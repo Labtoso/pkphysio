@@ -294,6 +294,7 @@ async function login(token) {
 }
 
 loginBtn.addEventListener('click', () => {
+  alert('Button-Klick erkannt. Klicke OK, dann versuche ich mich anzumelden.');
   loginError.textContent = '';
   const token = tokenInput.value.trim();
   if (!token) {
