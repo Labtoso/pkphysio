@@ -58,11 +58,71 @@
 
   <main class="admin-content">
 
+    <!-- DESIGN -->
+    <section class="admin-section">
+      <h2>Design</h2>
+
+      <div class="admin-color-row">
+        <label class="admin-field admin-field-inline">
+          <span>Hauptfarbe</span>
+          <input id="design_primaryColor" type="color">
+        </label>
+        <label class="admin-field admin-field-inline">
+          <span>Akzentfarbe</span>
+          <input id="design_accentColor" type="color">
+        </label>
+      </div>
+
+      <label class="admin-field">
+        <span>Schriftart</span>
+        <select id="design_fontFamily">
+          <option value="default">Standard (Poppins / Inter)</option>
+          <option value="montserrat">Montserrat</option>
+          <option value="playfair">Playfair Display / Lora (elegant, Serife)</option>
+          <option value="lora">Lora (Serife)</option>
+          <option value="roboto">Roboto</option>
+        </select>
+      </label>
+
+      <label class="admin-field">
+        <span>Eckenrundung: <span id="design_borderRadius_val"></span>px</span>
+        <input id="design_borderRadius" type="range" min="0" max="24" step="1">
+      </label>
+
+      <label class="admin-field">
+        <span>Textgröße: <span id="design_textScale_val"></span>%</span>
+        <input id="design_textScale" type="range" min="80" max="130" step="5">
+      </label>
+
+      <div class="admin-color-row">
+        <label class="admin-field admin-field-inline">
+          <span>Profilbild-Breite (px)</span>
+          <input id="design_portraitWidth" type="number" min="200" max="600" step="10">
+        </label>
+        <label class="admin-field admin-field-inline">
+          <span>Logo-Höhe (px)</span>
+          <input id="design_logoHeight" type="number" min="40" max="160" step="5">
+        </label>
+      </div>
+    </section>
+
     <!-- SEO / TAB -->
     <section class="admin-section">
       <h2>Seiten-Titel &amp; Browser-Tab</h2>
       <label class="admin-field"><span>Titel (im Browser-Tab)</span><input id="meta_title" type="text"></label>
       <label class="admin-field"><span>Beschreibung (für Suchmaschinen)</span><textarea id="meta_description" rows="2"></textarea></label>
+    </section>
+
+    <!-- NAVIGATION -->
+    <section class="admin-section">
+      <h2>Navigation &amp; Buttons</h2>
+      <label class="admin-field"><span>Menüpunkt: Über mich</span><input id="nav_ueberMich" type="text"></label>
+      <label class="admin-field"><span>Menüpunkt: Leistungen</span><input id="nav_leistungen" type="text"></label>
+      <label class="admin-field"><span>Menüpunkt: FAQ</span><input id="nav_faq" type="text"></label>
+      <label class="admin-field"><span>Menüpunkt: Kontakt</span><input id="nav_kontakt" type="text"></label>
+      <label class="admin-field"><span>Button oben rechts (Telefon)</span><input id="btn_headerCta" type="text"></label>
+      <label class="admin-field"><span>Button im Kontakt-Bereich</span><input id="btn_kontaktCta" type="text"></label>
+      <label class="admin-field"><span>Runder Anruf-Button (mobil, unten rechts)</span><input id="btn_mobileCta" type="text"></label>
     </section>
 
     <!-- BILDER -->
@@ -115,85 +175,130 @@
       <label class="admin-field"><span>Runder Anruf-Button (mobil, unten rechts)</span><input id="btn_mobileCta" type="text"></label>
     </section>
 
-    <!-- KONTAKTDATEN -->
-    <section class="admin-section">
-      <h2>Kontaktdaten</h2>
-      <p class="admin-hint">Wird auf der ganzen Website verwendet (Telefon-Buttons, Kontakt-Bereich, Karte).</p>
-      <label class="admin-field"><span>Telefonnummer (Anzeige)</span><input id="site_phone" type="text"></label>
-      <label class="admin-field"><span>Telefonnummer (für Anruf-Links, nur Ziffern/+)</span><input id="site_phoneHref" type="text"></label>
-      <label class="admin-field"><span>Adresse</span><input id="site_address" type="text"></label>
-      <label class="admin-field"><span>E-Mail</span><input id="site_email" type="text"></label>
-      <label class="admin-field"><span>Instagram-Name (mit @)</span><input id="site_instagramHandle" type="text"></label>
-      <label class="admin-field"><span>Instagram-Link</span><input id="site_instagramUrl" type="text"></label>
-    </section>
+    <h2 class="admin-page-heading">Seiteninhalt <span>ziehen zum Umsortieren</span></h2>
 
-    <!-- HERO -->
-    <section class="admin-section">
-      <h2>Startbereich (oben auf der Seite)</h2>
-      <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="hero_eyebrow" type="text"></label>
-      <label class="admin-field"><span>Name / Überschrift</span><input id="hero_title" type="text"></label>
-      <label class="admin-field"><span>Untertitel</span><input id="hero_subtitle" type="text"></label>
-      <label class="admin-field"><span>Beschreibungstext</span><textarea id="hero_text" rows="4"></textarea></label>
-      <label class="admin-field"><span>Button-Text (Telefon)</span><input id="hero_ctaPrimary" type="text"></label>
-      <label class="admin-field"><span>Button-Text (zu "Über mich" springen)</span><input id="hero_ctaSecondary" type="text"></label>
-    </section>
+    <!-- ---------- DRAGGABLE PAGE SECTIONS ---------- -->
+    <div id="draggableSections">
 
-    <!-- ÜBER MICH -->
-    <section class="admin-section">
-      <h2>Über mich</h2>
-      <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="about_eyebrow" type="text"></label>
-      <label class="admin-field"><span>Überschrift</span><input id="about_title" type="text"></label>
-      <label class="admin-field"><span>Text</span><textarea id="about_text" rows="6"></textarea></label>
+      <!-- HERO -->
+      <section class="admin-section draggable" data-section-key="hero">
+        <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Startbereich (oben auf der Seite)</h2>
+        <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="hero_eyebrow" type="text"></label>
+        <label class="admin-field"><span>Name / Überschrift</span><input id="hero_title" type="text"></label>
+        <label class="admin-field"><span>Untertitel</span><input id="hero_subtitle" type="text"></label>
+        <label class="admin-field">
+          <span>Beschreibungstext</span>
+          <div class="admin-richtext-toolbar">
+            <button type="button" class="rt-btn" data-cmd="bold"><b>B</b></button>
+            <button type="button" class="rt-btn" data-cmd="italic"><i>I</i></button>
+          </div>
+          <div class="admin-richtext" id="hero_text" contenteditable="true"></div>
+        </label>
+        <label class="admin-field"><span>Button-Text (Telefon)</span><input id="hero_ctaPrimary" type="text"></label>
+        <label class="admin-field"><span>Button-Text (zu "Über mich" springen)</span><input id="hero_ctaSecondary" type="text"></label>
+      </section>
 
-      <h3 class="admin-subheading">Lebenslauf-Zeitleiste</h3>
-      <div id="timelineList" class="admin-repeater"></div>
-      <button type="button" class="admin-add-btn" data-add="timeline">+ Eintrag hinzufügen</button>
-    </section>
+      <!-- ÜBER MICH -->
+      <section class="admin-section draggable" data-section-key="about">
+        <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Über mich</h2>
+        <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="about_eyebrow" type="text"></label>
+        <label class="admin-field"><span>Überschrift</span><input id="about_title" type="text"></label>
+        <label class="admin-field">
+          <span>Text</span>
+          <div class="admin-richtext-toolbar">
+            <button type="button" class="rt-btn" data-cmd="bold"><b>B</b></button>
+            <button type="button" class="rt-btn" data-cmd="italic"><i>I</i></button>
+          </div>
+          <div class="admin-richtext" id="about_text" contenteditable="true"></div>
+        </label>
 
-    <!-- LEISTUNGEN -->
-    <section class="admin-section">
-      <h2>Leistungen</h2>
-      <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="leistungen_eyebrow" type="text"></label>
-      <label class="admin-field"><span>Überschrift</span><input id="leistungen_title" type="text"></label>
+        <h3 class="admin-subheading">Lebenslauf-Zeitleiste</h3>
+        <div id="timelineList" class="admin-repeater"></div>
+        <button type="button" class="admin-add-btn" data-add="timeline">+ Eintrag hinzufügen</button>
+      </section>
 
-      <h3 class="admin-subheading">Physiotherapie</h3>
-      <label class="admin-field"><span>Titel</span><input id="service0_title" type="text"></label>
-      <label class="admin-field"><span>Text</span><textarea id="service0_text" rows="4"></textarea></label>
+      <!-- LEISTUNGEN + ANGEBOTE -->
+      <section class="admin-section draggable" data-section-key="leistungen">
+        <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Leistungen &amp; Angebote</h2>
+        <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="leistungen_eyebrow" type="text"></label>
+        <label class="admin-field"><span>Überschrift</span><input id="leistungen_title" type="text"></label>
 
-      <h3 class="admin-subheading">Sportphysiotherapie</h3>
-      <label class="admin-field"><span>Titel</span><input id="service1_title" type="text"></label>
-      <label class="admin-field"><span>Text</span><textarea id="service1_text" rows="4"></textarea></label>
-    </section>
+        <h3 class="admin-subheading">Physiotherapie</h3>
+        <label class="admin-field"><span>Titel</span><input id="service0_title" type="text"></label>
+        <label class="admin-field">
+          <span>Text</span>
+          <div class="admin-richtext-toolbar">
+            <button type="button" class="rt-btn" data-cmd="bold"><b>B</b></button>
+            <button type="button" class="rt-btn" data-cmd="italic"><i>I</i></button>
+          </div>
+          <div class="admin-richtext" id="service0_text" contenteditable="true"></div>
+        </label>
 
-    <!-- THERAPIE ANGEBOTE -->
-    <section class="admin-section">
-      <h2>Therapie Angebote</h2>
-      <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="angeboteEyebrow" type="text"></label>
-      <label class="admin-field"><span>Überschrift</span><input id="angeboteTitle" type="text"></label>
+        <h3 class="admin-subheading">Sportphysiotherapie</h3>
+        <label class="admin-field"><span>Titel</span><input id="service1_title" type="text"></label>
+        <label class="admin-field">
+          <span>Text</span>
+          <div class="admin-richtext-toolbar">
+            <button type="button" class="rt-btn" data-cmd="bold"><b>B</b></button>
+            <button type="button" class="rt-btn" data-cmd="italic"><i>I</i></button>
+          </div>
+          <div class="admin-richtext" id="service1_text" contenteditable="true"></div>
+        </label>
 
-      <div id="angeboteList" class="admin-repeater"></div>
-      <button type="button" class="admin-add-btn" data-add="angebote">+ Angebot hinzufügen</button>
-    </section>
+        <h3 class="admin-subheading">Therapie Angebote</h3>
+        <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="angeboteEyebrow" type="text"></label>
+        <label class="admin-field"><span>Überschrift</span><input id="angeboteTitle" type="text"></label>
 
-    <!-- FAQ -->
-    <section class="admin-section">
-      <h2>FAQ</h2>
-      <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="faq_eyebrow" type="text"></label>
-      <label class="admin-field"><span>Überschrift</span><input id="faq_title" type="text"></label>
-      <label class="admin-field"><span>Untertext</span><input id="faq_text" type="text"></label>
+        <div id="angeboteList" class="admin-repeater"></div>
+        <button type="button" class="admin-add-btn" data-add="angebote">+ Angebot hinzufügen</button>
+      </section>
 
-      <div id="faqList" class="admin-repeater"></div>
-      <button type="button" class="admin-add-btn" data-add="faq">+ Frage hinzufügen</button>
-      <p class="admin-note">Tipp: In einer Antwort kann <code>{{phone}}</code> geschrieben werden – das wird automatisch durch die oben eingetragene Telefonnummer als klickbaren Link ersetzt.</p>
-    </section>
+      <!-- FAQ -->
+      <section class="admin-section draggable" data-section-key="faq">
+        <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> FAQ</h2>
+        <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="faq_eyebrow" type="text"></label>
+        <label class="admin-field"><span>Überschrift</span><input id="faq_title" type="text"></label>
+        <label class="admin-field"><span>Untertext</span><input id="faq_text" type="text"></label>
 
-    <!-- KONTAKT -->
-    <section class="admin-section">
-      <h2>Kontakt-Bereich</h2>
-      <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="kontakt_eyebrow" type="text"></label>
-      <label class="admin-field"><span>Überschrift</span><input id="kontakt_title" type="text"></label>
-      <label class="admin-field"><span>Text</span><textarea id="kontakt_text" rows="3"></textarea></label>
-    </section>
+        <div id="faqList" class="admin-repeater"></div>
+        <button type="button" class="admin-add-btn" data-add="faq">+ Frage hinzufügen</button>
+        <p class="admin-note">Tipp: In einer Antwort kann <code>{{phone}}</code> geschrieben werden – das wird automatisch durch die eingetragene Telefonnummer als klickbaren Link ersetzt.</p>
+      </section>
+
+      <!-- KONTAKT -->
+      <section class="admin-section draggable" data-section-key="kontakt">
+        <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Kontakt</h2>
+        <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="kontakt_eyebrow" type="text"></label>
+        <label class="admin-field"><span>Überschrift</span><input id="kontakt_title" type="text"></label>
+        <label class="admin-field">
+          <span>Text</span>
+          <div class="admin-richtext-toolbar">
+            <button type="button" class="rt-btn" data-cmd="bold"><b>B</b></button>
+            <button type="button" class="rt-btn" data-cmd="italic"><i>I</i></button>
+          </div>
+          <div class="admin-richtext" id="kontakt_text" contenteditable="true"></div>
+        </label>
+
+        <h3 class="admin-subheading">Kontaktdaten</h3>
+        <p class="admin-hint">Wird auch für Telefon-Buttons und die Karte an anderen Stellen der Website verwendet.</p>
+        <label class="admin-field"><span>Telefonnummer (Anzeige)</span><input id="site_phone" type="text"></label>
+        <label class="admin-field"><span>Telefonnummer (für Anruf-Links, nur Ziffern/+)</span><input id="site_phoneHref" type="text"></label>
+        <label class="admin-field"><span>Adresse</span><input id="site_address" type="text"></label>
+        <label class="admin-field"><span>E-Mail</span><input id="site_email" type="text"></label>
+        <label class="admin-field"><span>Instagram-Name (mit @)</span><input id="site_instagramHandle" type="text"></label>
+        <label class="admin-field"><span>Instagram-Link</span><input id="site_instagramUrl" type="text"></label>
+      </section>
+
+    </div>
+    <!-- ---------- END DRAGGABLE PAGE SECTIONS ---------- -->
+
+    <!-- ADD SECTION -->
+    <div class="admin-add-section">
+      <select id="newSectionType">
+        <option value="textblock">Textblock (Überschrift + Text)</option>
+      </select>
+      <button type="button" id="addSectionBtn" class="admin-add-btn">+ Neue Sektion hinzufügen</button>
+    </div>
 
     <button id="saveBtnBottom" class="btn btn-primary admin-save-bottom" type="button">Speichern</button>
   </main>
