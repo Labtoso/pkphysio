@@ -243,6 +243,14 @@ function renderCustomSections(customSections, site) {
 
 function reorderSections(order, hiddenSections) {
   const main = document.getElementById('top');
+
+  // Any core section missing entirely from "order" was removed in the admin panel.
+  Object.keys(SECTION_ID_MAP).forEach(key => {
+    if (order.includes(key)) return;
+    const el = document.getElementById(SECTION_ID_MAP[key]);
+    if (el) el.style.display = 'none';
+  });
+
   order.forEach(key => {
     const id = SECTION_ID_MAP[key] || key;
     const el = document.getElementById(id);
