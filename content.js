@@ -1,10 +1,13 @@
 window.SITE_CONTENT = {
   "order": ["hero", "about", "leistungen", "faq", "kontakt"],
+  "hiddenSections": [],
   "customSections": [],
+  "customFonts": [],
   "design": {
     "primaryColor": "#17b6a4",
     "accentColor": "#ff8a5c",
-    "fontFamily": "default",
+    "headingFont": "poppins",
+    "bodyFont": "inter",
     "borderRadius": 10,
     "textScale": 100,
     "portraitWidth": 430,

@@ -375,6 +375,14 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .accordion-panel p { color: var(--color-ink-soft); padding-bottom: 20px; }
 .accordion-panel a { color: var(--color-primary); font-weight: 600; }
 
+.hero-text a,
+.lead a,
+.service-card p a,
+.custom-section-text a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
 /* ---------- Kontakt ---------- */
 .kontakt-grid {
   display: grid;

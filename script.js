@@ -1,11 +1,40 @@
 // ---------- Design (colors, fonts, sizes) ----------
-const FONT_MAP = {
-  default: { head: '"Poppins", sans-serif', body: '"Inter", sans-serif' },
-  montserrat: { head: '"Montserrat", sans-serif', body: '"Montserrat", sans-serif' },
-  playfair: { head: '"Playfair Display", serif', body: '"Lora", serif' },
-  lora: { head: '"Lora", serif', body: '"Lora", serif' },
-  roboto: { head: '"Roboto", sans-serif', body: '"Roboto", sans-serif' }
+const FONT_OPTIONS = {
+  poppins: '"Poppins", sans-serif',
+  inter: '"Inter", sans-serif',
+  montserrat: '"Montserrat", sans-serif',
+  playfair: '"Playfair Display", serif',
+  lora: '"Lora", serif',
+  roboto: '"Roboto", sans-serif'
 };
+
+function fontFormatFromPath(path) {
+  const ext = String(path).split('.').pop().toLowerCase();
+  return { woff2: 'woff2', woff: 'woff', otf: 'opentype', ttf: 'truetype' }[ext] || 'truetype';
+}
+
+function injectCustomFonts(customFonts) {
+  const existing = document.getElementById('customFontFaces');
+  if (existing) existing.remove();
+  if (!customFonts || !customFonts.length) return;
+  const style = document.createElement('style');
+  style.id = 'customFontFaces';
+  style.textContent = customFonts.map(f => `
+    @font-face {
+      font-family: "${f.name}";
+      src: url("${f.file}") format("${fontFormatFromPath(f.file)}");
+      font-display: swap;
+    }
+  `).join('\n');
+  document.head.appendChild(style);
+}
+
+function resolveFont(key, customFonts) {
+  if (FONT_OPTIONS[key]) return FONT_OPTIONS[key];
+  const custom = (customFonts || []).find(f => f.name === key);
+  if (custom) return `"${custom.name}", sans-serif`;
+  return FONT_OPTIONS.poppins;
+}
 
 function hexToRgb(hex) {
   const parts = String(hex).replace('#', '').match(/.{1,2}/g) || ['17', 'b6', 'a4'];
@@ -21,7 +50,7 @@ function tintColor(hex, alpha) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-function applyDesign(design) {
+function applyDesign(design, customFonts) {
   if (!design) return;
   const root = document.documentElement.style;
   root.setProperty('--color-primary', design.primaryColor);
@@ -34,9 +63,9 @@ function applyDesign(design) {
   root.setProperty('--logo-height', design.logoHeight + 'px');
   document.documentElement.style.fontSize = design.textScale + '%';
 
-  const fonts = FONT_MAP[design.fontFamily] || FONT_MAP.default;
-  root.setProperty('--font-head', fonts.head);
-  root.setProperty('--font-body', fonts.body);
+  injectCustomFonts(customFonts);
+  root.setProperty('--font-head', resolveFont(design.headingFont, customFonts));
+  root.setProperty('--font-body', resolveFont(design.bodyFont, customFonts));
 }
 
 // ---------- Render content from content.js ----------
@@ -49,7 +78,7 @@ function applyTemplate(text, site) {
 function renderContent(data) {
   const site = data.site;
 
-  applyDesign(data.design);
+  applyDesign(data.design, data.customFonts);
 
   // tel-links (href everywhere, text only where marked)
   document.querySelectorAll('.tel-link').forEach(el => {
@@ -177,7 +206,10 @@ function renderContent(data) {
 
   // Custom sections + section order
   renderCustomSections(data.customSections || [], site);
-  reorderSections(data.order || ['hero', 'about', 'leistungen', 'faq', 'kontakt']);
+  reorderSections(
+    data.order || ['hero', 'about', 'leistungen', 'faq', 'kontakt'],
+    data.hiddenSections || []
+  );
 }
 
 const SECTION_ID_MAP = {
@@ -209,12 +241,14 @@ function renderCustomSections(customSections, site) {
   });
 }
 
-function reorderSections(order) {
+function reorderSections(order, hiddenSections) {
   const main = document.getElementById('top');
   order.forEach(key => {
     const id = SECTION_ID_MAP[key] || key;
     const el = document.getElementById(id);
-    if (el) main.appendChild(el);
+    if (!el) return;
+    main.appendChild(el);
+    el.style.display = hiddenSections.includes(key) ? 'none' : '';
   });
 }
 

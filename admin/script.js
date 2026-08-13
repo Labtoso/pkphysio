@@ -132,18 +132,32 @@ function createCustomSectionCard(cs) {
     <label class="admin-field">
       <span>Text</span>
       <div class="admin-richtext-toolbar">
-        <button type="button" class="rt-btn" data-cmd="bold"><b>B</b></button>
-        <button type="button" class="rt-btn" data-cmd="italic"><i>I</i></button>
+        <button type="button" class="rt-btn" data-cmd="bold" title="Fett"><b>B</b></button>
+        <button type="button" class="rt-btn" data-cmd="italic" title="Kursiv"><i>I</i></button>
+        <button type="button" class="rt-btn" data-cmd="underline" title="Unterstrichen"><u>U</u></button>
+        <button type="button" class="rt-btn" data-cmd="createLink" title="Link einfügen">🔗</button>
+        <button type="button" class="rt-btn" data-cmd="unlink" title="Link entfernen">⊘</button>
       </div>
       <div class="admin-richtext cs-text" contenteditable="true"></div>
     </label>
+
+    <div class="admin-field admin-coming-soon">
+      <span>Bild zum Textblock <span class="admin-badge-soon">Bald verfügbar</span></span>
+      <div class="admin-image-row">
+        <div class="admin-image-preview admin-image-preview-placeholder"></div>
+        <input type="file" accept="image/*" disabled>
+      </div>
+      <div class="admin-position-row">
+        <label><input type="radio" name="cs-pos-${cs.id}" disabled checked> Bild links</label>
+        <label><input type="radio" name="cs-pos-${cs.id}" disabled> Bild rechts</label>
+      </div>
+    </div>
   `;
   section.querySelector('.cs-text').innerHTML = cs.text || '';
   const removeBtn = makeRemoveBtn(() => section.remove());
   removeBtn.textContent = 'Sektion entfernen';
   section.appendChild(removeBtn);
   initRichTextToolbar(section);
-  makeSectionDraggable(section);
   return section;
 }
 
@@ -171,29 +185,35 @@ document.getElementById('addSectionBtn').addEventListener('click', () => {
   }
 });
 
-// ---------- Drag & drop reordering ----------
+// ---------- Drag & drop reordering (custom pointer-based, no native HTML5 DnD) ----------
 let dragEl = null;
 
-function makeSectionDraggable(section) {
-  section.setAttribute('draggable', 'true');
-  section.addEventListener('dragstart', () => {
-    dragEl = section;
-    section.classList.add('dragging');
-  });
-  section.addEventListener('dragend', () => {
-    section.classList.remove('dragging');
-    dragEl = null;
-  });
-}
+draggableSections.addEventListener('pointerdown', e => {
+  const handle = e.target.closest('.admin-drag-handle');
+  if (!handle) return;
+  const section = handle.closest('.draggable');
+  if (!section) return;
 
-draggableSections.querySelectorAll('.draggable').forEach(makeSectionDraggable);
-
-draggableSections.addEventListener('dragover', e => {
+  dragEl = section;
+  section.classList.add('dragging');
+  document.body.classList.add('admin-dragging-active');
   e.preventDefault();
-  if (!dragEl) return;
-  const after = getDragAfterElement(draggableSections, e.clientY);
-  if (after == null) draggableSections.appendChild(dragEl);
-  else draggableSections.insertBefore(dragEl, after);
+
+  const onMove = ev => {
+    if (!dragEl) return;
+    const after = getDragAfterElement(draggableSections, ev.clientY);
+    if (after == null) draggableSections.appendChild(dragEl);
+    else draggableSections.insertBefore(dragEl, after);
+  };
+  const onUp = () => {
+    if (dragEl) dragEl.classList.remove('dragging');
+    dragEl = null;
+    document.body.classList.remove('admin-dragging-active');
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+  };
+  document.addEventListener('pointermove', onMove);
+  document.addEventListener('pointerup', onUp);
 });
 
 function getDragAfterElement(container, y) {
@@ -219,13 +239,40 @@ function collectSectionOrder() {
   return [...draggableSections.querySelectorAll('.draggable')].map(el => el.dataset.sectionKey);
 }
 
+// ---------- Hide/show core sections ----------
+function setSectionHidden(section, hidden) {
+  section.classList.toggle('hidden-section', hidden);
+  section.dataset.hidden = hidden ? '1' : '';
+  const btn = section.querySelector('.admin-hide-btn');
+  if (btn) btn.textContent = hidden ? 'Wieder einblenden' : 'Ausblenden';
+}
+
+document.querySelectorAll('.admin-hide-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const section = btn.closest('.draggable');
+    setSectionHidden(section, section.dataset.hidden !== '1');
+  });
+});
+
+function applyHiddenSections(hiddenKeys) {
+  draggableSections.querySelectorAll('.draggable[data-section-key]').forEach(section => {
+    setSectionHidden(section, hiddenKeys.includes(section.dataset.sectionKey));
+  });
+}
+
+function collectHiddenSections() {
+  return [...draggableSections.querySelectorAll('.draggable[data-hidden="1"]')].map(el => el.dataset.sectionKey);
+}
+
 function fillFixedFields(data) {
   document.getElementById('meta_title').value = data.meta.title;
   document.getElementById('meta_description').value = data.meta.description;
 
   document.getElementById('design_primaryColor').value = data.design.primaryColor;
   document.getElementById('design_accentColor').value = data.design.accentColor;
-  document.getElementById('design_fontFamily').value = data.design.fontFamily;
+  populateFontSelects(data.customFonts || []);
+  document.getElementById('design_headingFont').value = data.design.headingFont;
+  document.getElementById('design_bodyFont').value = data.design.bodyFont;
   document.getElementById('design_borderRadius').value = data.design.borderRadius;
   document.getElementById('design_borderRadius_val').textContent = data.design.borderRadius;
   document.getElementById('design_textScale').value = data.design.textScale;
@@ -283,7 +330,8 @@ function readFixedFields(data) {
 
   data.design.primaryColor = document.getElementById('design_primaryColor').value;
   data.design.accentColor = document.getElementById('design_accentColor').value;
-  data.design.fontFamily = document.getElementById('design_fontFamily').value;
+  data.design.headingFont = document.getElementById('design_headingFont').value;
+  data.design.bodyFont = document.getElementById('design_bodyFont').value;
   data.design.borderRadius = Number(document.getElementById('design_borderRadius').value);
   data.design.textScale = Number(document.getElementById('design_textScale').value);
   data.design.portraitWidth = Number(document.getElementById('design_portraitWidth').value);
@@ -400,8 +448,11 @@ function renderFaq(items) {
       <label class="admin-field">
         <span>Antwort</span>
         <div class="admin-richtext-toolbar">
-          <button type="button" class="rt-btn" data-cmd="bold"><b>B</b></button>
-          <button type="button" class="rt-btn" data-cmd="italic"><i>I</i></button>
+          <button type="button" class="rt-btn" data-cmd="bold" title="Fett"><b>B</b></button>
+          <button type="button" class="rt-btn" data-cmd="italic" title="Kursiv"><i>I</i></button>
+          <button type="button" class="rt-btn" data-cmd="underline" title="Unterstrichen"><u>U</u></button>
+          <button type="button" class="rt-btn" data-cmd="createLink" title="Link einfügen">🔗</button>
+          <button type="button" class="rt-btn" data-cmd="unlink" title="Link entfernen">⊘</button>
         </div>
         <div class="admin-richtext faq-a" contenteditable="true"></div>
       </label>
@@ -419,7 +470,24 @@ function collectFaq() {
   }));
 }
 
+function updateToolbarState(editable) {
+  const toolbar = editable.closest('.admin-field').querySelector('.admin-richtext-toolbar');
+  if (!toolbar) return;
+  ['bold', 'italic', 'underline'].forEach(cmd => {
+    const btn = toolbar.querySelector(`[data-cmd="${cmd}"]`);
+    if (btn) btn.classList.toggle('active', document.queryCommandState(cmd));
+  });
+}
+
 function initRichTextToolbar(container) {
+  container.querySelectorAll('.admin-richtext').forEach(editable => {
+    if (editable.dataset.wired) return;
+    editable.dataset.wired = '1';
+    ['keyup', 'mouseup', 'focus'].forEach(evt => {
+      editable.addEventListener(evt, () => updateToolbarState(editable));
+    });
+  });
+
   container.querySelectorAll('.rt-btn').forEach(btn => {
     if (btn.dataset.wired) return;
     btn.dataset.wired = '1';
@@ -427,7 +495,14 @@ function initRichTextToolbar(container) {
     btn.addEventListener('mousedown', e => e.preventDefault());
     btn.addEventListener('click', () => {
       editable.focus();
-      document.execCommand(btn.dataset.cmd, false, null);
+      const cmd = btn.dataset.cmd;
+      if (cmd === 'createLink') {
+        const url = prompt('Link-Adresse (z. B. https://...):', 'https://');
+        if (url) document.execCommand('createLink', false, url);
+      } else {
+        document.execCommand(cmd, false, null);
+      }
+      updateToolbarState(editable);
     });
   });
 }
@@ -480,6 +555,110 @@ async function uploadPendingImages(token, data) {
   }
 }
 
+// ---------- Fonts ----------
+const FONT_OPTIONS = {
+  poppins: 'Poppins',
+  inter: 'Inter',
+  montserrat: 'Montserrat',
+  playfair: 'Playfair Display',
+  lora: 'Lora',
+  roboto: 'Roboto'
+};
+const pendingFonts = {}; // tempId -> File
+
+function populateFontSelects(customFonts) {
+  const selects = [document.getElementById('design_headingFont'), document.getElementById('design_bodyFont')];
+  selects.forEach(select => {
+    const current = select.value;
+    select.innerHTML = '';
+    Object.entries(FONT_OPTIONS).forEach(([value, label]) => {
+      const opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = label;
+      select.appendChild(opt);
+    });
+    customFonts.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f.name;
+      opt.textContent = f.name + ' (eigene Schriftart)';
+      select.appendChild(opt);
+    });
+    if (current) select.value = current;
+  });
+}
+
+function renderCustomFontsList(customFonts) {
+  const list = document.getElementById('customFontsList');
+  list.innerHTML = '';
+  customFonts.forEach(f => {
+    const row = document.createElement('div');
+    row.className = 'admin-repeater-item';
+    row.dataset.fontName = f.name;
+    row.dataset.fontFile = f.file;
+    row.innerHTML = `<span>${escapeHtml(f.name)}</span> <span class="admin-hint" style="display:inline;margin:0;">(${escapeHtml(f.file)})</span>`;
+    row.appendChild(makeRemoveBtn(() => {
+      row.remove();
+      populateFontSelects(collectCustomFonts());
+    }));
+    list.appendChild(row);
+  });
+}
+
+function collectCustomFonts() {
+  return [...document.querySelectorAll('#customFontsList .admin-repeater-item')].map(row => ({
+    name: row.dataset.fontName,
+    file: row.dataset.fontFile
+  }));
+}
+
+document.getElementById('addFontBtn').addEventListener('click', () => {
+  const nameInput = document.getElementById('newFontName');
+  const fileInput = document.getElementById('newFontFile');
+  const name = nameInput.value.trim();
+  const file = fileInput.files[0];
+  if (!name || !file) {
+    alert('Bitte einen Namen eingeben und eine Schriftart-Datei auswählen.');
+    return;
+  }
+  const tempId = 'pending-' + Date.now();
+  pendingFonts[tempId] = file;
+
+  const row = document.createElement('div');
+  row.className = 'admin-repeater-item';
+  row.dataset.fontName = name;
+  row.dataset.fontFile = '';
+  row.dataset.pendingId = tempId;
+  row.innerHTML = `<span>${escapeHtml(name)}</span> <span class="admin-hint" style="display:inline;margin:0;">(wird beim Speichern hochgeladen)</span>`;
+  row.appendChild(makeRemoveBtn(() => {
+    delete pendingFonts[tempId];
+    row.remove();
+    populateFontSelects(collectCustomFonts());
+  }));
+  document.getElementById('customFontsList').appendChild(row);
+
+  populateFontSelects(collectCustomFonts());
+  nameInput.value = '';
+  fileInput.value = '';
+});
+
+async function uploadPendingFonts(token, data) {
+  const rows = [...document.querySelectorAll('#customFontsList .admin-repeater-item')];
+  for (const row of rows) {
+    const tempId = row.dataset.pendingId;
+    if (!tempId) continue;
+    const file = pendingFonts[tempId];
+    if (!file) continue;
+    const path = 'Assets/Fonts/' + sanitizeFilename(file.name);
+    const base64 = await fileToBase64(file);
+    const existingSha = await ghGetSha(token, path);
+    await ghPutBinaryFile(token, path, base64, 'Schriftart hochgeladen über Admin-Panel (' + row.dataset.fontName + ')', existingSha);
+    row.dataset.fontFile = path;
+    delete row.dataset.pendingId;
+    delete pendingFonts[tempId];
+  }
+  data.customFonts = collectCustomFonts();
+}
+
 // ---------- Login ----------
 function withTimeout(promise, ms) {
   return Promise.race([
@@ -512,6 +691,7 @@ async function login(token) {
 
     try { sessionStorage.setItem(TOKEN_KEY, token); } catch (e) {}
 
+    renderCustomFontsList(data.customFonts || []);
     fillFixedFields(data);
     fillImagePreviews(data.images);
     renderTimeline(data.about.timeline);
@@ -519,6 +699,7 @@ async function login(token) {
     renderFaq(data.faq.items);
     renderCustomSectionCards(data.customSections || []);
     applySectionOrder(data.order || ['hero', 'about', 'leistungen', 'faq', 'kontakt']);
+    applyHiddenSections(data.hiddenSections || []);
 
     showEditor();
   } catch (err) {
@@ -564,14 +745,23 @@ async function save() {
   state.data.faq.items = collectFaq();
   state.data.customSections = collectCustomSections();
   state.data.order = collectSectionOrder();
+  state.data.hiddenSections = collectHiddenSections();
 
   const hasImageUploads = IMAGE_KEYS.some(key => pendingImages[key]);
+  const hasFontUploads = Object.keys(pendingFonts).length > 0;
 
-  [saveStatus].forEach(el => { el.className = 'admin-status'; el.textContent = hasImageUploads ? 'Lade Bilder hoch …' : 'Speichere …'; });
+  [saveStatus].forEach(el => { el.className = 'admin-status'; el.textContent = (hasImageUploads || hasFontUploads) ? 'Lade Dateien hoch …' : 'Speichere …'; });
 
   try {
     if (hasImageUploads) {
       await uploadPendingImages(state.token, state.data);
+    }
+    if (hasFontUploads) {
+      await uploadPendingFonts(state.token, state.data);
+    } else {
+      state.data.customFonts = collectCustomFonts();
+    }
+    if (hasImageUploads || hasFontUploads) {
       saveStatus.textContent = 'Speichere Texte …';
     }
 
