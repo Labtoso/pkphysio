@@ -11,42 +11,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
 <link rel="stylesheet" href="style.css">
-<style>
-  #fatalError {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 99999;
-    background: #b91c1c;
-    color: #fff;
-    padding: 16px 20px;
-    font-family: sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-</style>
-<script>
-  window.addEventListener('error', function (e) {
-    var box = document.getElementById('fatalError');
-    if (box) {
-      box.style.display = 'block';
-      box.textContent = 'JavaScript-Fehler: ' + e.message + ' (Datei: ' + (e.filename ? e.filename.split('/').pop() : '?') + ', Zeile ' + e.lineno + ')';
-    }
-  });
-  window.addEventListener('unhandledrejection', function (e) {
-    var box = document.getElementById('fatalError');
-    if (box) {
-      box.style.display = 'block';
-      box.textContent = 'Unbehandelter Fehler: ' + (e.reason && e.reason.message ? e.reason.message : e.reason);
-    }
-  });
-</script>
 </head>
 <body>
-
-<div id="fatalError"></div>
 
 <!-- ---------- LOGIN ---------- -->
 <div id="loginScreen" class="admin-login">
@@ -233,9 +199,6 @@
   </main>
 </div>
 
-<script
-  src="script.js"
-  onerror="document.getElementById('fatalError').style.display='block'; document.getElementById('fatalError').textContent='script.js konnte nicht geladen werden (Netzwerkfehler oder falscher Pfad).';"
-></script>
+<script src="script.js"></script>
 </body>
 </html>
