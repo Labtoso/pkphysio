@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
-<link rel="stylesheet" href="admin.css">
+<link rel="stylesheet" href="style.css">
 <style>
   #fatalError {
     display: none;
@@ -25,13 +25,6 @@
     line-height: 1.5;
     white-space: pre-wrap;
     word-break: break-word;
-  }
-  #bootStatus {
-    font-family: sans-serif;
-    font-size: 12px;
-    color: #888;
-    text-align: center;
-    padding: 8px;
   }
 </style>
 <script>
@@ -54,7 +47,6 @@
 <body>
 
 <div id="fatalError"></div>
-<p id="bootStatus">Skript wird geladen …</p>
 
 <!-- ---------- LOGIN ---------- -->
 <div id="loginScreen" class="admin-login">
@@ -87,7 +79,7 @@
 </div>
 
 <!-- ---------- EDITOR ---------- -->
-<div id="editorScreen" class="admin-editor" hidden>
+<div id="editorScreen" class="admin-editor">
   <header class="admin-topbar">
     <span class="admin-topbar-title">Website-Editor</span>
     <div class="admin-topbar-actions">
@@ -185,8 +177,8 @@
 </div>
 
 <script
-  src="admin.js"
-  onerror="document.getElementById('fatalError').style.display='block'; document.getElementById('fatalError').textContent='admin.js konnte nicht geladen werden (Netzwerkfehler oder falscher Pfad).';"
+  src="script.js"
+  onerror="document.getElementById('fatalError').style.display='block'; document.getElementById('fatalError').textContent='script.js konnte nicht geladen werden (Netzwerkfehler oder falscher Pfad).';"
 ></script>
 </body>
 </html>
