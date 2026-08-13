@@ -193,7 +193,10 @@
       <section class="admin-section draggable" data-section-key="hero">
         <div class="admin-section-header">
           <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Startbereich (oben auf der Seite)</h2>
-          <button type="button" class="admin-hide-btn">Ausblenden</button>
+          <div class="admin-header-actions">
+            <button type="button" class="admin-hide-btn">Ausblenden</button>
+            <button type="button" class="admin-remove-core-btn">Entfernen</button>
+          </div>
         </div>
         <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="hero_eyebrow" type="text"></label>
         <label class="admin-field"><span>Name / Überschrift</span><input id="hero_title" type="text"></label>
@@ -217,7 +220,10 @@
       <section class="admin-section draggable" data-section-key="about">
         <div class="admin-section-header">
           <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Über mich</h2>
-          <button type="button" class="admin-hide-btn">Ausblenden</button>
+          <div class="admin-header-actions">
+            <button type="button" class="admin-hide-btn">Ausblenden</button>
+            <button type="button" class="admin-remove-core-btn">Entfernen</button>
+          </div>
         </div>
         <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="about_eyebrow" type="text"></label>
         <label class="admin-field"><span>Überschrift</span><input id="about_title" type="text"></label>
@@ -242,7 +248,10 @@
       <section class="admin-section draggable" data-section-key="leistungen">
         <div class="admin-section-header">
           <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Leistungen &amp; Angebote</h2>
-          <button type="button" class="admin-hide-btn">Ausblenden</button>
+          <div class="admin-header-actions">
+            <button type="button" class="admin-hide-btn">Ausblenden</button>
+            <button type="button" class="admin-remove-core-btn">Entfernen</button>
+          </div>
         </div>
         <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="leistungen_eyebrow" type="text"></label>
         <label class="admin-field"><span>Überschrift</span><input id="leistungen_title" type="text"></label>
@@ -287,7 +296,10 @@
       <section class="admin-section draggable" data-section-key="faq">
         <div class="admin-section-header">
           <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> FAQ</h2>
-          <button type="button" class="admin-hide-btn">Ausblenden</button>
+          <div class="admin-header-actions">
+            <button type="button" class="admin-hide-btn">Ausblenden</button>
+            <button type="button" class="admin-remove-core-btn">Entfernen</button>
+          </div>
         </div>
         <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="faq_eyebrow" type="text"></label>
         <label class="admin-field"><span>Überschrift</span><input id="faq_title" type="text"></label>
@@ -302,7 +314,10 @@
       <section class="admin-section draggable" data-section-key="kontakt">
         <div class="admin-section-header">
           <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Kontakt</h2>
-          <button type="button" class="admin-hide-btn">Ausblenden</button>
+          <div class="admin-header-actions">
+            <button type="button" class="admin-hide-btn">Ausblenden</button>
+            <button type="button" class="admin-remove-core-btn">Entfernen</button>
+          </div>
         </div>
         <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="kontakt_eyebrow" type="text"></label>
         <label class="admin-field"><span>Überschrift</span><input id="kontakt_title" type="text"></label>
@@ -330,6 +345,12 @@
 
     </div>
     <!-- ---------- END DRAGGABLE PAGE SECTIONS ---------- -->
+
+    <!-- REMOVED SECTIONS (restorable) -->
+    <div id="removedSectionsWrap" class="admin-removed-wrap" hidden>
+      <p class="admin-hint">Entfernte Sektionen (nicht mehr auf der Website sichtbar):</p>
+      <div id="removedSections" class="admin-removed-list"></div>
+    </div>
 
     <!-- ADD SECTION -->
     <div class="admin-add-section">

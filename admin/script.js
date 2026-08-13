@@ -264,6 +264,76 @@ function collectHiddenSections() {
   return [...draggableSections.querySelectorAll('.draggable[data-hidden="1"]')].map(el => el.dataset.sectionKey);
 }
 
+// ---------- Remove/restore core sections ----------
+const CORE_SECTION_NAMES = {
+  hero: 'Startbereich',
+  about: 'Über mich',
+  leistungen: 'Leistungen & Angebote',
+  faq: 'FAQ',
+  kontakt: 'Kontakt'
+};
+const removedSectionsEl = document.getElementById('removedSections');
+const removedSectionsWrap = document.getElementById('removedSectionsWrap');
+
+function updateRemovedWrapVisibility() {
+  removedSectionsWrap.hidden = removedSectionsEl.children.length === 0;
+}
+
+function removeCoreSection(section) {
+  const key = section.dataset.sectionKey;
+  section.style.display = 'none';
+  removedSectionsEl.appendChild(section);
+
+  const row = document.createElement('div');
+  row.className = 'admin-removed-row';
+  row.innerHTML = `<span>${CORE_SECTION_NAMES[key] || key}</span>`;
+  const restoreBtn = document.createElement('button');
+  restoreBtn.type = 'button';
+  restoreBtn.className = 'admin-restore-btn';
+  restoreBtn.textContent = 'Wiederherstellen';
+  restoreBtn.addEventListener('click', () => {
+    section.style.display = '';
+    draggableSections.appendChild(section);
+    row.remove();
+    updateRemovedWrapVisibility();
+  });
+  row.appendChild(restoreBtn);
+  removedSectionsEl.appendChild(row);
+  updateRemovedWrapVisibility();
+}
+
+document.querySelectorAll('.admin-remove-core-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const section = btn.closest('.draggable');
+    const name = CORE_SECTION_NAMES[section.dataset.sectionKey] || 'diese Sektion';
+    if (confirm(`"${name}" wirklich entfernen? Du kannst sie danach über die Liste "Entfernte Sektionen" weiter unten wiederherstellen.`)) {
+      removeCoreSection(section);
+    }
+  });
+});
+
+function resetRemovedSections() {
+  Object.keys(CORE_SECTION_NAMES).forEach(key => {
+    const section = removedSectionsEl.querySelector(`[data-section-key="${key}"]`);
+    if (section) {
+      section.style.display = '';
+      draggableSections.appendChild(section);
+    }
+  });
+  removedSectionsEl.innerHTML = '';
+  updateRemovedWrapVisibility();
+}
+
+function applyRemovedSections(order) {
+  resetRemovedSections();
+  Object.keys(CORE_SECTION_NAMES).forEach(key => {
+    if (!order.includes(key)) {
+      const section = draggableSections.querySelector(`[data-section-key="${key}"]`);
+      if (section) removeCoreSection(section);
+    }
+  });
+}
+
 function fillFixedFields(data) {
   document.getElementById('meta_title').value = data.meta.title;
   document.getElementById('meta_description').value = data.meta.description;
@@ -698,8 +768,10 @@ async function login(token) {
     renderAngebote(data.leistungen.angebote);
     renderFaq(data.faq.items);
     renderCustomSectionCards(data.customSections || []);
-    applySectionOrder(data.order || ['hero', 'about', 'leistungen', 'faq', 'kontakt']);
+    const order = data.order || ['hero', 'about', 'leistungen', 'faq', 'kontakt'];
+    applySectionOrder(order);
     applyHiddenSections(data.hiddenSections || []);
+    applyRemovedSections(order);
 
     showEditor();
   } catch (err) {

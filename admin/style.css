@@ -291,6 +291,53 @@ body.admin-dragging-active .admin-drag-handle { cursor: grabbing; }
 .admin-hide-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .hidden-section .admin-hide-btn { border-color: var(--color-primary); color: var(--color-primary); }
 
+.admin-header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.admin-remove-core-btn {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-ink-soft);
+  font-family: var(--font-body);
+  font-size: .78rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: border-color .2s ease, color .2s ease;
+}
+.admin-remove-core-btn:hover { border-color: #ff6b6b; color: #ff6b6b; }
+
+.admin-removed-wrap {
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+}
+.admin-removed-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.admin-removed-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: .9rem;
+  color: var(--color-ink-soft);
+}
+.admin-removed-row:last-child { border-bottom: none; }
+.admin-restore-btn {
+  background: none;
+  border: 1px solid var(--color-primary);
+  border-radius: 999px;
+  color: var(--color-primary);
+  font-family: var(--font-body);
+  font-size: .78rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.admin-restore-btn:hover { background: var(--color-primary-light); }
+
 .admin-add-section {
   display: flex;
   gap: 12px;
