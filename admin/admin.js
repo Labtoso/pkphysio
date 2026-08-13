@@ -256,12 +256,21 @@ document.querySelectorAll('[data-add]').forEach(btn => {
 });
 
 // ---------- Login ----------
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT: Keine Antwort von GitHub nach ' + (ms / 1000) + ' Sekunden. Evtl. blockiert eine Firewall/Antivirus/VPN die Verbindung zu api.github.com.')), ms))
+  ]);
+}
+
 async function login(token) {
   loginError.textContent = '';
   loginBtn.disabled = true;
   loginBtn.textContent = 'Prüfe Zugang …';
+  alert('Schritt 1: Sende jetzt Anfrage an api.github.com. Klicke OK und warte.');
   try {
-    const { sha, text } = await ghGetFile(token);
+    const { sha, text } = await withTimeout(ghGetFile(token), 10000);
+    alert('Schritt 2: Antwort von GitHub erhalten! Verarbeite Inhalt …');
     const data = parseContentJs(text);
 
     state.token = token;
@@ -277,7 +286,9 @@ async function login(token) {
 
     loginScreen.hidden = true;
     editorScreen.hidden = false;
+    alert('Schritt 3: Fertig, Editor sollte jetzt sichtbar sein.');
   } catch (err) {
+    alert('FEHLER: ' + err.message + ' | status=' + err.status);
     if (err.status === 401) {
       loginError.textContent = 'Token ungültig oder abgelaufen.';
     } else if (err.status === 404) {
