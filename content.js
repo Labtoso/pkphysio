@@ -1,6 +1,6 @@
 window.SITE_CONTENT = {
   "meta": {
-    "title": "W Pkphysiotherapie | Pascal Krieger",
+    "title": "Pkphysiotherapie | Pascal Krieger",
     "description": "Pascal Krieger – Physiotherapie & Sportphysiotherapie in Rainfeld, NÖ. Manuelle Techniken, Sportbetreuung, Kinesiotaping und mehr."
   },
   "nav": {
