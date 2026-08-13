@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pkphysiotherapie | Pascal Krieger</title>
+<meta name="description" content="Pascal Krieger – Physiotherapie & Sportphysiotherapie in Rainfeld, NÖ. Manuelle Techniken, Sportbetreuung, Kinesiotaping und mehr.">
+<link rel="icon" type="image/png" href="Assets/logo_1x1.png">
+<script>
+  (function () {
+    try {
+      var stored = localStorage.getItem('theme');
+      var wantsLight = stored ? stored === 'light' : window.matchMedia('(prefers-color-scheme: light)').matches;
+      if (wantsLight) document.documentElement.classList.add('light');
+    } catch (e) {}
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<header class="site-header" id="siteHeader">
+  <div class="container header-inner">
+    <a href="#top" class="logo-link" aria-label="Pascal Krieger Physiotherapie – Startseite">
+      <img src="Assets/logo_nobg_white.png" alt="Pascal Krieger Physiotherapie" class="logo-img logo-img-dark">
+      <img src="Assets/logo_nobg_black.png" alt="Pascal Krieger Physiotherapie" class="logo-img logo-img-light">
+    </a>
+
+    <nav class="nav" id="mainNav">
+      <a href="#ueber-mich" class="nav-link">Über mich</a>
+      <a href="#leistungen" class="nav-link">Leistungen</a>
+      <a href="#faq" class="nav-link">FAQ</a>
+      <a href="#kontakt" class="nav-link">Kontakt</a>
+    </nav>
+
+    <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false" aria-label="Farbschema wechseln">
+      <span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>
+    </button>
+
+    <a href="#" class="btn btn-primary btn-header tel-link" data-tel="href" id="headerCta">Termin anfragen</a>
+
+    <button class="burger" id="burgerBtn" aria-label="Menü öffnen" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <p class="eyebrow reveal" id="heroEyebrow"></p>
+      <h1 class="reveal" id="heroTitle"></h1>
+      <h3 class="hero-sub reveal" id="heroSubtitle"></h3>
+      <p class="hero-text reveal" id="heroText"></p>
+      <div class="hero-actions reveal">
+        <a href="#" class="btn btn-primary tel-link" data-tel="href" id="heroCtaPrimary"></a>
+        <a href="#ueber-mich" class="btn btn-outline" id="heroCtaSecondary"></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÜBER MICH -->
+  <section id="ueber-mich" class="section">
+    <div class="container about-grid">
+      <div class="about-visual reveal">
+        <div class="about-portrait">
+          <img src="Assets/Pascal_Krieger.avif" alt="Pascal Krieger" class="about-portrait-img">
+        </div>
+      </div>
+
+      <div class="about-content reveal">
+        <p class="eyebrow" id="aboutEyebrow"></p>
+        <h2 id="aboutTitle"></h2>
+        <p class="lead" id="aboutText"></p>
+        <ul class="timeline" id="aboutTimeline"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEISTUNGEN -->
+  <section id="leistungen" class="section section-alt">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow" id="leistungenEyebrow"></p>
+        <h2 id="leistungenTitle"></h2>
+      </div>
+
+      <div class="services-grid" id="servicesGrid"></div>
+
+      <div class="section-head reveal offers-head">
+        <p class="eyebrow" id="angeboteEyebrow"></p>
+        <h2 id="angeboteTitle"></h2>
+      </div>
+
+      <div class="offers-grid" id="offersGrid"></div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="section">
+    <div class="container faq-layout">
+      <div class="section-head reveal">
+        <p class="eyebrow" id="faqEyebrow"></p>
+        <h2 id="faqTitle"></h2>
+        <p class="lead" id="faqText"></p>
+      </div>
+
+      <div class="accordion reveal" id="accordion"></div>
+    </div>
+  </section>
+
+  <!-- KONTAKT -->
+  <section id="kontakt" class="section section-alt">
+    <div class="container kontakt-grid">
+      <div class="kontakt-info reveal">
+        <p class="eyebrow" id="kontaktEyebrow"></p>
+        <h2 id="kontaktTitle"></h2>
+        <p class="lead" id="kontaktText"></p>
+
+        <ul class="contact-list" id="contactList"></ul>
+
+        <a href="#" class="btn btn-primary tel-link" data-tel="href" id="kontaktCta">Jetzt anrufen</a>
+      </div>
+
+      <div class="kontakt-map reveal">
+        <iframe
+          id="kontaktMap"
+          title="Standort Pascal Krieger Physiotherapie"
+          src=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<a href="#" class="mobile-cta tel-link" data-tel="href" id="mobileCta">Anrufen</a>
+
+<script src="content.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

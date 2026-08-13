@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Website-Editor | Pascal Krieger</title>
+<link rel="icon" type="image/png" href="../Assets/logo_1x1.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<!-- ---------- LOGIN ---------- -->
+<div id="loginScreen" class="admin-login">
+  <div class="admin-login-card">
+    <p class="eyebrow">Website-Editor</p>
+    <h1>Anmelden</h1>
+    <p class="lead">Melde dich mit einem GitHub-Zugriffstoken an, um die Texte dieser Website zu bearbeiten.</p>
+
+    <label class="admin-field">
+      <span>GitHub-Token</span>
+      <input type="password" id="tokenInput" placeholder="github_pat_..." autocomplete="off">
+    </label>
+
+    <button id="loginBtn" class="btn btn-primary" type="button">Anmelden</button>
+    <p id="loginError" class="admin-error"></p>
+
+    <details class="admin-help">
+      <summary>Wie bekomme ich ein Token?</summary>
+      <ol>
+        <li>Auf GitHub: Einstellungen (oben rechts beim Profilbild) → <strong>Settings</strong></li>
+        <li>Ganz unten links: <strong>Developer settings</strong></li>
+        <li><strong>Personal access tokens</strong> → <strong>Fine-grained tokens</strong> → <strong>Generate new token</strong></li>
+        <li>Bei "Repository access" → <strong>Only select repositories</strong> → <em>pkphysio</em> auswählen</li>
+        <li>Bei "Permissions" → <strong>Contents</strong> → auf <strong>Read and write</strong> stellen</li>
+        <li>Token generieren, kopieren und hier oben einfügen</li>
+      </ol>
+      <p class="admin-note">Das Token wird nur in diesem Browser-Tab gespeichert und nie irgendwo hochgeladen. Nach dem Schließen des Tabs ist es weg.</p>
+    </details>
+  </div>
+</div>
+
+<!-- ---------- EDITOR ---------- -->
+<div id="editorScreen" class="admin-editor" hidden>
+  <header class="admin-topbar">
+    <span class="admin-topbar-title">Website-Editor</span>
+    <div class="admin-topbar-actions">
+      <button id="saveBtn" class="btn btn-primary" type="button">Speichern</button>
+      <button id="logoutBtn" class="btn btn-outline" type="button">Abmelden</button>
+    </div>
+  </header>
+
+  <p id="saveStatus" class="admin-status"></p>
+
+  <main class="admin-content">
+
+    <!-- KONTAKTDATEN -->
+    <section class="admin-section">
+      <h2>Kontaktdaten</h2>
+      <p class="admin-hint">Wird auf der ganzen Website verwendet (Telefon-Buttons, Kontakt-Bereich, Karte).</p>
+      <label class="admin-field"><span>Telefonnummer (Anzeige)</span><input id="site_phone" type="text"></label>
+      <label class="admin-field"><span>Telefonnummer (für Anruf-Links, nur Ziffern/+)</span><input id="site_phoneHref" type="text"></label>
+      <label class="admin-field"><span>Adresse</span><input id="site_address" type="text"></label>
+      <label class="admin-field"><span>E-Mail</span><input id="site_email" type="text"></label>
+      <label class="admin-field"><span>Instagram-Name (mit @)</span><input id="site_instagramHandle" type="text"></label>
+      <label class="admin-field"><span>Instagram-Link</span><input id="site_instagramUrl" type="text"></label>
+    </section>
+
+    <!-- HERO -->
+    <section class="admin-section">
+      <h2>Startbereich (oben auf der Seite)</h2>
+      <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="hero_eyebrow" type="text"></label>
+      <label class="admin-field"><span>Name / Überschrift</span><input id="hero_title" type="text"></label>
+      <label class="admin-field"><span>Untertitel</span><input id="hero_subtitle" type="text"></label>
+      <label class="admin-field"><span>Beschreibungstext</span><textarea id="hero_text" rows="4"></textarea></label>
+      <label class="admin-field"><span>Button-Text (Telefon)</span><input id="hero_ctaPrimary" type="text"></label>
+      <label class="admin-field"><span>Button-Text (zu "Über mich" springen)</span><input id="hero_ctaSecondary" type="text"></label>
+    </section>
+
+    <!-- ÜBER MICH -->
+    <section class="admin-section">
+      <h2>Über mich</h2>
+      <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="about_eyebrow" type="text"></label>
+      <label class="admin-field"><span>Überschrift</span><input id="about_title" type="text"></label>
+      <label class="admin-field"><span>Text</span><textarea id="about_text" rows="6"></textarea></label>
+
+      <h3 class="admin-subheading">Lebenslauf-Zeitleiste</h3>
+      <div id="timelineList" class="admin-repeater"></div>
+      <button type="button" class="admin-add-btn" data-add="timeline">+ Eintrag hinzufügen</button>
+    </section>
+
+    <!-- LEISTUNGEN -->
+    <section class="admin-section">
+      <h2>Leistungen</h2>
+      <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="leistungen_eyebrow" type="text"></label>
+      <label class="admin-field"><span>Überschrift</span><input id="leistungen_title" type="text"></label>
+
+      <h3 class="admin-subheading">Physiotherapie</h3>
+      <label class="admin-field"><span>Titel</span><input id="service0_title" type="text"></label>
+      <label class="admin-field"><span>Text</span><textarea id="service0_text" rows="4"></textarea></label>
+
+      <h3 class="admin-subheading">Sportphysiotherapie</h3>
+      <label class="admin-field"><span>Titel</span><input id="service1_title" type="text"></label>
+      <label class="admin-field"><span>Text</span><textarea id="service1_text" rows="4"></textarea></label>
+    </section>
+
+    <!-- THERAPIE ANGEBOTE -->
+    <section class="admin-section">
+      <h2>Therapie Angebote</h2>
+      <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="angeboteEyebrow" type="text"></label>
+      <label class="admin-field"><span>Überschrift</span><input id="angeboteTitle" type="text"></label>
+
+      <div id="angeboteList" class="admin-repeater"></div>
+      <button type="button" class="admin-add-btn" data-add="angebote">+ Angebot hinzufügen</button>
+    </section>
+
+    <!-- FAQ -->
+    <section class="admin-section">
+      <h2>FAQ</h2>
+      <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="faq_eyebrow" type="text"></label>
+      <label class="admin-field"><span>Überschrift</span><input id="faq_title" type="text"></label>
+      <label class="admin-field"><span>Untertext</span><input id="faq_text" type="text"></label>
+
+      <div id="faqList" class="admin-repeater"></div>
+      <button type="button" class="admin-add-btn" data-add="faq">+ Frage hinzufügen</button>
+      <p class="admin-note">Tipp: In einer Antwort kann <code>{{phone}}</code> geschrieben werden – das wird automatisch durch die oben eingetragene Telefonnummer als klickbaren Link ersetzt.</p>
+    </section>
+
+    <!-- KONTAKT -->
+    <section class="admin-section">
+      <h2>Kontakt-Bereich</h2>
+      <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="kontakt_eyebrow" type="text"></label>
+      <label class="admin-field"><span>Überschrift</span><input id="kontakt_title" type="text"></label>
+      <label class="admin-field"><span>Text</span><textarea id="kontakt_text" rows="3"></textarea></label>
+    </section>
+
+    <button id="saveBtnBottom" class="btn btn-primary admin-save-bottom" type="button">Speichern</button>
+  </main>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>
