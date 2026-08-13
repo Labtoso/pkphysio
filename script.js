@@ -13,6 +13,37 @@ function renderContent(data) {
     el.href = 'tel:' + site.phoneHref;
   });
 
+  // Meta / tab
+  if (data.meta) {
+    document.title = data.meta.title;
+    const descEl = document.getElementById('pageDescription');
+    if (descEl) descEl.setAttribute('content', data.meta.description);
+  }
+  const faviconEl = document.getElementById('favicon');
+  if (faviconEl && data.images) faviconEl.href = data.images.favicon;
+
+  // Nav
+  if (data.nav) {
+    document.getElementById('navUeberMich').textContent = data.nav.ueberMich;
+    document.getElementById('navLeistungen').textContent = data.nav.leistungen;
+    document.getElementById('navFaq').textContent = data.nav.faq;
+    document.getElementById('navKontakt').textContent = data.nav.kontakt;
+  }
+
+  // Images
+  if (data.images) {
+    document.getElementById('logoImgDark').src = data.images.logoDark;
+    document.getElementById('logoImgLight').src = data.images.logoLight;
+    document.getElementById('portraitImg').src = data.images.portrait;
+  }
+
+  // Buttons
+  if (data.buttons) {
+    document.getElementById('headerCta').textContent = data.buttons.headerCta;
+    document.getElementById('kontaktCta').textContent = data.buttons.kontaktCta;
+    document.getElementById('mobileCta').textContent = data.buttons.mobileCta;
+  }
+
   // Hero
   document.getElementById('heroEyebrow').textContent = data.hero.eyebrow;
   document.getElementById('heroTitle').textContent = data.hero.title;
