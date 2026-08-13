@@ -1,5 +1,3 @@
-document.getElementById('bootStatus').textContent = 'admin.js gestartet …';
-
 // ---------- Config ----------
 const REPO_OWNER = 'Labtoso';
 const REPO_NAME = 'pkphysio';
@@ -259,18 +257,26 @@ document.querySelectorAll('[data-add]').forEach(btn => {
 function withTimeout(promise, ms) {
   return Promise.race([
     promise,
-    new Promise((_, reject) => setTimeout(() => reject(new Error('TIMEOUT: Keine Antwort von GitHub nach ' + (ms / 1000) + ' Sekunden. Evtl. blockiert eine Firewall/Antivirus/VPN die Verbindung zu api.github.com.')), ms))
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Keine Antwort von GitHub nach ' + (ms / 1000) + ' Sekunden. Evtl. blockiert eine Firewall/Antivirus/VPN die Verbindung zu api.github.com.')), ms))
   ]);
 }
+
+function showEditor() {
+  loginScreen.style.display = 'none';
+  editorScreen.style.display = 'block';
+}
+function showLogin() {
+  editorScreen.style.display = 'none';
+  loginScreen.style.display = 'flex';
+}
+showLogin();
 
 async function login(token) {
   loginError.textContent = '';
   loginBtn.disabled = true;
   loginBtn.textContent = 'Prüfe Zugang …';
-  alert('Schritt 1: Sende jetzt Anfrage an api.github.com. Klicke OK und warte.');
   try {
     const { sha, text } = await withTimeout(ghGetFile(token), 10000);
-    alert('Schritt 2: Antwort von GitHub erhalten! Verarbeite Inhalt …');
     const data = parseContentJs(text);
 
     state.token = token;
@@ -284,11 +290,8 @@ async function login(token) {
     renderAngebote(data.leistungen.angebote);
     renderFaq(data.faq.items);
 
-    loginScreen.hidden = true;
-    editorScreen.hidden = false;
-    alert('Schritt 3: Fertig, Editor sollte jetzt sichtbar sein.');
+    showEditor();
   } catch (err) {
-    alert('FEHLER: ' + err.message + ' | status=' + err.status);
     if (err.status === 401) {
       loginError.textContent = 'Token ungültig oder abgelaufen.';
     } else if (err.status === 404) {
@@ -305,7 +308,6 @@ async function login(token) {
 }
 
 loginBtn.addEventListener('click', () => {
-  alert('Button-Klick erkannt. Klicke OK, dann versuche ich mich anzumelden.');
   loginError.textContent = '';
   const token = tokenInput.value.trim();
   if (!token) {
@@ -314,16 +316,13 @@ loginBtn.addEventListener('click', () => {
   }
   login(token);
 });
-
-document.getElementById('bootStatus').textContent = 'Bereit. Token eingeben und auf Anmelden klicken.';
 tokenInput.addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn.click(); });
 
 document.getElementById('logoutBtn').addEventListener('click', () => {
   state = { token: null, sha: null, data: null };
   try { sessionStorage.removeItem(TOKEN_KEY); } catch (e) {}
   tokenInput.value = '';
-  editorScreen.hidden = true;
-  loginScreen.hidden = false;
+  showLogin();
 });
 
 // ---------- Save ----------
