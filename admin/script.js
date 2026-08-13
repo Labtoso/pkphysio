@@ -117,10 +117,121 @@ const tokenInput = document.getElementById('tokenInput');
 const loginBtn = document.getElementById('loginBtn');
 const loginError = document.getElementById('loginError');
 const saveStatus = document.getElementById('saveStatus');
+const draggableSections = document.getElementById('draggableSections');
+
+// ---------- Custom sections (page builder) ----------
+function createCustomSectionCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.innerHTML = `
+    <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Textblock</h2>
+    <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
+    <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
+    <label class="admin-field">
+      <span>Text</span>
+      <div class="admin-richtext-toolbar">
+        <button type="button" class="rt-btn" data-cmd="bold"><b>B</b></button>
+        <button type="button" class="rt-btn" data-cmd="italic"><i>I</i></button>
+      </div>
+      <div class="admin-richtext cs-text" contenteditable="true"></div>
+    </label>
+  `;
+  section.querySelector('.cs-text').innerHTML = cs.text || '';
+  const removeBtn = makeRemoveBtn(() => section.remove());
+  removeBtn.textContent = 'Sektion entfernen';
+  section.appendChild(removeBtn);
+  initRichTextToolbar(section);
+  makeSectionDraggable(section);
+  return section;
+}
+
+function renderCustomSectionCards(customSections) {
+  draggableSections.querySelectorAll('[data-custom="1"]').forEach(el => el.remove());
+  customSections.forEach(cs => {
+    draggableSections.appendChild(createCustomSectionCard(cs));
+  });
+}
+
+function collectCustomSections() {
+  return [...draggableSections.querySelectorAll('[data-custom="1"]')].map(section => ({
+    id: section.dataset.sectionKey,
+    eyebrow: section.querySelector('.cs-eyebrow').value,
+    title: section.querySelector('.cs-title').value,
+    text: section.querySelector('.cs-text').innerHTML
+  }));
+}
+
+document.getElementById('addSectionBtn').addEventListener('click', () => {
+  const type = document.getElementById('newSectionType').value;
+  if (type === 'textblock') {
+    const cs = { id: 'custom-' + Date.now(), eyebrow: '', title: 'Neue Überschrift', text: '' };
+    draggableSections.appendChild(createCustomSectionCard(cs));
+  }
+});
+
+// ---------- Drag & drop reordering ----------
+let dragEl = null;
+
+function makeSectionDraggable(section) {
+  section.setAttribute('draggable', 'true');
+  section.addEventListener('dragstart', () => {
+    dragEl = section;
+    section.classList.add('dragging');
+  });
+  section.addEventListener('dragend', () => {
+    section.classList.remove('dragging');
+    dragEl = null;
+  });
+}
+
+draggableSections.querySelectorAll('.draggable').forEach(makeSectionDraggable);
+
+draggableSections.addEventListener('dragover', e => {
+  e.preventDefault();
+  if (!dragEl) return;
+  const after = getDragAfterElement(draggableSections, e.clientY);
+  if (after == null) draggableSections.appendChild(dragEl);
+  else draggableSections.insertBefore(dragEl, after);
+});
+
+function getDragAfterElement(container, y) {
+  const els = [...container.querySelectorAll('.draggable:not(.dragging)')];
+  return els.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) {
+      return { offset, element: child };
+    }
+    return closest;
+  }, { offset: -Infinity }).element;
+}
+
+function applySectionOrder(order) {
+  order.forEach(key => {
+    const el = draggableSections.querySelector(`[data-section-key="${key}"]`);
+    if (el) draggableSections.appendChild(el);
+  });
+}
+
+function collectSectionOrder() {
+  return [...draggableSections.querySelectorAll('.draggable')].map(el => el.dataset.sectionKey);
+}
 
 function fillFixedFields(data) {
   document.getElementById('meta_title').value = data.meta.title;
   document.getElementById('meta_description').value = data.meta.description;
+
+  document.getElementById('design_primaryColor').value = data.design.primaryColor;
+  document.getElementById('design_accentColor').value = data.design.accentColor;
+  document.getElementById('design_fontFamily').value = data.design.fontFamily;
+  document.getElementById('design_borderRadius').value = data.design.borderRadius;
+  document.getElementById('design_borderRadius_val').textContent = data.design.borderRadius;
+  document.getElementById('design_textScale').value = data.design.textScale;
+  document.getElementById('design_textScale_val').textContent = data.design.textScale;
+  document.getElementById('design_portraitWidth').value = data.design.portraitWidth;
+  document.getElementById('design_logoHeight').value = data.design.logoHeight;
 
   document.getElementById('nav_ueberMich').value = data.nav.ueberMich;
   document.getElementById('nav_leistungen').value = data.nav.leistungen;
@@ -140,20 +251,20 @@ function fillFixedFields(data) {
   document.getElementById('hero_eyebrow').value = data.hero.eyebrow;
   document.getElementById('hero_title').value = data.hero.title;
   document.getElementById('hero_subtitle').value = data.hero.subtitle;
-  document.getElementById('hero_text').value = data.hero.text;
+  document.getElementById('hero_text').innerHTML = data.hero.text;
   document.getElementById('hero_ctaPrimary').value = data.hero.ctaPrimary;
   document.getElementById('hero_ctaSecondary').value = data.hero.ctaSecondary;
 
   document.getElementById('about_eyebrow').value = data.about.eyebrow;
   document.getElementById('about_title').value = data.about.title;
-  document.getElementById('about_text').value = data.about.text;
+  document.getElementById('about_text').innerHTML = data.about.text;
 
   document.getElementById('leistungen_eyebrow').value = data.leistungen.eyebrow;
   document.getElementById('leistungen_title').value = data.leistungen.title;
   document.getElementById('service0_title').value = data.leistungen.services[0].title;
-  document.getElementById('service0_text').value = data.leistungen.services[0].text;
+  document.getElementById('service0_text').innerHTML = data.leistungen.services[0].text;
   document.getElementById('service1_title').value = data.leistungen.services[1].title;
-  document.getElementById('service1_text').value = data.leistungen.services[1].text;
+  document.getElementById('service1_text').innerHTML = data.leistungen.services[1].text;
   document.getElementById('angeboteEyebrow').value = data.leistungen.angeboteEyebrow;
   document.getElementById('angeboteTitle').value = data.leistungen.angeboteTitle;
 
@@ -163,12 +274,20 @@ function fillFixedFields(data) {
 
   document.getElementById('kontakt_eyebrow').value = data.kontakt.eyebrow;
   document.getElementById('kontakt_title').value = data.kontakt.title;
-  document.getElementById('kontakt_text').value = data.kontakt.text;
+  document.getElementById('kontakt_text').innerHTML = data.kontakt.text;
 }
 
 function readFixedFields(data) {
   data.meta.title = document.getElementById('meta_title').value.trim();
   data.meta.description = document.getElementById('meta_description').value.trim();
+
+  data.design.primaryColor = document.getElementById('design_primaryColor').value;
+  data.design.accentColor = document.getElementById('design_accentColor').value;
+  data.design.fontFamily = document.getElementById('design_fontFamily').value;
+  data.design.borderRadius = Number(document.getElementById('design_borderRadius').value);
+  data.design.textScale = Number(document.getElementById('design_textScale').value);
+  data.design.portraitWidth = Number(document.getElementById('design_portraitWidth').value);
+  data.design.logoHeight = Number(document.getElementById('design_logoHeight').value);
 
   data.nav.ueberMich = document.getElementById('nav_ueberMich').value;
   data.nav.leistungen = document.getElementById('nav_leistungen').value;
@@ -188,20 +307,20 @@ function readFixedFields(data) {
   data.hero.eyebrow = document.getElementById('hero_eyebrow').value;
   data.hero.title = document.getElementById('hero_title').value;
   data.hero.subtitle = document.getElementById('hero_subtitle').value;
-  data.hero.text = document.getElementById('hero_text').value;
+  data.hero.text = document.getElementById('hero_text').innerHTML;
   data.hero.ctaPrimary = document.getElementById('hero_ctaPrimary').value;
   data.hero.ctaSecondary = document.getElementById('hero_ctaSecondary').value;
 
   data.about.eyebrow = document.getElementById('about_eyebrow').value;
   data.about.title = document.getElementById('about_title').value;
-  data.about.text = document.getElementById('about_text').value;
+  data.about.text = document.getElementById('about_text').innerHTML;
 
   data.leistungen.eyebrow = document.getElementById('leistungen_eyebrow').value;
   data.leistungen.title = document.getElementById('leistungen_title').value;
   data.leistungen.services[0].title = document.getElementById('service0_title').value;
-  data.leistungen.services[0].text = document.getElementById('service0_text').value;
+  data.leistungen.services[0].text = document.getElementById('service0_text').innerHTML;
   data.leistungen.services[1].title = document.getElementById('service1_title').value;
-  data.leistungen.services[1].text = document.getElementById('service1_text').value;
+  data.leistungen.services[1].text = document.getElementById('service1_text').innerHTML;
   data.leistungen.angeboteEyebrow = document.getElementById('angeboteEyebrow').value;
   data.leistungen.angeboteTitle = document.getElementById('angeboteTitle').value;
 
@@ -211,7 +330,7 @@ function readFixedFields(data) {
 
   data.kontakt.eyebrow = document.getElementById('kontakt_eyebrow').value;
   data.kontakt.title = document.getElementById('kontakt_title').value;
-  data.kontakt.text = document.getElementById('kontakt_text').value;
+  data.kontakt.text = document.getElementById('kontakt_text').innerHTML;
 }
 
 // ---------- Repeaters ----------
@@ -278,8 +397,17 @@ function renderFaq(items) {
     row.className = 'admin-repeater-item';
     row.innerHTML = `
       <label class="admin-field"><span>Frage</span><input class="faq-q" type="text" value="${escapeAttr(item.q)}"></label>
-      <label class="admin-field"><span>Antwort</span><textarea class="faq-a" rows="3">${escapeHtml(item.a)}</textarea></label>
+      <label class="admin-field">
+        <span>Antwort</span>
+        <div class="admin-richtext-toolbar">
+          <button type="button" class="rt-btn" data-cmd="bold"><b>B</b></button>
+          <button type="button" class="rt-btn" data-cmd="italic"><i>I</i></button>
+        </div>
+        <div class="admin-richtext faq-a" contenteditable="true"></div>
+      </label>
     `;
+    row.querySelector('.faq-a').innerHTML = item.a;
+    initRichTextToolbar(row);
     row.appendChild(makeRemoveBtn(() => { row.remove(); }));
     list.appendChild(row);
   });
@@ -287,8 +415,21 @@ function renderFaq(items) {
 function collectFaq() {
   return [...document.querySelectorAll('#faqList .admin-repeater-item')].map(row => ({
     q: row.querySelector('.faq-q').value,
-    a: row.querySelector('.faq-a').value
+    a: row.querySelector('.faq-a').innerHTML
   }));
+}
+
+function initRichTextToolbar(container) {
+  container.querySelectorAll('.rt-btn').forEach(btn => {
+    if (btn.dataset.wired) return;
+    btn.dataset.wired = '1';
+    const editable = btn.closest('.admin-field').querySelector('[contenteditable]');
+    btn.addEventListener('mousedown', e => e.preventDefault());
+    btn.addEventListener('click', () => {
+      editable.focus();
+      document.execCommand(btn.dataset.cmd, false, null);
+    });
+  });
 }
 
 function escapeAttr(str) {
@@ -376,6 +517,8 @@ async function login(token) {
     renderTimeline(data.about.timeline);
     renderAngebote(data.leistungen.angebote);
     renderFaq(data.faq.items);
+    renderCustomSectionCards(data.customSections || []);
+    applySectionOrder(data.order || ['hero', 'about', 'leistungen', 'faq', 'kontakt']);
 
     showEditor();
   } catch (err) {
@@ -419,6 +562,8 @@ async function save() {
   state.data.about.timeline = collectTimeline();
   state.data.leistungen.angebote = collectAngebote();
   state.data.faq.items = collectFaq();
+  state.data.customSections = collectCustomSections();
+  state.data.order = collectSectionOrder();
 
   const hasImageUploads = IMAGE_KEYS.some(key => pendingImages[key]);
 
@@ -433,8 +578,10 @@ async function save() {
     const newText = serializeContentJs(state.data);
     const newSha = await ghPutFile(state.token, state.sha, newText, 'Inhalte über Admin-Panel aktualisiert');
     state.sha = newSha;
+    const actionsUrl = `https://github.com/${REPO_OWNER}/${REPO_NAME}/actions`;
     saveStatus.className = 'admin-status success';
-    saveStatus.textContent = 'Gespeichert. Die Website aktualisiert sich in der Regel innerhalb von ein bis zwei Minuten.';
+    saveStatus.innerHTML = 'Gespeichert. Die Website aktualisiert sich in der Regel innerhalb von ein bis zwei Minuten. ' +
+      '<a href="' + actionsUrl + '" target="_blank" rel="noopener">Fortschritt auf GitHub Actions ansehen →</a>';
   } catch (err) {
     saveStatus.className = 'admin-status error';
     if (err.status === 409) {
@@ -449,6 +596,16 @@ async function save() {
 
 document.getElementById('saveBtn').addEventListener('click', save);
 document.getElementById('saveBtnBottom').addEventListener('click', save);
+
+// ---------- Static rich-text toolbars & design sliders ----------
+initRichTextToolbar(document);
+
+document.getElementById('design_borderRadius').addEventListener('input', e => {
+  document.getElementById('design_borderRadius_val').textContent = e.target.value;
+});
+document.getElementById('design_textScale').addEventListener('input', e => {
+  document.getElementById('design_textScale_val').textContent = e.target.value;
+});
 
 // ---------- Auto-login if a token is already in this tab's session ----------
 (function () {

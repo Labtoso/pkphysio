@@ -1,3 +1,44 @@
+// ---------- Design (colors, fonts, sizes) ----------
+const FONT_MAP = {
+  default: { head: '"Poppins", sans-serif', body: '"Inter", sans-serif' },
+  montserrat: { head: '"Montserrat", sans-serif', body: '"Montserrat", sans-serif' },
+  playfair: { head: '"Playfair Display", serif', body: '"Lora", serif' },
+  lora: { head: '"Lora", serif', body: '"Lora", serif' },
+  roboto: { head: '"Roboto", sans-serif', body: '"Roboto", sans-serif' }
+};
+
+function hexToRgb(hex) {
+  const parts = String(hex).replace('#', '').match(/.{1,2}/g) || ['17', 'b6', 'a4'];
+  return parts.map(p => parseInt(p, 16));
+}
+function shadeColor(hex, factor) {
+  const [r, g, b] = hexToRgb(hex);
+  const f = c => Math.max(0, Math.min(255, Math.round(c * factor)));
+  return `rgb(${f(r)}, ${f(g)}, ${f(b)})`;
+}
+function tintColor(hex, alpha) {
+  const [r, g, b] = hexToRgb(hex);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function applyDesign(design) {
+  if (!design) return;
+  const root = document.documentElement.style;
+  root.setProperty('--color-primary', design.primaryColor);
+  root.setProperty('--color-primary-dark', shadeColor(design.primaryColor, 0.62));
+  root.setProperty('--color-primary-light', tintColor(design.primaryColor, 0.16));
+  root.setProperty('--color-accent', design.accentColor);
+  root.setProperty('--radius', design.borderRadius + 'px');
+  root.setProperty('--radius-sm', Math.max(4, design.borderRadius - 2) + 'px');
+  root.setProperty('--portrait-width', design.portraitWidth + 'px');
+  root.setProperty('--logo-height', design.logoHeight + 'px');
+  document.documentElement.style.fontSize = design.textScale + '%';
+
+  const fonts = FONT_MAP[design.fontFamily] || FONT_MAP.default;
+  root.setProperty('--font-head', fonts.head);
+  root.setProperty('--font-body', fonts.body);
+}
+
 // ---------- Render content from content.js ----------
 function applyTemplate(text, site) {
   return String(text)
@@ -7,6 +48,8 @@ function applyTemplate(text, site) {
 
 function renderContent(data) {
   const site = data.site;
+
+  applyDesign(data.design);
 
   // tel-links (href everywhere, text only where marked)
   document.querySelectorAll('.tel-link').forEach(el => {
@@ -48,14 +91,14 @@ function renderContent(data) {
   document.getElementById('heroEyebrow').textContent = data.hero.eyebrow;
   document.getElementById('heroTitle').textContent = data.hero.title;
   document.getElementById('heroSubtitle').textContent = data.hero.subtitle;
-  document.getElementById('heroText').textContent = data.hero.text;
+  document.getElementById('heroText').innerHTML = data.hero.text;
   document.getElementById('heroCtaPrimary').textContent = data.hero.ctaPrimary;
   document.getElementById('heroCtaSecondary').textContent = data.hero.ctaSecondary;
 
   // About
   document.getElementById('aboutEyebrow').textContent = data.about.eyebrow;
   document.getElementById('aboutTitle').textContent = data.about.title;
-  document.getElementById('aboutText').textContent = data.about.text;
+  document.getElementById('aboutText').innerHTML = data.about.text;
 
   const timelineEl = document.getElementById('aboutTimeline');
   timelineEl.innerHTML = data.about.timeline.map(item => `
@@ -119,7 +162,7 @@ function renderContent(data) {
   // Kontakt
   document.getElementById('kontaktEyebrow').textContent = data.kontakt.eyebrow;
   document.getElementById('kontaktTitle').textContent = data.kontakt.title;
-  document.getElementById('kontaktText').textContent = data.kontakt.text;
+  document.getElementById('kontaktText').innerHTML = data.kontakt.text;
 
   const contactList = document.getElementById('contactList');
   contactList.innerHTML = `
@@ -131,6 +174,48 @@ function renderContent(data) {
 
   document.getElementById('kontaktMap').src =
     'https://maps.google.com/maps?q=' + encodeURIComponent(site.address) + '&t=&z=14&ie=UTF8&iwloc=&output=embed';
+
+  // Custom sections + section order
+  renderCustomSections(data.customSections || [], site);
+  reorderSections(data.order || ['hero', 'about', 'leistungen', 'faq', 'kontakt']);
+}
+
+const SECTION_ID_MAP = {
+  hero: 'hero-section',
+  about: 'ueber-mich',
+  leistungen: 'leistungen',
+  faq: 'faq',
+  kontakt: 'kontakt'
+};
+
+function renderCustomSections(customSections, site) {
+  const main = document.getElementById('top');
+  main.querySelectorAll('.custom-section').forEach(el => el.remove());
+
+  customSections.forEach((cs, i) => {
+    const section = document.createElement('section');
+    section.id = cs.id;
+    section.className = 'section custom-section' + (i % 2 === 1 ? ' section-alt' : '');
+    section.innerHTML = `
+      <div class="container custom-section-inner">
+        <div class="section-head reveal custom-section-head">
+          <p class="eyebrow">${cs.eyebrow || ''}</p>
+          <h2>${cs.title || ''}</h2>
+        </div>
+        <div class="custom-section-text reveal">${applyTemplate(cs.text || '', site)}</div>
+      </div>
+    `;
+    main.appendChild(section);
+  });
+}
+
+function reorderSections(order) {
+  const main = document.getElementById('top');
+  order.forEach(key => {
+    const id = SECTION_ID_MAP[key] || key;
+    const el = document.getElementById(id);
+    if (el) main.appendChild(el);
+  });
 }
 
 if (window.SITE_CONTENT) {

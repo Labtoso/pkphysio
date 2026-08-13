@@ -1,4 +1,15 @@
 window.SITE_CONTENT = {
+  "order": ["hero", "about", "leistungen", "faq", "kontakt"],
+  "customSections": [],
+  "design": {
+    "primaryColor": "#17b6a4",
+    "accentColor": "#ff8a5c",
+    "fontFamily": "default",
+    "borderRadius": 10,
+    "textScale": 100,
+    "portraitWidth": 430,
+    "logoHeight": 90
+  },
   "meta": {
     "title": "Pkphysiotherapie | Pascal Krieger",
     "description": "Pascal Krieger – Physiotherapie & Sportphysiotherapie in Rainfeld, NÖ. Manuelle Techniken, Sportbetreuung, Kinesiotaping und mehr."

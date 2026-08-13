@@ -77,6 +77,7 @@ body {
 }
 .admin-status.success { color: var(--color-primary); }
 .admin-status.error { color: #ff6b6b; }
+.admin-status a { text-decoration: underline; font-weight: 600; }
 
 .admin-content {
   max-width: 760px;
@@ -115,7 +116,8 @@ body {
   color: var(--color-ink-soft);
 }
 .admin-field input,
-.admin-field textarea {
+.admin-field textarea,
+.admin-field select {
   font-family: var(--font-body);
   font-size: .95rem;
   color: var(--color-ink);
@@ -126,7 +128,53 @@ body {
   resize: vertical;
 }
 .admin-field input:focus,
-.admin-field textarea:focus {
+.admin-field textarea:focus,
+.admin-field select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+/* ---------- Design controls ---------- */
+.admin-color-row { display: flex; gap: 20px; flex-wrap: wrap; }
+.admin-field-inline { flex: 1; min-width: 160px; }
+.admin-field input[type="color"] {
+  padding: 4px;
+  height: 42px;
+  cursor: pointer;
+}
+.admin-field input[type="range"] {
+  padding: 0;
+  border: none;
+  background: none;
+  accent-color: var(--color-primary);
+}
+.admin-field input[type="number"] { max-width: 160px; }
+
+/* ---------- Rich text editor ---------- */
+.admin-richtext-toolbar { display: flex; gap: 6px; }
+.rt-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: .85rem;
+}
+.rt-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.admin-richtext {
+  font-family: var(--font-body);
+  font-size: .95rem;
+  color: var(--color-ink);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  min-height: 90px;
+}
+.admin-richtext:focus {
   outline: none;
   border-color: var(--color-primary);
 }
@@ -163,6 +211,48 @@ body {
   color: var(--color-ink-soft);
   max-width: 240px;
 }
+
+/* ---------- Draggable page sections ---------- */
+.admin-page-heading {
+  font-size: 1rem;
+  color: var(--color-ink-soft);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.admin-page-heading span {
+  font-size: .78rem;
+  font-weight: 500;
+  color: var(--color-ink-soft);
+  opacity: .7;
+}
+#draggableSections { display: flex; flex-direction: column; gap: 40px; }
+.admin-section.draggable { cursor: default; }
+.admin-section.draggable h2 { display: flex; align-items: center; gap: 10px; cursor: grab; }
+.admin-section.draggable.dragging { opacity: .4; }
+.admin-drag-handle {
+  color: var(--color-ink-soft);
+  font-size: 1.1rem;
+  line-height: 1;
+  user-select: none;
+}
+
+.admin-add-section {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+.admin-add-section select {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: .9rem;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0 14px;
+}
+.admin-add-section .admin-add-btn { width: auto; margin-top: 0; white-space: nowrap; padding: 0 18px; }
 
 /* ---------- Repeaters ---------- */
 .admin-repeater { display: flex; flex-direction: column; gap: 16px; }
