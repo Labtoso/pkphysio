@@ -1,3 +1,5 @@
+document.getElementById('bootStatus').textContent = 'admin.js gestartet …';
+
 // ---------- Config ----------
 const REPO_OWNER = 'Labtoso';
 const REPO_NAME = 'pkphysio';
@@ -292,6 +294,7 @@ async function login(token) {
 }
 
 loginBtn.addEventListener('click', () => {
+  loginError.textContent = '';
   const token = tokenInput.value.trim();
   if (!token) {
     loginError.textContent = 'Bitte ein Token eingeben.';
@@ -299,6 +302,8 @@ loginBtn.addEventListener('click', () => {
   }
   login(token);
 });
+
+document.getElementById('bootStatus').textContent = 'Bereit. Token eingeben und auf Anmelden klicken.';
 tokenInput.addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn.click(); });
 
 document.getElementById('logoutBtn').addEventListener('click', () => {
