@@ -54,6 +54,49 @@ async function ghPutFile(token, sha, newText, message) {
   return json.content.sha;
 }
 
+async function ghGetSha(token, path) {
+  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}?ref=${REPO_BRANCH}`;
+  const res = await fetch(url, { headers: ghHeaders(token) });
+  if (res.status === 404) return null;
+  if (!res.ok) {
+    const err = new Error('GitHub-Fehler (' + res.status + ')');
+    err.status = res.status;
+    throw err;
+  }
+  const json = await res.json();
+  return json.sha;
+}
+
+async function ghPutBinaryFile(token, path, base64Content, message, sha) {
+  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+  const body = { message: message, content: base64Content, branch: REPO_BRANCH };
+  if (sha) body.sha = sha;
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: { ...ghHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const err = new Error('GitHub-Fehler beim Bild-Upload (' + res.status + ')');
+    err.status = res.status;
+    throw err;
+  }
+  return res.json();
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(',')[1]);
+    reader.onerror = () => reject(new Error('Datei konnte nicht gelesen werden.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function sanitizeFilename(name) {
+  return name.replace(/[^a-zA-Z0-9._-]/g, '_');
+}
+
 function parseContentJs(text) {
   const match = text.match(/window\.SITE_CONTENT\s*=\s*([\s\S]*?);\s*$/);
   if (!match) throw new Error('content.js konnte nicht gelesen werden (unerwartetes Format).');
@@ -75,18 +118,18 @@ const loginBtn = document.getElementById('loginBtn');
 const loginError = document.getElementById('loginError');
 const saveStatus = document.getElementById('saveStatus');
 
-const FIELD_IDS = [
-  'site_phone', 'site_phoneHref', 'site_address', 'site_email', 'site_instagramHandle', 'site_instagramUrl',
-  'hero_eyebrow', 'hero_title', 'hero_subtitle', 'hero_text', 'hero_ctaPrimary', 'hero_ctaSecondary',
-  'about_eyebrow', 'about_title', 'about_text',
-  'leistungen_eyebrow', 'leistungen_title',
-  'service0_title', 'service0_text', 'service1_title', 'service1_text',
-  'angeboteEyebrow', 'angeboteTitle',
-  'faq_eyebrow', 'faq_title', 'faq_text',
-  'kontakt_eyebrow', 'kontakt_title', 'kontakt_text'
-];
-
 function fillFixedFields(data) {
+  document.getElementById('meta_title').value = data.meta.title;
+  document.getElementById('meta_description').value = data.meta.description;
+
+  document.getElementById('nav_ueberMich').value = data.nav.ueberMich;
+  document.getElementById('nav_leistungen').value = data.nav.leistungen;
+  document.getElementById('nav_faq').value = data.nav.faq;
+  document.getElementById('nav_kontakt').value = data.nav.kontakt;
+  document.getElementById('btn_headerCta').value = data.buttons.headerCta;
+  document.getElementById('btn_kontaktCta').value = data.buttons.kontaktCta;
+  document.getElementById('btn_mobileCta').value = data.buttons.mobileCta;
+
   document.getElementById('site_phone').value = data.site.phone;
   document.getElementById('site_phoneHref').value = data.site.phoneHref;
   document.getElementById('site_address').value = data.site.address;
@@ -124,6 +167,17 @@ function fillFixedFields(data) {
 }
 
 function readFixedFields(data) {
+  data.meta.title = document.getElementById('meta_title').value.trim();
+  data.meta.description = document.getElementById('meta_description').value.trim();
+
+  data.nav.ueberMich = document.getElementById('nav_ueberMich').value;
+  data.nav.leistungen = document.getElementById('nav_leistungen').value;
+  data.nav.faq = document.getElementById('nav_faq').value;
+  data.nav.kontakt = document.getElementById('nav_kontakt').value;
+  data.buttons.headerCta = document.getElementById('btn_headerCta').value;
+  data.buttons.kontaktCta = document.getElementById('btn_kontaktCta').value;
+  data.buttons.mobileCta = document.getElementById('btn_mobileCta').value;
+
   data.site.phone = document.getElementById('site_phone').value.trim();
   data.site.phoneHref = document.getElementById('site_phoneHref').value.trim();
   data.site.address = document.getElementById('site_address').value.trim();
@@ -253,6 +307,38 @@ document.querySelectorAll('[data-add]').forEach(btn => {
   });
 });
 
+// ---------- Images ----------
+const IMAGE_KEYS = ['portrait', 'logoDark', 'logoLight', 'favicon'];
+const pendingImages = {};
+
+IMAGE_KEYS.forEach(key => {
+  document.getElementById('file_' + key).addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    pendingImages[key] = file;
+    document.getElementById('preview_' + key).src = URL.createObjectURL(file);
+  });
+});
+
+function fillImagePreviews(images) {
+  IMAGE_KEYS.forEach(key => {
+    document.getElementById('preview_' + key).src = '../' + images[key];
+  });
+}
+
+async function uploadPendingImages(token, data) {
+  for (const key of IMAGE_KEYS) {
+    const file = pendingImages[key];
+    if (!file) continue;
+    const path = 'Assets/' + sanitizeFilename(file.name);
+    const base64 = await fileToBase64(file);
+    const existingSha = await ghGetSha(token, path);
+    await ghPutBinaryFile(token, path, base64, 'Bild aktualisiert über Admin-Panel (' + key + ')', existingSha);
+    data.images[key] = path;
+    delete pendingImages[key];
+  }
+}
+
 // ---------- Login ----------
 function withTimeout(promise, ms) {
   return Promise.race([
@@ -286,6 +372,7 @@ async function login(token) {
     try { sessionStorage.setItem(TOKEN_KEY, token); } catch (e) {}
 
     fillFixedFields(data);
+    fillImagePreviews(data.images);
     renderTimeline(data.about.timeline);
     renderAngebote(data.leistungen.angebote);
     renderFaq(data.faq.items);
@@ -333,11 +420,17 @@ async function save() {
   state.data.leistungen.angebote = collectAngebote();
   state.data.faq.items = collectFaq();
 
-  const newText = serializeContentJs(state.data);
+  const hasImageUploads = IMAGE_KEYS.some(key => pendingImages[key]);
 
-  [saveStatus].forEach(el => { el.className = 'admin-status'; el.textContent = 'Speichere …'; });
+  [saveStatus].forEach(el => { el.className = 'admin-status'; el.textContent = hasImageUploads ? 'Lade Bilder hoch …' : 'Speichere …'; });
 
   try {
+    if (hasImageUploads) {
+      await uploadPendingImages(state.token, state.data);
+      saveStatus.textContent = 'Speichere Texte …';
+    }
+
+    const newText = serializeContentJs(state.data);
     const newSha = await ghPutFile(state.token, state.sha, newText, 'Inhalte über Admin-Panel aktualisiert');
     state.sha = newSha;
     saveStatus.className = 'admin-status success';

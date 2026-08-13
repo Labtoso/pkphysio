@@ -92,6 +92,63 @@
 
   <main class="admin-content">
 
+    <!-- SEO / TAB -->
+    <section class="admin-section">
+      <h2>Seiten-Titel &amp; Browser-Tab</h2>
+      <label class="admin-field"><span>Titel (im Browser-Tab)</span><input id="meta_title" type="text"></label>
+      <label class="admin-field"><span>Beschreibung (für Suchmaschinen)</span><textarea id="meta_description" rows="2"></textarea></label>
+    </section>
+
+    <!-- BILDER -->
+    <section class="admin-section">
+      <h2>Bilder</h2>
+      <p class="admin-hint">Neues Bild auswählen, um das aktuelle zu ersetzen. Wird erst beim Klick auf "Speichern" hochgeladen.</p>
+
+      <div class="admin-image-field">
+        <span>Profilfoto (Über mich)</span>
+        <div class="admin-image-row">
+          <img id="preview_portrait" class="admin-image-preview">
+          <input id="file_portrait" type="file" accept="image/*">
+        </div>
+      </div>
+
+      <div class="admin-image-field">
+        <span>Logo – Dark Mode (helle Version)</span>
+        <div class="admin-image-row">
+          <img id="preview_logoDark" class="admin-image-preview admin-image-preview-dark">
+          <input id="file_logoDark" type="file" accept="image/*">
+        </div>
+      </div>
+
+      <div class="admin-image-field">
+        <span>Logo – Light Mode (dunkle Version)</span>
+        <div class="admin-image-row">
+          <img id="preview_logoLight" class="admin-image-preview admin-image-preview-light">
+          <input id="file_logoLight" type="file" accept="image/*">
+        </div>
+      </div>
+
+      <div class="admin-image-field">
+        <span>Tab-Icon (Favicon)</span>
+        <div class="admin-image-row">
+          <img id="preview_favicon" class="admin-image-preview admin-image-preview-small">
+          <input id="file_favicon" type="file" accept="image/*">
+        </div>
+      </div>
+    </section>
+
+    <!-- NAVIGATION -->
+    <section class="admin-section">
+      <h2>Navigation &amp; Buttons</h2>
+      <label class="admin-field"><span>Menüpunkt: Über mich</span><input id="nav_ueberMich" type="text"></label>
+      <label class="admin-field"><span>Menüpunkt: Leistungen</span><input id="nav_leistungen" type="text"></label>
+      <label class="admin-field"><span>Menüpunkt: FAQ</span><input id="nav_faq" type="text"></label>
+      <label class="admin-field"><span>Menüpunkt: Kontakt</span><input id="nav_kontakt" type="text"></label>
+      <label class="admin-field"><span>Button oben rechts (Telefon)</span><input id="btn_headerCta" type="text"></label>
+      <label class="admin-field"><span>Button im Kontakt-Bereich</span><input id="btn_kontaktCta" type="text"></label>
+      <label class="admin-field"><span>Runder Anruf-Button (mobil, unten rechts)</span><input id="btn_mobileCta" type="text"></label>
+    </section>
+
     <!-- KONTAKTDATEN -->
     <section class="admin-section">
       <h2>Kontaktdaten</h2>

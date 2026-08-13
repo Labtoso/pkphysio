@@ -1,4 +1,25 @@
 window.SITE_CONTENT = {
+  "meta": {
+    "title": "Pkphysiotherapie | Pascal Krieger",
+    "description": "Pascal Krieger – Physiotherapie & Sportphysiotherapie in Rainfeld, NÖ. Manuelle Techniken, Sportbetreuung, Kinesiotaping und mehr."
+  },
+  "nav": {
+    "ueberMich": "Über mich",
+    "leistungen": "Leistungen",
+    "faq": "FAQ",
+    "kontakt": "Kontakt"
+  },
+  "buttons": {
+    "headerCta": "Termin anfragen",
+    "kontaktCta": "Jetzt anrufen",
+    "mobileCta": "Anrufen"
+  },
+  "images": {
+    "portrait": "Assets/Pascal_Krieger.avif",
+    "logoDark": "Assets/logo_nobg_white.png",
+    "logoLight": "Assets/logo_nobg_black.png",
+    "favicon": "Assets/logo_1x1.png"
+  },
   "site": {
     "phone": "+43 680 3106032",
     "phoneHref": "+436803106032",

@@ -131,6 +131,39 @@ body {
   border-color: var(--color-primary);
 }
 
+/* ---------- Image fields ---------- */
+.admin-image-field { margin-bottom: 22px; }
+.admin-image-field:last-child { margin-bottom: 0; }
+.admin-image-field > span {
+  display: block;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+  margin-bottom: 8px;
+}
+.admin-image-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.admin-image-preview {
+  width: 84px;
+  height: 84px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: #1a1a1a;
+}
+.admin-image-preview-dark { background: #111; }
+.admin-image-preview-light { background: #f4f4f4; }
+.admin-image-preview-small { object-fit: contain; padding: 8px; }
+.admin-image-row input[type="file"] {
+  font-size: .82rem;
+  color: var(--color-ink-soft);
+  max-width: 240px;
+}
+
 /* ---------- Repeaters ---------- */
 .admin-repeater { display: flex; flex-direction: column; gap: 16px; }
 .admin-repeater-item {
