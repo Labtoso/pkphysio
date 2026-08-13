@@ -73,16 +73,25 @@
         </label>
       </div>
 
-      <label class="admin-field">
-        <span>Schriftart</span>
-        <select id="design_fontFamily">
-          <option value="default">Standard (Poppins / Inter)</option>
-          <option value="montserrat">Montserrat</option>
-          <option value="playfair">Playfair Display / Lora (elegant, Serife)</option>
-          <option value="lora">Lora (Serife)</option>
-          <option value="roboto">Roboto</option>
-        </select>
-      </label>
+      <div class="admin-color-row">
+        <label class="admin-field admin-field-inline">
+          <span>Schriftart Überschriften</span>
+          <select id="design_headingFont"></select>
+        </label>
+        <label class="admin-field admin-field-inline">
+          <span>Schriftart Fließtext</span>
+          <select id="design_bodyFont"></select>
+        </label>
+      </div>
+
+      <h3 class="admin-subheading">Eigene Schriftart hochladen</h3>
+      <div id="customFontsList" class="admin-repeater"></div>
+      <div class="admin-add-section">
+        <input id="newFontName" type="text" placeholder="Name der Schriftart (z. B. MeineFont)">
+        <input id="newFontFile" type="file" accept=".woff2,.woff,.ttf,.otf">
+        <button type="button" id="addFontBtn" class="admin-add-btn">+ Hochladen</button>
+      </div>
+      <p class="admin-note">Erscheint danach als Option in den beiden Schriftart-Auswahlfeldern oben. Wird beim Klick auf "Speichern" hochgeladen.</p>
 
       <label class="admin-field">
         <span>Eckenrundung: <span id="design_borderRadius_val"></span>px</span>
@@ -182,15 +191,21 @@
 
       <!-- HERO -->
       <section class="admin-section draggable" data-section-key="hero">
-        <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Startbereich (oben auf der Seite)</h2>
+        <div class="admin-section-header">
+          <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Startbereich (oben auf der Seite)</h2>
+          <button type="button" class="admin-hide-btn">Ausblenden</button>
+        </div>
         <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="hero_eyebrow" type="text"></label>
         <label class="admin-field"><span>Name / Überschrift</span><input id="hero_title" type="text"></label>
         <label class="admin-field"><span>Untertitel</span><input id="hero_subtitle" type="text"></label>
         <label class="admin-field">
           <span>Beschreibungstext</span>
           <div class="admin-richtext-toolbar">
-            <button type="button" class="rt-btn" data-cmd="bold"><b>B</b></button>
-            <button type="button" class="rt-btn" data-cmd="italic"><i>I</i></button>
+            <button type="button" class="rt-btn" data-cmd="bold" title="Fett"><b>B</b></button>
+            <button type="button" class="rt-btn" data-cmd="italic" title="Kursiv"><i>I</i></button>
+            <button type="button" class="rt-btn" data-cmd="underline" title="Unterstrichen"><u>U</u></button>
+            <button type="button" class="rt-btn" data-cmd="createLink" title="Link einfügen">🔗</button>
+            <button type="button" class="rt-btn" data-cmd="unlink" title="Link entfernen">⊘</button>
           </div>
           <div class="admin-richtext" id="hero_text" contenteditable="true"></div>
         </label>
@@ -200,14 +215,20 @@
 
       <!-- ÜBER MICH -->
       <section class="admin-section draggable" data-section-key="about">
-        <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Über mich</h2>
+        <div class="admin-section-header">
+          <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Über mich</h2>
+          <button type="button" class="admin-hide-btn">Ausblenden</button>
+        </div>
         <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="about_eyebrow" type="text"></label>
         <label class="admin-field"><span>Überschrift</span><input id="about_title" type="text"></label>
         <label class="admin-field">
           <span>Text</span>
           <div class="admin-richtext-toolbar">
-            <button type="button" class="rt-btn" data-cmd="bold"><b>B</b></button>
-            <button type="button" class="rt-btn" data-cmd="italic"><i>I</i></button>
+            <button type="button" class="rt-btn" data-cmd="bold" title="Fett"><b>B</b></button>
+            <button type="button" class="rt-btn" data-cmd="italic" title="Kursiv"><i>I</i></button>
+            <button type="button" class="rt-btn" data-cmd="underline" title="Unterstrichen"><u>U</u></button>
+            <button type="button" class="rt-btn" data-cmd="createLink" title="Link einfügen">🔗</button>
+            <button type="button" class="rt-btn" data-cmd="unlink" title="Link entfernen">⊘</button>
           </div>
           <div class="admin-richtext" id="about_text" contenteditable="true"></div>
         </label>
@@ -219,7 +240,10 @@
 
       <!-- LEISTUNGEN + ANGEBOTE -->
       <section class="admin-section draggable" data-section-key="leistungen">
-        <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Leistungen &amp; Angebote</h2>
+        <div class="admin-section-header">
+          <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Leistungen &amp; Angebote</h2>
+          <button type="button" class="admin-hide-btn">Ausblenden</button>
+        </div>
         <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="leistungen_eyebrow" type="text"></label>
         <label class="admin-field"><span>Überschrift</span><input id="leistungen_title" type="text"></label>
 
@@ -228,8 +252,11 @@
         <label class="admin-field">
           <span>Text</span>
           <div class="admin-richtext-toolbar">
-            <button type="button" class="rt-btn" data-cmd="bold"><b>B</b></button>
-            <button type="button" class="rt-btn" data-cmd="italic"><i>I</i></button>
+            <button type="button" class="rt-btn" data-cmd="bold" title="Fett"><b>B</b></button>
+            <button type="button" class="rt-btn" data-cmd="italic" title="Kursiv"><i>I</i></button>
+            <button type="button" class="rt-btn" data-cmd="underline" title="Unterstrichen"><u>U</u></button>
+            <button type="button" class="rt-btn" data-cmd="createLink" title="Link einfügen">🔗</button>
+            <button type="button" class="rt-btn" data-cmd="unlink" title="Link entfernen">⊘</button>
           </div>
           <div class="admin-richtext" id="service0_text" contenteditable="true"></div>
         </label>
@@ -239,8 +266,11 @@
         <label class="admin-field">
           <span>Text</span>
           <div class="admin-richtext-toolbar">
-            <button type="button" class="rt-btn" data-cmd="bold"><b>B</b></button>
-            <button type="button" class="rt-btn" data-cmd="italic"><i>I</i></button>
+            <button type="button" class="rt-btn" data-cmd="bold" title="Fett"><b>B</b></button>
+            <button type="button" class="rt-btn" data-cmd="italic" title="Kursiv"><i>I</i></button>
+            <button type="button" class="rt-btn" data-cmd="underline" title="Unterstrichen"><u>U</u></button>
+            <button type="button" class="rt-btn" data-cmd="createLink" title="Link einfügen">🔗</button>
+            <button type="button" class="rt-btn" data-cmd="unlink" title="Link entfernen">⊘</button>
           </div>
           <div class="admin-richtext" id="service1_text" contenteditable="true"></div>
         </label>
@@ -255,7 +285,10 @@
 
       <!-- FAQ -->
       <section class="admin-section draggable" data-section-key="faq">
-        <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> FAQ</h2>
+        <div class="admin-section-header">
+          <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> FAQ</h2>
+          <button type="button" class="admin-hide-btn">Ausblenden</button>
+        </div>
         <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="faq_eyebrow" type="text"></label>
         <label class="admin-field"><span>Überschrift</span><input id="faq_title" type="text"></label>
         <label class="admin-field"><span>Untertext</span><input id="faq_text" type="text"></label>
@@ -267,14 +300,20 @@
 
       <!-- KONTAKT -->
       <section class="admin-section draggable" data-section-key="kontakt">
-        <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Kontakt</h2>
+        <div class="admin-section-header">
+          <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Kontakt</h2>
+          <button type="button" class="admin-hide-btn">Ausblenden</button>
+        </div>
         <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="kontakt_eyebrow" type="text"></label>
         <label class="admin-field"><span>Überschrift</span><input id="kontakt_title" type="text"></label>
         <label class="admin-field">
           <span>Text</span>
           <div class="admin-richtext-toolbar">
-            <button type="button" class="rt-btn" data-cmd="bold"><b>B</b></button>
-            <button type="button" class="rt-btn" data-cmd="italic"><i>I</i></button>
+            <button type="button" class="rt-btn" data-cmd="bold" title="Fett"><b>B</b></button>
+            <button type="button" class="rt-btn" data-cmd="italic" title="Kursiv"><i>I</i></button>
+            <button type="button" class="rt-btn" data-cmd="underline" title="Unterstrichen"><u>U</u></button>
+            <button type="button" class="rt-btn" data-cmd="createLink" title="Link einfügen">🔗</button>
+            <button type="button" class="rt-btn" data-cmd="unlink" title="Link entfernen">⊘</button>
           </div>
           <div class="admin-richtext" id="kontakt_text" contenteditable="true"></div>
         </label>
