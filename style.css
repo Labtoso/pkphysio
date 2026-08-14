@@ -144,7 +144,7 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 :root.light .logo-img-dark { display: none; }
 :root.light .logo-img-light { display: block; }
 
-.nav { display: flex; align-items: center; gap: 28px; margin-left: auto; margin-right: 24px; }
+.nav { display: flex; align-items: center; gap: 28px; margin-left: auto; }
 .nav-link {
   position: relative;
   font-weight: 500;
@@ -413,24 +413,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 }
 :root.light .kontakt-map iframe { filter: none; }
 
-/* ---------- Mobile CTA ---------- */
-.mobile-cta {
-  display: none;
-  position: fixed;
-  bottom: 20px; right: 20px;
-  padding: 14px 24px;
-  border-radius: 8px;
-  background: var(--color-primary);
-  color: #0a0c0b;
-  font-family: var(--font-head);
-  font-weight: 600;
-  font-size: .9rem;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-md);
-  z-index: 800;
-}
-
 /* ---------- Reveal animation ---------- */
 .reveal {
   opacity: 0;
@@ -453,7 +435,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   .nav-link { padding: 14px 0; border-bottom: 1px solid var(--color-border); }
   .burger { display: flex; }
   .btn-header { display: none; }
-  .mobile-cta { display: flex; }
   .hero { padding: 150px 0 80px; }
   .section { padding: 72px 0; }
   .offers-head { margin-top: 56px; }
