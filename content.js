@@ -1,5 +1,11 @@
 window.SITE_CONTENT = {
-  "order": ["hero", "about", "leistungen", "faq", "kontakt"],
+  "order": [
+    "hero",
+    "about",
+    "leistungen",
+    "faq",
+    "kontakt"
+  ],
   "hiddenSections": [],
   "customSections": [],
   "customFonts": [],
