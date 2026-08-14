@@ -113,7 +113,6 @@ function renderContent(data) {
   if (data.buttons) {
     document.getElementById('headerCta').textContent = data.buttons.headerCta;
     document.getElementById('kontaktCta').textContent = data.buttons.kontaktCta;
-    document.getElementById('mobileCta').textContent = data.buttons.mobileCta;
   }
 
   // Hero

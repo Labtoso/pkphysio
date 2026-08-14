@@ -25,8 +25,7 @@ window.SITE_CONTENT = {
   },
   "buttons": {
     "headerCta": "Termin anfragen",
-    "kontaktCta": "Jetzt anrufen",
-    "mobileCta": "Anrufen"
+    "kontaktCta": "Jetzt anrufen"
   },
   "images": {
     "portrait": "Assets/Pascal_Krieger.avif",
