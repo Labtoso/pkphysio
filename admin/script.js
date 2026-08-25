@@ -130,14 +130,33 @@ const loginError = document.getElementById('loginError');
 const saveStatus = document.getElementById('saveStatus');
 const draggableSections = document.getElementById('draggableSections');
 
-// ---------- Custom sections (page builder) ----------
-function createCustomSectionCard(cs) {
+// ---------- Custom blocks (page builder) ----------
+const pendingBlockImages = {}; // imageKey -> File
+const tableBlockData = new WeakMap(); // section -> { columns, rows }
+
+function blockUid() {
+  return 'custom-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+}
+function blockImagePreviewSrc(path) {
+  return path ? '../' + path : '';
+}
+function finishBlockCard(section) {
+  const removeBtn = makeRemoveBtn(() => section.remove());
+  removeBtn.textContent = 'Baustein entfernen';
+  section.appendChild(removeBtn);
+  return section;
+}
+
+// -- Textblock mit Bild --
+function createTextImageCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
   section.dataset.sectionKey = cs.id;
   section.dataset.custom = '1';
+  section.dataset.blockType = 'textimage';
+  section.dataset.imagePath = cs.image || '';
   section.innerHTML = `
-    <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Textblock</h2>
+    <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Textblock mit Bild</h2>
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <label class="admin-field">
@@ -145,85 +164,473 @@ function createCustomSectionCard(cs) {
       <div class="admin-richtext-toolbar"></div>
       <div class="admin-richtext cs-text" contenteditable="true"></div>
     </label>
-
-    <div class="admin-field admin-coming-soon">
-      <span>Bild zum Textblock <span class="admin-badge-soon">Bald verfügbar</span></span>
+    <div class="admin-image-field">
+      <span>Bild</span>
       <div class="admin-image-row">
-        <div class="admin-image-preview admin-image-preview-placeholder"></div>
-        <input type="file" accept="image/*" disabled>
+        <img class="admin-image-preview cs-image-preview" src="${escapeAttr(blockImagePreviewSrc(cs.image))}">
+        <input type="file" accept="image/*" class="cs-image-file">
       </div>
-      <div class="admin-position-row">
-        <label><input type="radio" name="cs-pos-${cs.id}" disabled checked> Bild links</label>
-        <label><input type="radio" name="cs-pos-${cs.id}" disabled> Bild rechts</label>
-      </div>
+    </div>
+    <div class="admin-radio-row">
+      <label><input type="radio" name="cs-pos-${cs.id}" class="cs-pos" value="left" ${cs.imagePosition !== 'right' ? 'checked' : ''}> Bild links</label>
+      <label><input type="radio" name="cs-pos-${cs.id}" class="cs-pos" value="right" ${cs.imagePosition === 'right' ? 'checked' : ''}> Bild rechts</label>
     </div>
   `;
   section.querySelector('.cs-text').innerHTML = cs.text || '';
-  const removeBtn = makeRemoveBtn(() => section.remove());
-  removeBtn.textContent = 'Sektion entfernen';
-  section.appendChild(removeBtn);
+  const preview = section.querySelector('.cs-image-preview');
+  section.querySelector('.cs-image-file').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    pendingBlockImages[cs.id] = file;
+    preview.src = URL.createObjectURL(file);
+  });
   initRichTextToolbar(section);
-  return section;
+  return finishBlockCard(section);
+}
+function collectTextImageCard(section) {
+  const posEl = section.querySelector('.cs-pos:checked');
+  return {
+    id: section.dataset.sectionKey,
+    type: 'textimage',
+    eyebrow: section.querySelector('.cs-eyebrow').value,
+    title: section.querySelector('.cs-title').value,
+    text: section.querySelector('.cs-text').innerHTML,
+    image: section.dataset.imagePath || '',
+    imagePosition: posEl ? posEl.value : 'left'
+  };
+}
+
+// -- FAQ-Liste --
+function createFaqBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'faq';
+  section.innerHTML = `
+    <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> FAQ-Liste</h2>
+    <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
+    <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
+    <div class="cs-faq-list admin-repeater"></div>
+    <button type="button" class="admin-add-btn cs-faq-add">+ Frage hinzufügen</button>
+  `;
+  const list = section.querySelector('.cs-faq-list');
+  function renderRow(item) {
+    const row = document.createElement('div');
+    row.className = 'admin-repeater-item';
+    row.innerHTML = `
+      <label class="admin-field"><span>Frage</span><input class="cs-faq-q" type="text" value="${escapeAttr(item.q || '')}"></label>
+      <label class="admin-field">
+        <span>Antwort</span>
+        <div class="admin-richtext-toolbar"></div>
+        <div class="admin-richtext cs-faq-a" contenteditable="true"></div>
+      </label>
+    `;
+    row.querySelector('.cs-faq-a').innerHTML = item.a || '';
+    initRichTextToolbar(row);
+    row.appendChild(makeRemoveBtn(() => row.remove()));
+    list.appendChild(row);
+  }
+  (cs.items && cs.items.length ? cs.items : [{ q: '', a: '' }]).forEach(renderRow);
+  section.querySelector('.cs-faq-add').addEventListener('click', () => renderRow({ q: '', a: '' }));
+  return finishBlockCard(section);
+}
+function collectFaqBlockCard(section) {
+  return {
+    id: section.dataset.sectionKey,
+    type: 'faq',
+    eyebrow: section.querySelector('.cs-eyebrow').value,
+    title: section.querySelector('.cs-title').value,
+    items: [...section.querySelectorAll('.cs-faq-list .admin-repeater-item')].map(row => ({
+      q: row.querySelector('.cs-faq-q').value,
+      a: row.querySelector('.cs-faq-a').innerHTML
+    }))
+  };
+}
+
+// -- Tabelle --
+function createTableBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'table';
+  section.innerHTML = `
+    <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Tabelle</h2>
+    <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
+    <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
+    <div class="cs-table-wrap"></div>
+    <div class="admin-table-actions">
+      <button type="button" class="admin-add-btn cs-table-add-row">+ Zeile</button>
+      <button type="button" class="admin-add-btn cs-table-add-col">+ Spalte</button>
+    </div>
+  `;
+  const tableData = {
+    columns: cs.columns && cs.columns.length ? cs.columns.slice() : ['Spalte 1', 'Spalte 2'],
+    rows: cs.rows && cs.rows.length ? cs.rows.map(r => r.slice()) : [['', '']]
+  };
+  tableBlockData.set(section, tableData);
+  const wrap = section.querySelector('.cs-table-wrap');
+
+  function renderTable() {
+    wrap.innerHTML = '';
+    const table = document.createElement('div');
+    table.className = 'admin-table-editor';
+
+    const headRow = document.createElement('div');
+    headRow.className = 'admin-table-row admin-table-head';
+    tableData.columns.forEach((col, ci) => {
+      const cell = document.createElement('div');
+      cell.className = 'admin-table-cell';
+      cell.innerHTML = `<input type="text" value="${escapeAttr(col)}">`;
+      cell.querySelector('input').addEventListener('input', e => { tableData.columns[ci] = e.target.value; });
+      if (tableData.columns.length > 1) {
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'admin-table-cell-remove';
+        del.title = 'Spalte entfernen';
+        del.textContent = '×';
+        del.addEventListener('click', () => {
+          tableData.columns.splice(ci, 1);
+          tableData.rows.forEach(r => r.splice(ci, 1));
+          renderTable();
+        });
+        cell.appendChild(del);
+      }
+      headRow.appendChild(cell);
+    });
+    table.appendChild(headRow);
+
+    tableData.rows.forEach((row, ri) => {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'admin-table-row';
+      row.forEach((val, ci) => {
+        const cell = document.createElement('div');
+        cell.className = 'admin-table-cell';
+        cell.innerHTML = `<input type="text" value="${escapeAttr(val)}">`;
+        cell.querySelector('input').addEventListener('input', e => { tableData.rows[ri][ci] = e.target.value; });
+        rowEl.appendChild(cell);
+      });
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'admin-table-row-remove';
+      del.title = 'Zeile entfernen';
+      del.textContent = '×';
+      del.addEventListener('click', () => {
+        tableData.rows.splice(ri, 1);
+        if (!tableData.rows.length) tableData.rows.push(tableData.columns.map(() => ''));
+        renderTable();
+      });
+      rowEl.appendChild(del);
+      table.appendChild(rowEl);
+    });
+
+    wrap.appendChild(table);
+  }
+  renderTable();
+
+  section.querySelector('.cs-table-add-row').addEventListener('click', () => {
+    tableData.rows.push(tableData.columns.map(() => ''));
+    renderTable();
+  });
+  section.querySelector('.cs-table-add-col').addEventListener('click', () => {
+    tableData.columns.push('Spalte ' + (tableData.columns.length + 1));
+    tableData.rows.forEach(r => r.push(''));
+    renderTable();
+  });
+
+  return finishBlockCard(section);
+}
+function collectTableBlockCard(section) {
+  const tableData = tableBlockData.get(section) || { columns: [], rows: [] };
+  return {
+    id: section.dataset.sectionKey,
+    type: 'table',
+    eyebrow: section.querySelector('.cs-eyebrow').value,
+    title: section.querySelector('.cs-title').value,
+    columns: tableData.columns.slice(),
+    rows: tableData.rows.map(r => r.slice())
+  };
+}
+
+// -- Bildergalerie --
+function createGalleryBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'gallery';
+  section.innerHTML = `
+    <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Bildergalerie</h2>
+    <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
+    <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
+    <div class="cs-gallery-list admin-repeater"></div>
+    <button type="button" class="admin-add-btn cs-gallery-add">+ Bild hinzufügen</button>
+  `;
+  const list = section.querySelector('.cs-gallery-list');
+  let slotSeq = 0;
+  function addSlot(imagePath) {
+    const slotIndex = slotSeq++;
+    const row = document.createElement('div');
+    row.className = 'admin-repeater-item admin-gallery-slot';
+    row.dataset.slotIndex = String(slotIndex);
+    row.dataset.imagePath = imagePath || '';
+    row.innerHTML = `
+      <div class="admin-image-row">
+        <img class="admin-image-preview cs-gallery-preview" src="${escapeAttr(blockImagePreviewSrc(imagePath))}">
+        <input type="file" accept="image/*" class="cs-gallery-file">
+      </div>
+    `;
+    const preview = row.querySelector('.cs-gallery-preview');
+    row.querySelector('.cs-gallery-file').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      pendingBlockImages[cs.id + '::' + slotIndex] = file;
+      preview.src = URL.createObjectURL(file);
+    });
+    row.appendChild(makeRemoveBtn(() => {
+      delete pendingBlockImages[cs.id + '::' + slotIndex];
+      row.remove();
+    }));
+    list.appendChild(row);
+  }
+  (cs.images && cs.images.length ? cs.images : ['']).forEach(addSlot);
+  section.querySelector('.cs-gallery-add').addEventListener('click', () => addSlot(''));
+  return finishBlockCard(section);
+}
+function collectGalleryBlockCard(section) {
+  return {
+    id: section.dataset.sectionKey,
+    type: 'gallery',
+    eyebrow: section.querySelector('.cs-eyebrow').value,
+    title: section.querySelector('.cs-title').value,
+    images: [...section.querySelectorAll('.admin-gallery-slot')].map(row => row.dataset.imagePath || '').filter(Boolean)
+  };
+}
+
+// -- Zitat --
+function createQuoteBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'quote';
+  section.innerHTML = `
+    <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Zitat</h2>
+    <label class="admin-field"><span>Zitat-Text</span><textarea class="cs-quote-text" rows="3">${escapeHtml(cs.text || '')}</textarea></label>
+    <label class="admin-field"><span>Autor / Quelle (optional)</span><input class="cs-quote-author" type="text" value="${escapeAttr(cs.author || '')}"></label>
+  `;
+  return finishBlockCard(section);
+}
+function collectQuoteBlockCard(section) {
+  return {
+    id: section.dataset.sectionKey,
+    type: 'quote',
+    text: section.querySelector('.cs-quote-text').value,
+    author: section.querySelector('.cs-quote-author').value
+  };
+}
+
+// -- Call-to-Action --
+function createCtaBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'cta';
+  section.innerHTML = `
+    <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Call-to-Action</h2>
+    <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
+    <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
+    <label class="admin-field"><span>Text</span><textarea class="cs-cta-text" rows="2">${escapeHtml(cs.text || '')}</textarea></label>
+    <label class="admin-field"><span>Button-Text</span><input class="cs-cta-label" type="text" value="${escapeAttr(cs.buttonLabel || '')}"></label>
+    <label class="admin-field"><span>Button-Link (z. B. tel:+43…, mailto:…, https://…)</span><input class="cs-cta-url" type="text" value="${escapeAttr(cs.buttonUrl || '')}"></label>
+  `;
+  return finishBlockCard(section);
+}
+function collectCtaBlockCard(section) {
+  return {
+    id: section.dataset.sectionKey,
+    type: 'cta',
+    eyebrow: section.querySelector('.cs-eyebrow').value,
+    title: section.querySelector('.cs-title').value,
+    text: section.querySelector('.cs-cta-text').value,
+    buttonLabel: section.querySelector('.cs-cta-label').value,
+    buttonUrl: section.querySelector('.cs-cta-url').value
+  };
+}
+
+// -- Video --
+function createVideoBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'video';
+  section.innerHTML = `
+    <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Video</h2>
+    <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
+    <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
+    <label class="admin-field"><span>YouTube- oder Vimeo-Link</span><input class="cs-video-url" type="text" placeholder="https://www.youtube.com/watch?v=…" value="${escapeAttr(cs.videoUrl || '')}"></label>
+  `;
+  return finishBlockCard(section);
+}
+function collectVideoBlockCard(section) {
+  return {
+    id: section.dataset.sectionKey,
+    type: 'video',
+    eyebrow: section.querySelector('.cs-eyebrow').value,
+    title: section.querySelector('.cs-title').value,
+    videoUrl: section.querySelector('.cs-video-url').value
+  };
+}
+
+// -- Block-Registry / Baustein-Bibliothek --
+const BLOCK_TYPES = {
+  textimage: {
+    label: 'Textblock mit Bild',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="8" height="8" rx="1"/><circle cx="6" cy="7.2" r="1"/><path d="M3.8 10.8L6 8.6l2.2 2.2"/><line x1="13" y1="6" x2="21" y2="6"/><line x1="13" y1="9" x2="21" y2="9"/><line x1="3" y1="16" x2="21" y2="16"/><line x1="3" y1="19" x2="15" y2="19"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'textimage', eyebrow: '', title: 'Neue Überschrift', text: '', image: '', imagePosition: 'left' }),
+    create: createTextImageCard,
+    collect: collectTextImageCard
+  },
+  faq: {
+    label: 'FAQ-Liste',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.2 9.5a2.8 2.8 0 015.4 1c0 1.8-2.6 1.6-2.6 3.6"/><line x1="12" y1="17" x2="12" y2="17.1"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'faq', eyebrow: '', title: 'Häufige Fragen', items: [{ q: '', a: '' }] }),
+    create: createFaqBlockCard,
+    collect: collectFaqBlockCard
+  },
+  table: {
+    label: 'Tabelle',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="10" y1="4" x2="10" y2="20"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'table', eyebrow: '', title: 'Tabelle', columns: ['Spalte 1', 'Spalte 2'], rows: [['', '']] }),
+    create: createTableBlockCard,
+    collect: collectTableBlockCard
+  },
+  gallery: {
+    label: 'Bildergalerie',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'gallery', eyebrow: '', title: 'Galerie', images: [] }),
+    create: createGalleryBlockCard,
+    collect: collectGalleryBlockCard
+  },
+  quote: {
+    label: 'Zitat',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8c-2.2 0-3.5 1.6-3.5 3.7 0 1.8 1.1 3 2.7 3 1.3 0 2.3-.9 2.3-2.2 0-1.1-.8-1.9-1.9-1.9-.2 0-.4 0-.5.1.2-1.3 1.3-2.2 2.6-2.3"/><path d="M16 8c-2.2 0-3.5 1.6-3.5 3.7 0 1.8 1.1 3 2.7 3 1.3 0 2.3-.9 2.3-2.2 0-1.1-.8-1.9-1.9-1.9-.2 0-.4 0-.5.1.2-1.3 1.3-2.2 2.6-2.3"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'quote', text: '', author: '' }),
+    create: createQuoteBlockCard,
+    collect: collectQuoteBlockCard
+  },
+  cta: {
+    label: 'Call-to-Action',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="7" rx="3.5"/><line x1="9" y1="12.5" x2="15" y2="12.5"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'cta', eyebrow: '', title: 'Bereit für den ersten Termin?', text: '', buttonLabel: 'Jetzt anrufen', buttonUrl: '' }),
+    create: createCtaBlockCard,
+    collect: collectCtaBlockCard
+  },
+  video: {
+    label: 'Video',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10.5 9.5l5 2.5-5 2.5z" fill="currentColor" stroke="none"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'video', eyebrow: '', title: 'Video', videoUrl: '' }),
+    create: createVideoBlockCard,
+    collect: collectVideoBlockCard
+  }
+};
+
+function createBlockCard(cs) {
+  const type = BLOCK_TYPES[cs.type] ? cs.type : 'textimage';
+  return BLOCK_TYPES[type].create(cs);
 }
 
 function renderCustomSectionCards(customSections) {
   draggableSections.querySelectorAll('[data-custom="1"]').forEach(el => el.remove());
   customSections.forEach(cs => {
-    draggableSections.appendChild(createCustomSectionCard(cs));
+    draggableSections.appendChild(createBlockCard(cs));
   });
 }
 
 function collectCustomSections() {
-  return [...draggableSections.querySelectorAll('[data-custom="1"]')].map(section => ({
-    id: section.dataset.sectionKey,
-    eyebrow: section.querySelector('.cs-eyebrow').value,
-    title: section.querySelector('.cs-title').value,
-    text: section.querySelector('.cs-text').innerHTML
-  }));
+  return [...draggableSections.querySelectorAll('[data-custom="1"]')].map(section => {
+    const type = BLOCK_TYPES[section.dataset.blockType] ? section.dataset.blockType : 'textimage';
+    return BLOCK_TYPES[type].collect(section);
+  });
 }
 
-// ---------- Drag & drop reordering (custom pointer-based, no native HTML5 DnD) ----------
-let dragEl = null;
+function renderBlockPicker() {
+  const grid = document.getElementById('blockPickerGrid');
+  if (!grid) return;
+  grid.innerHTML = Object.entries(BLOCK_TYPES).map(([type, def]) => `
+    <button type="button" class="admin-block-picker-btn" data-block-type="${type}">
+      <span class="admin-block-picker-icon">${def.icon}</span>
+      <span class="admin-block-picker-label">${escapeHtml(def.label)}</span>
+    </button>
+  `).join('');
+  grid.querySelectorAll('.admin-block-picker-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const def = BLOCK_TYPES[btn.dataset.blockType];
+      if (!def) return;
+      const card = def.create(def.defaults());
+      draggableSections.appendChild(card);
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  });
+}
+renderBlockPicker();
 
-draggableSections.addEventListener('pointerdown', e => {
-  const handle = e.target.closest('.admin-drag-handle');
-  if (!handle) return;
-  const section = handle.closest('.draggable');
-  if (!section) return;
+async function uploadPendingBlockImages(token, data) {
+  if (!Object.keys(pendingBlockImages).length) return;
+  const sections = [...draggableSections.querySelectorAll('[data-custom="1"]')];
+  for (const section of sections) {
+    const id = section.dataset.sectionKey;
+    const type = section.dataset.blockType;
+    const cs = data.customSections.find(c => c.id === id);
+    if (!cs) continue;
 
-  dragEl = section;
-  section.classList.add('dragging');
-  document.body.classList.add('admin-dragging-active');
-  e.preventDefault();
-
-  const onMove = ev => {
-    if (!dragEl) return;
-    const after = getDragAfterElement(draggableSections, ev.clientY);
-    if (after == null) draggableSections.appendChild(dragEl);
-    else draggableSections.insertBefore(dragEl, after);
-  };
-  const onUp = () => {
-    if (dragEl) dragEl.classList.remove('dragging');
-    dragEl = null;
-    document.body.classList.remove('admin-dragging-active');
-    document.removeEventListener('pointermove', onMove);
-    document.removeEventListener('pointerup', onUp);
-  };
-  document.addEventListener('pointermove', onMove);
-  document.addEventListener('pointerup', onUp);
-});
-
-function getDragAfterElement(container, y) {
-  const els = [...container.querySelectorAll('.draggable:not(.dragging)')];
-  return els.reduce((closest, child) => {
-    const box = child.getBoundingClientRect();
-    const offset = y - box.top - box.height / 2;
-    if (offset < 0 && offset > closest.offset) {
-      return { offset, element: child };
+    if (type === 'textimage' && pendingBlockImages[id]) {
+      const file = pendingBlockImages[id];
+      const path = 'Assets/Blocks/' + id + '-' + sanitizeFilename(file.name);
+      const base64 = await fileToBase64(file);
+      const existingSha = await ghGetSha(token, path);
+      await ghPutBinaryFile(token, path, base64, 'Bild hochgeladen über Admin-Panel', existingSha);
+      cs.image = path;
+      section.dataset.imagePath = path;
+      delete pendingBlockImages[id];
     }
-    return closest;
-  }, { offset: -Infinity }).element;
+
+    if (type === 'gallery') {
+      const rows = [...section.querySelectorAll('.admin-gallery-slot')];
+      const images = [];
+      for (const row of rows) {
+        const slotIndex = row.dataset.slotIndex;
+        const key = id + '::' + slotIndex;
+        if (pendingBlockImages[key]) {
+          const file = pendingBlockImages[key];
+          const path = 'Assets/Blocks/' + id + '-' + slotIndex + '-' + sanitizeFilename(file.name);
+          const base64 = await fileToBase64(file);
+          const existingSha = await ghGetSha(token, path);
+          await ghPutBinaryFile(token, path, base64, 'Galerie-Bild hochgeladen über Admin-Panel', existingSha);
+          row.dataset.imagePath = path;
+          delete pendingBlockImages[key];
+          images.push(path);
+        } else if (row.dataset.imagePath) {
+          images.push(row.dataset.imagePath);
+        }
+      }
+      cs.images = images;
+    }
+  }
 }
+
+// ---------- Drag & drop reordering (SortableJS) ----------
+Sortable.create(draggableSections, {
+  handle: '.admin-drag-handle',
+  animation: 150,
+  ghostClass: 'admin-sortable-ghost',
+  chosenClass: 'dragging',
+  onStart: () => document.body.classList.add('admin-dragging-active'),
+  onEnd: () => document.body.classList.remove('admin-dragging-active')
+});
 
 function applySectionOrder(order) {
   order.forEach(key => {
@@ -914,19 +1321,23 @@ async function save() {
 
   const hasImageUploads = IMAGE_KEYS.some(key => pendingImages[key]);
   const hasFontUploads = Object.keys(pendingFonts).length > 0;
+  const hasBlockImageUploads = Object.keys(pendingBlockImages).length > 0;
 
-  [saveStatus].forEach(el => { el.className = 'admin-status'; el.textContent = (hasImageUploads || hasFontUploads) ? 'Lade Dateien hoch …' : 'Speichere …'; });
+  [saveStatus].forEach(el => { el.className = 'admin-status'; el.textContent = (hasImageUploads || hasFontUploads || hasBlockImageUploads) ? 'Lade Dateien hoch …' : 'Speichere …'; });
 
   try {
     if (hasImageUploads) {
       await uploadPendingImages(state.token, state.data);
+    }
+    if (hasBlockImageUploads) {
+      await uploadPendingBlockImages(state.token, state.data);
     }
     if (hasFontUploads) {
       await uploadPendingFonts(state.token, state.data);
     } else {
       state.data.customFonts = collectCustomFonts();
     }
-    if (hasImageUploads || hasFontUploads) {
+    if (hasImageUploads || hasFontUploads || hasBlockImageUploads) {
       saveStatus.textContent = 'Speichere Texte …';
     }
 
