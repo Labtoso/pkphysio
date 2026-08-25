@@ -383,6 +383,42 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   text-decoration: underline;
 }
 
+/* Lists authored via the admin rich text editor.
+   Note: .service-card/.accordion-panel target the ul directly (not "p ul") because
+   the browser auto-closes the template's <p> when it hits a block-level <ul>,
+   so the list ends up a sibling of the p, not nested inside it. */
+.hero-text ul, .lead ul, .service-card ul, .accordion-panel ul, .custom-section-text ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 14px 0;
+}
+.hero-text ul li, .lead ul li, .service-card ul li, .accordion-panel ul li, .custom-section-text ul li {
+  position: relative;
+  padding-left: 18px;
+}
+.hero-text ul li::before, .lead ul li::before, .service-card ul li::before, .accordion-panel ul li::before, .custom-section-text ul li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 9px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+.hero-text ol, .lead ol, .service-card ol, .accordion-panel ol, .custom-section-text ol {
+  padding-left: 20px;
+  margin: 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+/* These two lists render as a sibling of the auto-closed <p>, so they don't
+   inherit its color/size from ".service-card p" / ".accordion-panel p" — restore it. */
+.service-card ul, .service-card ol, .accordion-panel ul, .accordion-panel ol {
+  color: var(--color-ink-soft);
+  font-size: .95rem;
+}
+
 /* ---------- Kontakt ---------- */
 .kontakt-grid {
   display: grid;

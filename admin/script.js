@@ -142,13 +142,7 @@ function createCustomSectionCard(cs) {
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <label class="admin-field">
       <span>Text</span>
-      <div class="admin-richtext-toolbar">
-        <button type="button" class="rt-btn" data-cmd="bold" title="Fett"><b>B</b></button>
-        <button type="button" class="rt-btn" data-cmd="italic" title="Kursiv"><i>I</i></button>
-        <button type="button" class="rt-btn" data-cmd="underline" title="Unterstrichen"><u>U</u></button>
-        <button type="button" class="rt-btn" data-cmd="createLink" title="Link einfügen">🔗</button>
-        <button type="button" class="rt-btn" data-cmd="unlink" title="Link entfernen">⊘</button>
-      </div>
+      <div class="admin-richtext-toolbar"></div>
       <div class="admin-richtext cs-text" contenteditable="true"></div>
     </label>
 
@@ -526,13 +520,7 @@ function renderFaq(items) {
       <label class="admin-field"><span>Frage</span><input class="faq-q" type="text" value="${escapeAttr(item.q)}"></label>
       <label class="admin-field">
         <span>Antwort</span>
-        <div class="admin-richtext-toolbar">
-          <button type="button" class="rt-btn" data-cmd="bold" title="Fett"><b>B</b></button>
-          <button type="button" class="rt-btn" data-cmd="italic" title="Kursiv"><i>I</i></button>
-          <button type="button" class="rt-btn" data-cmd="underline" title="Unterstrichen"><u>U</u></button>
-          <button type="button" class="rt-btn" data-cmd="createLink" title="Link einfügen">🔗</button>
-          <button type="button" class="rt-btn" data-cmd="unlink" title="Link entfernen">⊘</button>
-        </div>
+        <div class="admin-richtext-toolbar"></div>
         <div class="admin-richtext faq-a" contenteditable="true"></div>
       </label>
     `;
@@ -549,39 +537,142 @@ function collectFaq() {
   }));
 }
 
+// ---------- Rich text toolbar (single source of truth for all fields) ----------
+const RT_ICONS = {
+  ul: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="4" cy="6" r="1.3" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.3" fill="currentColor" stroke="none"/><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/></svg>',
+  ol: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><text x="1" y="8" font-size="7" fill="currentColor" stroke="none">1</text><text x="1" y="14" font-size="7" fill="currentColor" stroke="none">2</text><text x="1" y="20" font-size="7" fill="currentColor" stroke="none">3</text><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/></svg>',
+  link: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 15l6-6"/><path d="M11 6l1-1a4 4 0 015 5l-2 2"/><path d="M13 18l-1 1a4 4 0 01-5-5l2-2"/></svg>',
+  unlink: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 6l1-1a4 4 0 015 5l-1 1"/><path d="M13 18l-1 1a4 4 0 01-5-5l1-1"/><line x1="4" y1="4" x2="20" y2="20"/></svg>',
+  clear: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h11"/><path d="M9.5 5v13"/><path d="M14 19h6"/><path d="M15 14l6 6"/></svg>'
+};
+
+const RT_TOOLBAR_HTML = `
+  <button type="button" class="rt-btn" data-cmd="bold" title="Fett"><b>B</b></button>
+  <button type="button" class="rt-btn" data-cmd="italic" title="Kursiv"><i>I</i></button>
+  <button type="button" class="rt-btn" data-cmd="underline" title="Unterstrichen"><u>U</u></button>
+  <span class="rt-divider"></span>
+  <button type="button" class="rt-btn" data-cmd="insertUnorderedList" title="Aufzählungsliste">${RT_ICONS.ul}</button>
+  <button type="button" class="rt-btn" data-cmd="insertOrderedList" title="Nummerierte Liste">${RT_ICONS.ol}</button>
+  <span class="rt-divider"></span>
+  <button type="button" class="rt-btn" data-cmd="createLink" title="Link einfügen / bearbeiten">${RT_ICONS.link}</button>
+  <button type="button" class="rt-btn" data-cmd="unlink" title="Link entfernen">${RT_ICONS.unlink}</button>
+  <span class="rt-divider"></span>
+  <button type="button" class="rt-btn" data-cmd="removeFormat" title="Formatierung entfernen">${RT_ICONS.clear}</button>
+  <div class="rt-link-popover" hidden>
+    <input type="text" class="rt-link-input" placeholder="https://...">
+    <button type="button" class="rt-link-apply">Übernehmen</button>
+  </div>
+`;
+
+const RT_STATE_CMDS = ['bold', 'italic', 'underline', 'insertUnorderedList', 'insertOrderedList'];
+
+function rtIsInsideLink(editable) {
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return null;
+  let node = sel.getRangeAt(0).startContainer;
+  if (node.nodeType === 3) node = node.parentNode;
+  const link = node && node.closest ? node.closest('a') : null;
+  return link && editable.contains(link) ? link : null;
+}
+
 function updateToolbarState(editable) {
   const toolbar = editable.closest('.admin-field').querySelector('.admin-richtext-toolbar');
   if (!toolbar) return;
-  ['bold', 'italic', 'underline'].forEach(cmd => {
+  RT_STATE_CMDS.forEach(cmd => {
     const btn = toolbar.querySelector(`[data-cmd="${cmd}"]`);
     if (btn) btn.classList.toggle('active', document.queryCommandState(cmd));
+  });
+  const linkBtn = toolbar.querySelector('[data-cmd="createLink"]');
+  if (linkBtn) linkBtn.classList.toggle('active', !!rtIsInsideLink(editable));
+}
+
+function wireRichTextToolbar(toolbar, editable) {
+  let savedRange = null;
+  function saveSelection() {
+    const sel = window.getSelection();
+    if (sel.rangeCount && editable.contains(sel.anchorNode)) {
+      savedRange = sel.getRangeAt(0).cloneRange();
+    }
+  }
+  function restoreSelection() {
+    if (!savedRange) return;
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(savedRange);
+  }
+
+  const popover = toolbar.querySelector('.rt-link-popover');
+  const linkInput = popover.querySelector('.rt-link-input');
+  const linkApply = popover.querySelector('.rt-link-apply');
+
+  function closePopover() { popover.hidden = true; }
+  function openPopover() {
+    const link = savedRange ? (() => {
+      let node = savedRange.startContainer;
+      if (node.nodeType === 3) node = node.parentNode;
+      const a = node && node.closest ? node.closest('a') : null;
+      return a && editable.contains(a) ? a : null;
+    })() : null;
+    linkInput.value = link ? (link.getAttribute('href') || '') : '';
+    popover.hidden = false;
+    linkInput.focus();
+    linkInput.select();
+  }
+
+  function applyLink() {
+    let url = linkInput.value.trim();
+    if (!url) { closePopover(); return; }
+    if (!/^([a-z][a-z0-9+.-]*:|#|\/)/i.test(url)) url = 'https://' + url;
+    editable.focus();
+    restoreSelection();
+    document.execCommand('createLink', false, url);
+    closePopover();
+    updateToolbarState(editable);
+  }
+
+  linkApply.addEventListener('mousedown', e => e.preventDefault());
+  linkApply.addEventListener('click', applyLink);
+  linkInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); applyLink(); }
+    if (e.key === 'Escape') { e.preventDefault(); closePopover(); }
+  });
+  document.addEventListener('click', e => {
+    if (!popover.hidden && !popover.contains(e.target) && !toolbar.querySelector('[data-cmd="createLink"]').contains(e.target)) {
+      closePopover();
+    }
+  });
+
+  toolbar.querySelectorAll('.rt-btn').forEach(btn => {
+    btn.addEventListener('mousedown', e => e.preventDefault());
+    btn.addEventListener('click', () => {
+      const cmd = btn.dataset.cmd;
+      if (cmd === 'createLink') {
+        saveSelection();
+        if (popover.hidden) openPopover(); else closePopover();
+        return;
+      }
+      closePopover();
+      editable.focus();
+      document.execCommand(cmd, false, null);
+      updateToolbarState(editable);
+    });
   });
 }
 
 function initRichTextToolbar(container) {
+  container.querySelectorAll('.admin-richtext-toolbar').forEach(toolbar => {
+    if (toolbar.dataset.wired) return;
+    toolbar.dataset.wired = '1';
+    toolbar.innerHTML = RT_TOOLBAR_HTML;
+    const editable = toolbar.closest('.admin-field').querySelector('.admin-richtext');
+    if (editable) wireRichTextToolbar(toolbar, editable);
+  });
+
   container.querySelectorAll('.admin-richtext').forEach(editable => {
     if (editable.dataset.wired) return;
     editable.dataset.wired = '1';
     ['keyup', 'mouseup', 'focus'].forEach(evt => {
       editable.addEventListener(evt, () => updateToolbarState(editable));
-    });
-  });
-
-  container.querySelectorAll('.rt-btn').forEach(btn => {
-    if (btn.dataset.wired) return;
-    btn.dataset.wired = '1';
-    const editable = btn.closest('.admin-field').querySelector('[contenteditable]');
-    btn.addEventListener('mousedown', e => e.preventDefault());
-    btn.addEventListener('click', () => {
-      editable.focus();
-      const cmd = btn.dataset.cmd;
-      if (cmd === 'createLink') {
-        const url = prompt('Link-Adresse (z. B. https://...):', 'https://');
-        if (url) document.execCommand('createLink', false, url);
-      } else {
-        document.execCommand(cmd, false, null);
-      }
-      updateToolbarState(editable);
     });
   });
 }

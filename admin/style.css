@@ -206,10 +206,22 @@ body {
 .admin-field input[type="number"] { max-width: 160px; }
 
 /* ---------- Rich text editor ---------- */
-.admin-richtext-toolbar { display: flex; gap: 6px; }
+.admin-richtext-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  position: relative;
+  margin-bottom: 8px;
+  min-height: 30px;
+}
+.rt-divider { width: 1px; align-self: stretch; background: var(--color-border); margin: 2px 0; }
 .rt-btn {
   width: 30px;
   height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--color-border);
   border-radius: 6px;
   background: var(--color-bg);
@@ -218,8 +230,49 @@ body {
   font-family: var(--font-body);
   font-size: .85rem;
 }
+.rt-btn svg { display: block; }
 .rt-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .rt-btn.active { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-light); }
+
+.rt-link-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 20;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  box-shadow: var(--shadow-md, 0 10px 30px rgba(0,0,0,.45));
+}
+.rt-link-popover input {
+  font-family: var(--font-body);
+  font-size: .85rem;
+  color: var(--color-ink);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  min-width: 220px;
+}
+.rt-link-popover input:focus { outline: none; border-color: var(--color-primary); }
+.rt-link-apply {
+  flex-shrink: 0;
+  background: var(--color-primary);
+  color: #0a0c0b;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 7px 14px;
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: .82rem;
+  cursor: pointer;
+}
+.rt-link-apply:hover { background: #22cdb9; }
+
 .admin-richtext {
   font-family: var(--font-body);
   font-size: .95rem;
@@ -232,6 +285,8 @@ body {
   cursor: text;
 }
 .admin-richtext a { color: var(--color-primary); text-decoration: underline; }
+.admin-richtext ul, .admin-richtext ol { padding-left: 22px; margin: 8px 0; }
+.admin-richtext li { margin-bottom: 4px; }
 .admin-richtext:focus {
   outline: none;
   border-color: var(--color-primary);
