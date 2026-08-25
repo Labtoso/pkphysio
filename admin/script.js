@@ -738,6 +738,7 @@ function withTimeout(promise, ms) {
 function showEditor() {
   loginScreen.style.display = 'none';
   editorScreen.style.display = 'block';
+  updateStickybarHeight();
 }
 function showLogin() {
   editorScreen.style.display = 'none';
@@ -877,3 +878,83 @@ document.getElementById('design_textScale').addEventListener('input', e => {
     }
   } catch (e) {}
 })();
+
+// ---------- Sticky bar height (for scroll offset) ----------
+const adminStickybar = document.querySelector('.admin-stickybar');
+function updateStickybarHeight() {
+  if (adminStickybar) {
+    document.documentElement.style.setProperty('--stickybar-height', adminStickybar.offsetHeight + 16 + 'px');
+  }
+}
+window.addEventListener('resize', updateStickybarHeight);
+updateStickybarHeight();
+
+// ---------- Quick nav (jump to section) ----------
+document.querySelectorAll('.admin-quicknav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = document.getElementById(btn.dataset.target);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// ---------- Search / filter ----------
+const adminSearchInput = document.getElementById('adminSearch');
+const adminSearchEmpty = document.getElementById('adminSearchEmpty');
+
+function nearestSubheadingText(el) {
+  let sib = el.previousElementSibling;
+  while (sib) {
+    if (sib.classList.contains('admin-subheading')) return sib.textContent;
+    if (sib.matches('.admin-field, .admin-image-field, .admin-repeater-item, .admin-color-row, .admin-repeater')) break;
+    sib = sib.previousElementSibling;
+  }
+  return '';
+}
+
+function sectionHeadingText(section) {
+  const heading = section.querySelector(':scope > h2, :scope > .admin-section-header > h2');
+  return heading ? heading.textContent.toLowerCase() : '';
+}
+
+function filterSection(section, query) {
+  if (!query) {
+    section.hidden = false;
+    section.querySelectorAll('.admin-search-hidden').forEach(el => el.classList.remove('admin-search-hidden'));
+    return true;
+  }
+
+  const headingMatches = sectionHeadingText(section).includes(query);
+
+  const blocks = [...section.querySelectorAll('.admin-color-row, .admin-field, .admin-image-field, .admin-repeater-item')]
+    .filter(el => {
+      if (el.classList.contains('admin-field') && el.closest('.admin-color-row')) return false;
+      if ((el.classList.contains('admin-field') || el.classList.contains('admin-image-field')) && el.closest('.admin-repeater-item')) return false;
+      return true;
+    });
+
+  let anyVisible = headingMatches;
+
+  blocks.forEach(block => {
+    const haystack = (block.textContent + ' ' + nearestSubheadingText(block)).toLowerCase();
+    const matches = headingMatches || haystack.includes(query);
+    block.classList.toggle('admin-search-hidden', !matches);
+    if (matches) anyVisible = true;
+  });
+
+  section.hidden = !anyVisible;
+  return anyVisible;
+}
+
+function filterAdminContent() {
+  const query = adminSearchInput.value.trim().toLowerCase();
+  const sections = document.querySelectorAll('.admin-content .admin-section');
+  let anySectionVisible = !query;
+  sections.forEach(section => {
+    if (filterSection(section, query)) anySectionVisible = true;
+  });
+  adminSearchEmpty.hidden = !query || anySectionVisible;
+}
+
+if (adminSearchInput) {
+  adminSearchInput.addEventListener('input', filterAdminContent);
+}

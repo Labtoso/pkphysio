@@ -46,20 +46,38 @@
 
 <!-- ---------- EDITOR ---------- -->
 <div id="editorScreen" class="admin-editor">
-  <header class="admin-topbar">
-    <span class="admin-topbar-title">Website-Editor</span>
-    <div class="admin-topbar-actions">
-      <button id="saveBtn" class="btn btn-primary" type="button">Speichern</button>
-      <button id="logoutBtn" class="btn btn-outline" type="button">Abmelden</button>
-    </div>
-  </header>
+  <div class="admin-stickybar">
+    <header class="admin-topbar">
+      <span class="admin-topbar-title">Website-Editor</span>
+      <div class="admin-topbar-search">
+        <input type="search" id="adminSearch" placeholder="Feld oder Bereich suchen …" autocomplete="off">
+      </div>
+      <div class="admin-topbar-actions">
+        <button id="saveBtn" class="btn btn-primary" type="button">Speichern</button>
+        <button id="logoutBtn" class="btn btn-outline" type="button">Abmelden</button>
+      </div>
+    </header>
+
+    <nav class="admin-quicknav" id="adminQuicknav">
+      <button type="button" class="admin-quicknav-btn" data-target="section-design">Design</button>
+      <button type="button" class="admin-quicknav-btn" data-target="section-seo">SEO &amp; Tab</button>
+      <button type="button" class="admin-quicknav-btn" data-target="section-navigation">Navigation</button>
+      <button type="button" class="admin-quicknav-btn" data-target="section-bilder">Bilder</button>
+      <button type="button" class="admin-quicknav-btn" data-target="section-hero">Startbereich</button>
+      <button type="button" class="admin-quicknav-btn" data-target="section-about">Über mich</button>
+      <button type="button" class="admin-quicknav-btn" data-target="section-leistungen">Leistungen</button>
+      <button type="button" class="admin-quicknav-btn" data-target="section-faq">FAQ</button>
+      <button type="button" class="admin-quicknav-btn" data-target="section-kontakt">Kontakt</button>
+    </nav>
+  </div>
 
   <p id="saveStatus" class="admin-status"></p>
+  <p id="adminSearchEmpty" class="admin-search-empty" hidden>Keine Treffer.</p>
 
   <main class="admin-content">
 
     <!-- DESIGN -->
-    <section class="admin-section">
+    <section class="admin-section" id="section-design">
       <h2>Design</h2>
 
       <div class="admin-color-row">
@@ -116,14 +134,14 @@
     </section>
 
     <!-- SEO / TAB -->
-    <section class="admin-section">
+    <section class="admin-section" id="section-seo">
       <h2>Seiten-Titel &amp; Browser-Tab</h2>
       <label class="admin-field"><span>Titel (im Browser-Tab)</span><input id="meta_title" type="text"></label>
       <label class="admin-field"><span>Beschreibung (für Suchmaschinen)</span><textarea id="meta_description" rows="2"></textarea></label>
     </section>
 
     <!-- NAVIGATION -->
-    <section class="admin-section">
+    <section class="admin-section" id="section-navigation">
       <h2>Navigation &amp; Buttons</h2>
       <label class="admin-field"><span>Menüpunkt: Über mich</span><input id="nav_ueberMich" type="text"></label>
       <label class="admin-field"><span>Menüpunkt: Leistungen</span><input id="nav_leistungen" type="text"></label>
@@ -134,7 +152,7 @@
     </section>
 
     <!-- BILDER -->
-    <section class="admin-section">
+    <section class="admin-section" id="section-bilder">
       <h2>Bilder</h2>
       <p class="admin-hint">Neues Bild auswählen, um das aktuelle zu ersetzen. Wird erst beim Klick auf "Speichern" hochgeladen.</p>
 
@@ -171,24 +189,13 @@
       </div>
     </section>
 
-    <!-- NAVIGATION -->
-    <section class="admin-section">
-      <h2>Navigation &amp; Buttons</h2>
-      <label class="admin-field"><span>Menüpunkt: Über mich</span><input id="nav_ueberMich" type="text"></label>
-      <label class="admin-field"><span>Menüpunkt: Leistungen</span><input id="nav_leistungen" type="text"></label>
-      <label class="admin-field"><span>Menüpunkt: FAQ</span><input id="nav_faq" type="text"></label>
-      <label class="admin-field"><span>Menüpunkt: Kontakt</span><input id="nav_kontakt" type="text"></label>
-      <label class="admin-field"><span>Button oben rechts (Telefon)</span><input id="btn_headerCta" type="text"></label>
-      <label class="admin-field"><span>Button im Kontakt-Bereich</span><input id="btn_kontaktCta" type="text"></label>
-    </section>
-
     <h2 class="admin-page-heading">Seiteninhalt <span>ziehen zum Umsortieren</span></h2>
 
     <!-- ---------- DRAGGABLE PAGE SECTIONS ---------- -->
     <div id="draggableSections">
 
       <!-- HERO -->
-      <section class="admin-section draggable" data-section-key="hero">
+      <section class="admin-section draggable" data-section-key="hero" id="section-hero">
         <div class="admin-section-header">
           <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Startbereich (oben auf der Seite)</h2>
           <div class="admin-header-actions">
@@ -215,7 +222,7 @@
       </section>
 
       <!-- ÜBER MICH -->
-      <section class="admin-section draggable" data-section-key="about">
+      <section class="admin-section draggable" data-section-key="about" id="section-about">
         <div class="admin-section-header">
           <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Über mich</h2>
           <div class="admin-header-actions">
@@ -243,7 +250,7 @@
       </section>
 
       <!-- LEISTUNGEN + ANGEBOTE -->
-      <section class="admin-section draggable" data-section-key="leistungen">
+      <section class="admin-section draggable" data-section-key="leistungen" id="section-leistungen">
         <div class="admin-section-header">
           <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Leistungen &amp; Angebote</h2>
           <div class="admin-header-actions">
@@ -291,7 +298,7 @@
       </section>
 
       <!-- FAQ -->
-      <section class="admin-section draggable" data-section-key="faq">
+      <section class="admin-section draggable" data-section-key="faq" id="section-faq">
         <div class="admin-section-header">
           <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> FAQ</h2>
           <div class="admin-header-actions">
@@ -309,7 +316,7 @@
       </section>
 
       <!-- KONTAKT -->
-      <section class="admin-section draggable" data-section-key="kontakt">
+      <section class="admin-section draggable" data-section-key="kontakt" id="section-kontakt">
         <div class="admin-section-header">
           <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Kontakt</h2>
           <div class="admin-header-actions">
