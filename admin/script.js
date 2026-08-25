@@ -182,14 +182,6 @@ function collectCustomSections() {
   }));
 }
 
-document.getElementById('addSectionBtn').addEventListener('click', () => {
-  const type = document.getElementById('newSectionType').value;
-  if (type === 'textblock') {
-    const cs = { id: 'custom-' + Date.now(), eyebrow: '', title: 'Neue Überschrift', text: '' };
-    draggableSections.appendChild(createCustomSectionCard(cs));
-  }
-});
-
 // ---------- Drag & drop reordering (custom pointer-based, no native HTML5 DnD) ----------
 let dragEl = null;
 
