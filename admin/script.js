@@ -140,10 +140,23 @@ function blockUid() {
 function blockImagePreviewSrc(path) {
   return path ? '../' + path : '';
 }
+function blockHeaderHtml(label) {
+  return `
+    <div class="admin-section-header">
+      <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> ${label}</h2>
+      <div class="admin-header-actions"></div>
+    </div>
+  `;
+}
 function finishBlockCard(section) {
-  const removeBtn = makeRemoveBtn(() => section.remove());
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.className = 'admin-remove-core-btn';
   removeBtn.textContent = 'Baustein entfernen';
-  section.appendChild(removeBtn);
+  removeBtn.addEventListener('click', () => section.remove());
+  const actions = section.querySelector('.admin-header-actions');
+  if (actions) actions.appendChild(removeBtn);
+  else section.appendChild(removeBtn);
   return section;
 }
 
@@ -156,7 +169,7 @@ function createTextImageCard(cs) {
   section.dataset.blockType = 'textimage';
   section.dataset.imagePath = cs.image || '';
   section.innerHTML = `
-    <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Textblock mit Bild</h2>
+    ${blockHeaderHtml('Textblock mit Bild')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <label class="admin-field">
@@ -168,6 +181,7 @@ function createTextImageCard(cs) {
       <div class="admin-image-row">
         <img class="admin-image-preview cs-image-preview" src="${escapeAttr(blockImagePreviewSrc(cs.image))}">
         <input type="file" accept="image/*" class="cs-image-file">
+        <button type="button" class="admin-image-remove-btn cs-image-remove">Bild entfernen</button>
       </div>
     </div>
     <div class="admin-radio-row">
@@ -177,11 +191,18 @@ function createTextImageCard(cs) {
   `;
   section.querySelector('.cs-text').innerHTML = cs.text || '';
   const preview = section.querySelector('.cs-image-preview');
-  section.querySelector('.cs-image-file').addEventListener('change', e => {
+  const fileInput = section.querySelector('.cs-image-file');
+  fileInput.addEventListener('change', e => {
     const file = e.target.files[0];
     if (!file) return;
     pendingBlockImages[cs.id] = file;
     preview.src = URL.createObjectURL(file);
+  });
+  section.querySelector('.cs-image-remove').addEventListener('click', () => {
+    delete pendingBlockImages[cs.id];
+    section.dataset.imagePath = '';
+    preview.src = '';
+    fileInput.value = '';
   });
   initQuillEditors(section);
   return finishBlockCard(section);
@@ -207,7 +228,7 @@ function createFaqBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'faq';
   section.innerHTML = `
-    <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> FAQ-Liste</h2>
+    ${blockHeaderHtml('FAQ-Liste')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <div class="cs-faq-list admin-repeater"></div>
@@ -254,7 +275,7 @@ function createTableBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'table';
   section.innerHTML = `
-    <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Tabelle</h2>
+    ${blockHeaderHtml('Tabelle')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <div class="cs-table-wrap"></div>
@@ -359,7 +380,7 @@ function createGalleryBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'gallery';
   section.innerHTML = `
-    <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Bildergalerie</h2>
+    ${blockHeaderHtml('Bildergalerie')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <div class="cs-gallery-list admin-repeater"></div>
@@ -414,7 +435,7 @@ function createQuoteBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'quote';
   section.innerHTML = `
-    <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Zitat</h2>
+    ${blockHeaderHtml('Zitat')}
     <label class="admin-field"><span>Zitat-Text</span><textarea class="cs-quote-text" rows="3">${escapeHtml(cs.text || '')}</textarea></label>
     <label class="admin-field"><span>Autor / Quelle (optional)</span><input class="cs-quote-author" type="text" value="${escapeAttr(cs.author || '')}"></label>
   `;
@@ -437,7 +458,7 @@ function createCtaBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'cta';
   section.innerHTML = `
-    <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Call-to-Action</h2>
+    ${blockHeaderHtml('Call-to-Action')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <label class="admin-field"><span>Text</span><textarea class="cs-cta-text" rows="2">${escapeHtml(cs.text || '')}</textarea></label>
@@ -466,7 +487,7 @@ function createVideoBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'video';
   section.innerHTML = `
-    <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Video</h2>
+    ${blockHeaderHtml('Video')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <label class="admin-field"><span>YouTube- oder Vimeo-Link</span><input class="cs-video-url" type="text" placeholder="https://www.youtube.com/watch?v=…" value="${escapeAttr(cs.videoUrl || '')}"></label>
