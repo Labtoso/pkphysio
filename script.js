@@ -219,23 +219,130 @@ const SECTION_ID_MAP = {
   kontakt: 'kontakt'
 };
 
+function toEmbedUrl(url) {
+  if (!url) return '';
+  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([\w-]{6,})/);
+  if (yt) return 'https://www.youtube-nocookie.com/embed/' + yt[1];
+  const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeo) return 'https://player.vimeo.com/video/' + vimeo[1];
+  return '';
+}
+
+const CUSTOM_BLOCK_RENDERERS = {
+  textimage(cs, site) {
+    const hasImage = !!cs.image;
+    const posClass = cs.imagePosition === 'right' ? ' custom-section-imgright' : '';
+    return `
+      <div class="container custom-section-inner${hasImage ? ' has-image' + posClass : ''}">
+        ${hasImage ? `<div class="custom-section-media reveal"><img src="${cs.image}" alt="${cs.title || ''}" loading="lazy"></div>` : ''}
+        <div class="custom-section-body">
+          <div class="section-head reveal custom-section-head">
+            <p class="eyebrow">${cs.eyebrow || ''}</p>
+            <h2>${cs.title || ''}</h2>
+          </div>
+          <div class="custom-section-text reveal">${applyTemplate(cs.text || '', site)}</div>
+        </div>
+      </div>
+    `;
+  },
+  faq(cs, site) {
+    return `
+      <div class="container">
+        <div class="section-head reveal custom-section-head">
+          <p class="eyebrow">${cs.eyebrow || ''}</p>
+          <h2>${cs.title || ''}</h2>
+        </div>
+        <div class="accordion custom-block-accordion reveal">
+          ${(cs.items || []).map(item => `
+            <div class="accordion-item">
+              <button class="accordion-trigger">${item.q}</button>
+              <div class="accordion-panel">
+                <p>${applyTemplate(item.a, site)}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  },
+  table(cs) {
+    const columns = cs.columns || [];
+    const rows = cs.rows || [];
+    return `
+      <div class="container">
+        <div class="section-head reveal custom-section-head">
+          <p class="eyebrow">${cs.eyebrow || ''}</p>
+          <h2>${cs.title || ''}</h2>
+        </div>
+        <div class="custom-table-wrap reveal">
+          <table class="custom-table">
+            <thead><tr>${columns.map(c => `<th>${c}</th>`).join('')}</tr></thead>
+            <tbody>${rows.map(r => `<tr>${r.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  },
+  gallery(cs) {
+    const images = cs.images || [];
+    return `
+      <div class="container">
+        <div class="section-head reveal custom-section-head">
+          <p class="eyebrow">${cs.eyebrow || ''}</p>
+          <h2>${cs.title || ''}</h2>
+        </div>
+        <div class="custom-gallery-grid reveal">
+          ${images.map(src => `<img src="${src}" loading="lazy">`).join('')}
+        </div>
+      </div>
+    `;
+  },
+  quote(cs, site) {
+    return `
+      <div class="container custom-quote-container">
+        <blockquote class="custom-quote reveal">
+          <p>${applyTemplate(cs.text || '', site)}</p>
+          ${cs.author ? `<cite>${cs.author}</cite>` : ''}
+        </blockquote>
+      </div>
+    `;
+  },
+  cta(cs, site) {
+    const url = applyTemplate(cs.buttonUrl || '', site);
+    const external = /^https?:/.test(url);
+    return `
+      <div class="container custom-cta-container reveal">
+        <p class="eyebrow">${cs.eyebrow || ''}</p>
+        <h2>${cs.title || ''}</h2>
+        ${cs.text ? `<p class="custom-cta-text">${applyTemplate(cs.text, site)}</p>` : ''}
+        ${cs.buttonLabel && url ? `<a class="btn btn-primary" href="${url}"${external ? ' target="_blank" rel="noopener"' : ''}>${cs.buttonLabel}</a>` : ''}
+      </div>
+    `;
+  },
+  video(cs) {
+    const embed = toEmbedUrl(cs.videoUrl || '');
+    return `
+      <div class="container">
+        <div class="section-head reveal custom-section-head">
+          <p class="eyebrow">${cs.eyebrow || ''}</p>
+          <h2>${cs.title || ''}</h2>
+        </div>
+        ${embed ? `<div class="custom-video-wrap reveal"><iframe src="${embed}" title="${cs.title || 'Video'}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>` : ''}
+      </div>
+    `;
+  }
+};
+
 function renderCustomSections(customSections, site) {
   const main = document.getElementById('top');
   main.querySelectorAll('.custom-section').forEach(el => el.remove());
 
   customSections.forEach((cs, i) => {
+    const type = CUSTOM_BLOCK_RENDERERS[cs.type] ? cs.type : 'textimage';
     const section = document.createElement('section');
     section.id = cs.id;
-    section.className = 'section custom-section' + (i % 2 === 1 ? ' section-alt' : '');
-    section.innerHTML = `
-      <div class="container custom-section-inner">
-        <div class="section-head reveal custom-section-head">
-          <p class="eyebrow">${cs.eyebrow || ''}</p>
-          <h2>${cs.title || ''}</h2>
-        </div>
-        <div class="custom-section-text reveal">${applyTemplate(cs.text || '', site)}</div>
-      </div>
-    `;
+    section.className = 'section custom-section custom-block-' + type + (i % 2 === 1 ? ' section-alt' : '');
+    section.innerHTML = CUSTOM_BLOCK_RENDERERS[type](cs, site);
     main.appendChild(section);
   });
 }

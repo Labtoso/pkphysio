@@ -85,6 +85,7 @@
       <button type="button" class="admin-quicknav-btn" data-target="section-leistungen">Leistungen</button>
       <button type="button" class="admin-quicknav-btn" data-target="section-faq">FAQ</button>
       <button type="button" class="admin-quicknav-btn" data-target="section-kontakt">Kontakt</button>
+      <button type="button" class="admin-quicknav-btn" data-target="section-block-library">Baustein hinzufügen</button>
     </nav>
   </div>
 
@@ -344,10 +345,18 @@
       <div id="removedSections" class="admin-removed-list"></div>
     </div>
 
+    <!-- BLOCK LIBRARY -->
+    <section class="admin-section admin-block-library" id="section-block-library">
+      <h2>Baustein hinzufügen</h2>
+      <p class="admin-hint">Baustein anklicken, um ihn unten an die Seite anzuhängen. Danach mit dem ≡-Griff an die gewünschte Stelle ziehen.</p>
+      <div id="blockPickerGrid" class="admin-block-picker-grid"></div>
+    </section>
+
     <button id="saveBtnBottom" class="btn btn-primary admin-save-bottom" type="button">Speichern</button>
   </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js" integrity="sha384-HZZ/fukV+9G8gwTNjN7zQDG0Sp7MsZy5DDN6VfY3Be7V9dvQpEpR2jF2HlyFUUjU" crossorigin="anonymous"></script>
 <script src="script.js"></script>
 </body>
 </html>
