@@ -14,8 +14,25 @@
 </head>
 <body>
 
+<!-- ---------- PIN GATE ---------- -->
+<div id="pinScreen" class="admin-login" style="display:none">
+  <div class="admin-login-card">
+    <p class="eyebrow">Website-Editor</p>
+    <h1>Zugang</h1>
+    <p class="lead">Bitte Zugangs-Passwort eingeben, um zum Login zu gelangen.</p>
+
+    <label class="admin-field">
+      <span>Passwort</span>
+      <input type="password" id="pinInput" placeholder="Passwort" autocomplete="off">
+    </label>
+
+    <button id="pinBtn" class="btn btn-primary" type="button">Weiter</button>
+    <p id="pinError" class="admin-error"></p>
+  </div>
+</div>
+
 <!-- ---------- LOGIN ---------- -->
-<div id="loginScreen" class="admin-login">
+<div id="loginScreen" class="admin-login" style="display:none">
   <div class="admin-login-card">
     <p class="eyebrow">Website-Editor</p>
     <h1>Anmelden</h1>
