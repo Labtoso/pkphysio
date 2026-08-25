@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.bubble.css" integrity="sha384-1p1L5n/ntE3sHKd2FQZmckXnRjjkgWlN9qvfQ2rQuCXYhgCEhcmPSjjVcbttjWKu" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -226,8 +227,7 @@
         <label class="admin-field"><span>Untertitel</span><input id="hero_subtitle" type="text"></label>
         <label class="admin-field">
           <span>Beschreibungstext</span>
-          <div class="admin-richtext-toolbar"></div>
-          <div class="admin-richtext" id="hero_text" contenteditable="true"></div>
+          <div class="admin-richtext" id="hero_text"></div>
         </label>
         <label class="admin-field"><span>Button-Text (Telefon)</span><input id="hero_ctaPrimary" type="text"></label>
         <label class="admin-field"><span>Button-Text (zu "Über mich" springen)</span><input id="hero_ctaSecondary" type="text"></label>
@@ -246,8 +246,7 @@
         <label class="admin-field"><span>Überschrift</span><input id="about_title" type="text"></label>
         <label class="admin-field">
           <span>Text</span>
-          <div class="admin-richtext-toolbar"></div>
-          <div class="admin-richtext" id="about_text" contenteditable="true"></div>
+          <div class="admin-richtext" id="about_text"></div>
         </label>
 
         <h3 class="admin-subheading">Lebenslauf-Zeitleiste</h3>
@@ -271,16 +270,14 @@
         <label class="admin-field"><span>Titel</span><input id="service0_title" type="text"></label>
         <label class="admin-field">
           <span>Text</span>
-          <div class="admin-richtext-toolbar"></div>
-          <div class="admin-richtext" id="service0_text" contenteditable="true"></div>
+          <div class="admin-richtext" id="service0_text"></div>
         </label>
 
         <h3 class="admin-subheading">Sportphysiotherapie</h3>
         <label class="admin-field"><span>Titel</span><input id="service1_title" type="text"></label>
         <label class="admin-field">
           <span>Text</span>
-          <div class="admin-richtext-toolbar"></div>
-          <div class="admin-richtext" id="service1_text" contenteditable="true"></div>
+          <div class="admin-richtext" id="service1_text"></div>
         </label>
 
         <h3 class="admin-subheading">Therapie Angebote</h3>
@@ -322,8 +319,7 @@
         <label class="admin-field"><span>Überschrift</span><input id="kontakt_title" type="text"></label>
         <label class="admin-field">
           <span>Text</span>
-          <div class="admin-richtext-toolbar"></div>
-          <div class="admin-richtext" id="kontakt_text" contenteditable="true"></div>
+          <div class="admin-richtext" id="kontakt_text"></div>
         </label>
 
         <h3 class="admin-subheading">Kontaktdaten</h3>
@@ -357,6 +353,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js" integrity="sha384-HZZ/fukV+9G8gwTNjN7zQDG0Sp7MsZy5DDN6VfY3Be7V9dvQpEpR2jF2HlyFUUjU" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js" integrity="sha384-utBUCeG4SYaCm4m7GQZYr8Hy8Fpy3V4KGjBZaf4WTKOcwhCYpt/0PfeEe3HNlwx8" crossorigin="anonymous"></script>
 <script src="script.js"></script>
 </body>
 </html>
