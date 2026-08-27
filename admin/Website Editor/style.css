@@ -102,8 +102,6 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
-  line-height: 1;
 }
 
 .admin-status {
@@ -309,8 +307,6 @@ body {
   background: var(--color-primary);
   color: #0a0c0b;
   border: none;
-  font-size: 1.8rem;
-  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -667,11 +663,13 @@ body.admin-dragging-active .admin-drag-handle { cursor: grabbing; }
   border-radius: 999px;
   color: var(--color-ink-soft);
   cursor: pointer;
-  font-size: .9rem;
   transition: border-color .2s ease, color .2s ease;
 }
 .admin-modal-close:hover { border-color: #ff6b6b; color: #ff6b6b; }
 .admin-modal-close-right { left: auto; right: 16px; }
+.admin-modal-close svg,
+.admin-add-block-fab svg,
+.admin-quicknav-btn-icon svg { display: block; }
 
 @media (max-width: 640px) {
   .admin-topbar { padding: 14px 18px; flex-wrap: wrap; row-gap: 10px; }
