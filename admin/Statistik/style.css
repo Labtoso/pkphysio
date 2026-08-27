@@ -1,0 +1,90 @@
+body { background: var(--color-bg); }
+
+.stats-page {
+  min-height: 100vh;
+  padding: 90px 24px 80px;
+  position: relative;
+}
+.stats-inner { max-width: 900px; margin: 0 auto; }
+.stats-inner h1 { margin-bottom: 24px; }
+.stats-theme-toggle { position: fixed; top: 24px; right: 24px; z-index: 10; }
+.admin-home-btn-standalone { position: fixed; z-index: 10; }
+
+/* ---------- Stat tiles ---------- */
+.stat-tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 48px;
+}
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+}
+.stat-tile-label { font-size: .82rem; font-weight: 600; color: var(--color-ink-soft); text-transform: uppercase; letter-spacing: .04em; }
+.stat-tile-value { font-family: var(--font-head); font-weight: 800; font-size: 2.2rem; color: var(--color-primary); }
+.stat-tile-delta { font-size: .82rem; color: var(--color-ink-soft); }
+
+/* ---------- Sections ---------- */
+.stats-section { margin-bottom: 48px; }
+.stats-section h2 { font-size: 1.1rem; margin-bottom: 20px; }
+
+/* ---------- Trend chart (bars) ---------- */
+.trend-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 180px;
+  padding: 0 4px;
+  border-bottom: 1px solid var(--color-border);
+}
+.trend-bar-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 6px;
+}
+.trend-bar-value { font-size: .7rem; color: var(--color-ink-soft); white-space: nowrap; }
+.trend-bar {
+  width: 100%;
+  max-width: 28px;
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary-dark);
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+}
+.trend-bar-day { font-size: .7rem; color: var(--color-ink-soft); }
+
+/* ---------- Click breakdown (horizontal bars) ---------- */
+.click-row {
+  display: grid;
+  grid-template-columns: 180px 1fr 44px;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+}
+.click-row-label { font-size: .88rem; color: var(--color-ink); }
+.click-row-bar-track {
+  height: 10px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.click-row-bar { height: 100%; background: var(--color-primary); border-radius: 999px; }
+.click-row-value { font-size: .85rem; font-weight: 700; color: var(--color-ink); text-align: right; }
+
+@media (max-width: 640px) {
+  .stats-page { padding: 76px 18px 60px; }
+  .click-row { grid-template-columns: 110px 1fr 36px; gap: 10px; }
+  .click-row-label { font-size: .8rem; }
+}
