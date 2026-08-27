@@ -567,6 +567,7 @@ body.admin-dragging-active .admin-drag-handle { cursor: grabbing; }
   justify-content: center;
   padding: 24px;
 }
+.admin-modal-overlay[hidden] { display: none; }
 .admin-modal {
   position: relative;
   width: 100%;
