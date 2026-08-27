@@ -140,19 +140,59 @@ function blockUid() {
 function blockImagePreviewSrc(path) {
   return path ? '../' + path : '';
 }
-function blockHeaderHtml(label) {
+const PENCIL_ICON = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-4L16 5l3 3L8 19l-4 1z"/><path d="M14 7l3 3"/></svg>';
+
+function blockHeaderHtml(cs, typeLabel) {
+  const displayLabel = cs.customLabel || typeLabel;
   return `
     <div class="admin-section-header">
-      <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> ${label}</h2>
+      <h2>
+        <span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span>
+        <span class="admin-block-label" data-default-label="${escapeAttr(typeLabel)}">${escapeHtml(displayLabel)}</span>
+        <button type="button" class="admin-block-rename-btn" title="Namen bearbeiten" aria-label="Namen bearbeiten">${PENCIL_ICON}</button>
+      </h2>
       <div class="admin-header-actions"></div>
     </div>
   `;
 }
-function finishBlockCard(section) {
+function wireBlockRename(section) {
+  const labelSpan = section.querySelector('.admin-block-label');
+  const renameBtn = section.querySelector('.admin-block-rename-btn');
+  if (!labelSpan || !renameBtn) return;
+  renameBtn.addEventListener('click', () => {
+    const current = labelSpan.textContent;
+    const defaultLabel = labelSpan.dataset.defaultLabel;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'admin-block-label-input';
+    input.value = current === defaultLabel ? '' : current;
+    input.placeholder = defaultLabel;
+    labelSpan.replaceWith(input);
+    input.focus();
+    input.select();
+    const commit = () => {
+      const value = input.value.trim();
+      const newSpan = document.createElement('span');
+      newSpan.className = 'admin-block-label';
+      newSpan.dataset.defaultLabel = defaultLabel;
+      newSpan.textContent = value || defaultLabel;
+      section.dataset.customLabel = value;
+      input.replaceWith(newSpan);
+    };
+    input.addEventListener('blur', commit);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+      if (e.key === 'Escape') { e.preventDefault(); input.value = current === defaultLabel ? '' : current; input.blur(); }
+    });
+  });
+}
+function finishBlockCard(section, cs) {
+  section.dataset.customLabel = cs.customLabel || '';
+  wireBlockRename(section);
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   removeBtn.className = 'admin-remove-core-btn';
-  removeBtn.textContent = 'Baustein entfernen';
+  removeBtn.textContent = 'Entfernen';
   removeBtn.addEventListener('click', () => section.remove());
   const actions = section.querySelector('.admin-header-actions');
   if (actions) actions.appendChild(removeBtn);
@@ -169,7 +209,7 @@ function createTextImageCard(cs) {
   section.dataset.blockType = 'textimage';
   section.dataset.imagePath = cs.image || '';
   section.innerHTML = `
-    ${blockHeaderHtml('Textblock mit Bild')}
+    ${blockHeaderHtml(cs, 'Textblock mit Bild')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <label class="admin-field">
@@ -227,7 +267,7 @@ function createTextImageCard(cs) {
   (cs.subblocks || []).forEach(renderSubRow);
   section.querySelector('.cs-subblock-add').addEventListener('click', () => renderSubRow({ heading: '', text: '' }));
   initQuillEditors(section);
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectTextImageCard(section) {
   const posEl = section.querySelector('.cs-pos:checked');
@@ -254,7 +294,7 @@ function createFaqBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'faq';
   section.innerHTML = `
-    ${blockHeaderHtml('FAQ-Liste')}
+    ${blockHeaderHtml(cs, 'FAQ-Liste')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <div class="cs-faq-list admin-repeater"></div>
@@ -278,7 +318,7 @@ function createFaqBlockCard(cs) {
   }
   (cs.items && cs.items.length ? cs.items : [{ q: '', a: '' }]).forEach(renderRow);
   section.querySelector('.cs-faq-add').addEventListener('click', () => renderRow({ q: '', a: '' }));
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectFaqBlockCard(section) {
   return {
@@ -301,7 +341,7 @@ function createTableBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'table';
   section.innerHTML = `
-    ${blockHeaderHtml('Tabelle')}
+    ${blockHeaderHtml(cs, 'Tabelle')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <div class="cs-table-wrap"></div>
@@ -384,7 +424,7 @@ function createTableBlockCard(cs) {
     renderTable();
   });
 
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectTableBlockCard(section) {
   const tableData = tableBlockData.get(section) || { columns: [], rows: [] };
@@ -406,7 +446,7 @@ function createGalleryBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'gallery';
   section.innerHTML = `
-    ${blockHeaderHtml('Bildergalerie')}
+    ${blockHeaderHtml(cs, 'Bildergalerie')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <div class="cs-gallery-list admin-repeater"></div>
@@ -441,7 +481,7 @@ function createGalleryBlockCard(cs) {
   }
   (cs.images && cs.images.length ? cs.images : ['']).forEach(addSlot);
   section.querySelector('.cs-gallery-add').addEventListener('click', () => addSlot(''));
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectGalleryBlockCard(section) {
   return {
@@ -461,11 +501,11 @@ function createQuoteBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'quote';
   section.innerHTML = `
-    ${blockHeaderHtml('Zitat')}
+    ${blockHeaderHtml(cs, 'Zitat')}
     <label class="admin-field"><span>Zitat-Text</span><textarea class="cs-quote-text" rows="3">${escapeHtml(cs.text || '')}</textarea></label>
     <label class="admin-field"><span>Autor / Quelle (optional)</span><input class="cs-quote-author" type="text" value="${escapeAttr(cs.author || '')}"></label>
   `;
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectQuoteBlockCard(section) {
   return {
@@ -484,14 +524,14 @@ function createCtaBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'cta';
   section.innerHTML = `
-    ${blockHeaderHtml('Call-to-Action')}
+    ${blockHeaderHtml(cs, 'Call-to-Action')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <label class="admin-field"><span>Text</span><textarea class="cs-cta-text" rows="2">${escapeHtml(cs.text || '')}</textarea></label>
     <label class="admin-field"><span>Button-Text</span><input class="cs-cta-label" type="text" value="${escapeAttr(cs.buttonLabel || '')}"></label>
     <label class="admin-field"><span>Button-Link (z. B. tel:+43…, mailto:…, https://…)</span><input class="cs-cta-url" type="text" value="${escapeAttr(cs.buttonUrl || '')}"></label>
   `;
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectCtaBlockCard(section) {
   return {
@@ -513,12 +553,12 @@ function createVideoBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'video';
   section.innerHTML = `
-    ${blockHeaderHtml('Video')}
+    ${blockHeaderHtml(cs, 'Video')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <label class="admin-field"><span>YouTube- oder Vimeo-Link</span><input class="cs-video-url" type="text" placeholder="https://www.youtube.com/watch?v=…" value="${escapeAttr(cs.videoUrl || '')}"></label>
   `;
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectVideoBlockCard(section) {
   return {
@@ -538,7 +578,7 @@ function createStatsBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'stats';
   section.innerHTML = `
-    ${blockHeaderHtml('Statistik-Reihe')}
+    ${blockHeaderHtml(cs, 'Statistik-Reihe')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift (optional)</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <div class="cs-stats-list admin-repeater"></div>
@@ -557,7 +597,7 @@ function createStatsBlockCard(cs) {
   }
   (cs.items && cs.items.length ? cs.items : [{ value: '', label: '' }]).forEach(renderRow);
   section.querySelector('.cs-stats-add').addEventListener('click', () => renderRow({ value: '', label: '' }));
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectStatsBlockCard(section) {
   return {
@@ -580,7 +620,7 @@ function createHoursBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'hours';
   section.innerHTML = `
-    ${blockHeaderHtml('Öffnungszeiten')}
+    ${blockHeaderHtml(cs, 'Öffnungszeiten')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <div class="cs-hours-list admin-repeater"></div>
@@ -599,7 +639,7 @@ function createHoursBlockCard(cs) {
   }
   (cs.rows && cs.rows.length ? cs.rows : [{ day: '', time: '' }]).forEach(renderRow);
   section.querySelector('.cs-hours-add').addEventListener('click', () => renderRow({ day: '', time: '' }));
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectHoursBlockCard(section) {
   return {
@@ -622,7 +662,7 @@ function createColumnsBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'columns';
   section.innerHTML = `
-    ${blockHeaderHtml('Zwei-Spalten-Text')}
+    ${blockHeaderHtml(cs, 'Zwei-Spalten-Text')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <h3 class="admin-subheading">Linke Spalte</h3>
@@ -641,7 +681,7 @@ function createColumnsBlockCard(cs) {
   section.querySelector('.cs-col-left-text').innerHTML = cs.leftText || '';
   section.querySelector('.cs-col-right-text').innerHTML = cs.rightText || '';
   initQuillEditors(section);
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectColumnsBlockCard(section) {
   return {
@@ -664,7 +704,7 @@ function createDividerBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'divider';
   section.innerHTML = `
-    ${blockHeaderHtml('Trenner')}
+    ${blockHeaderHtml(cs, 'Trenner')}
     <label class="admin-field">
       <span>Stil</span>
       <select class="cs-divider-style">
@@ -674,7 +714,7 @@ function createDividerBlockCard(cs) {
     </label>
     <label class="admin-field"><span>Text auf der Linie (optional)</span><input class="cs-divider-label" type="text" value="${escapeAttr(cs.label || '')}"></label>
   `;
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectDividerBlockCard(section) {
   return {
@@ -693,13 +733,13 @@ function createMapBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'map';
   section.innerHTML = `
-    ${blockHeaderHtml('Karte')}
+    ${blockHeaderHtml(cs, 'Karte')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <label class="admin-field"><span>Adresse</span><input class="cs-map-address" type="text" placeholder="Leer lassen für die Praxis-Adresse aus Kontakt" value="${escapeAttr(cs.address || '')}"></label>
     <p class="admin-hint">Leer lassen, um automatisch die Adresse aus dem Kontakt-Bereich zu verwenden.</p>
   `;
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectMapBlockCard(section) {
   return {
@@ -719,7 +759,7 @@ function createTeamBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'team';
   section.innerHTML = `
-    ${blockHeaderHtml('Team')}
+    ${blockHeaderHtml(cs, 'Team')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <div class="cs-team-list admin-repeater"></div>
@@ -765,7 +805,7 @@ function createTeamBlockCard(cs) {
   }
   (cs.members && cs.members.length ? cs.members : [{ photo: '', name: '', role: '', bio: '' }]).forEach(addMember);
   section.querySelector('.cs-team-add').addEventListener('click', () => addMember({ photo: '', name: '', role: '', bio: '' }));
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectTeamBlockCard(section) {
   return {
@@ -790,7 +830,7 @@ function createTestimonialsBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'testimonials';
   section.innerHTML = `
-    ${blockHeaderHtml('Bewertungen')}
+    ${blockHeaderHtml(cs, 'Bewertungen')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <div class="cs-testimonials-list admin-repeater"></div>
@@ -810,7 +850,7 @@ function createTestimonialsBlockCard(cs) {
   }
   (cs.items && cs.items.length ? cs.items : [{ text: '', author: '', role: '' }]).forEach(renderRow);
   section.querySelector('.cs-testimonial-add').addEventListener('click', () => renderRow({ text: '', author: '', role: '' }));
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectTestimonialsBlockCard(section) {
   return {
@@ -834,7 +874,7 @@ function createPricingBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'pricing';
   section.innerHTML = `
-    ${blockHeaderHtml('Preisliste')}
+    ${blockHeaderHtml(cs, 'Preisliste')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
     <div class="cs-pricing-list admin-repeater"></div>
@@ -859,7 +899,7 @@ function createPricingBlockCard(cs) {
   }
   (cs.plans && cs.plans.length ? cs.plans : [{ name: '', price: '', period: '', description: '', features: [], highlighted: false }]).forEach(renderRow);
   section.querySelector('.cs-pricing-add').addEventListener('click', () => renderRow({ name: '', price: '', period: '', description: '', features: [], highlighted: false }));
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectPricingBlockCard(section) {
   return {
@@ -886,7 +926,7 @@ function createLogosBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'logos';
   section.innerHTML = `
-    ${blockHeaderHtml('Logo-Leiste')}
+    ${blockHeaderHtml(cs, 'Logo-Leiste')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift (optional)</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <div class="cs-logos-list admin-repeater"></div>
     <button type="button" class="admin-add-btn cs-logos-add">+ Logo hinzufügen</button>
@@ -929,7 +969,7 @@ function createLogosBlockCard(cs) {
   }
   (cs.logos && cs.logos.length ? cs.logos : ['']).forEach(l => addLogo(typeof l === 'string' ? { image: l, url: '' } : l));
   section.querySelector('.cs-logos-add').addEventListener('click', () => addLogo({ image: '', url: '' }));
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectLogosBlockCard(section) {
   return {
@@ -961,7 +1001,7 @@ function createSocialBlockCard(cs) {
   section.dataset.custom = '1';
   section.dataset.blockType = 'social';
   section.innerHTML = `
-    ${blockHeaderHtml('Social-Media-Icons')}
+    ${blockHeaderHtml(cs, 'Social-Media-Icons')}
     <div class="cs-social-list admin-repeater"></div>
     <button type="button" class="admin-add-btn cs-social-add">+ Icon hinzufügen</button>
   `;
@@ -983,7 +1023,7 @@ function createSocialBlockCard(cs) {
   }
   (cs.items && cs.items.length ? cs.items : [{ platform: 'instagram', url: '' }]).forEach(renderRow);
   section.querySelector('.cs-social-add').addEventListener('click', () => renderRow({ platform: 'instagram', url: '' }));
-  return finishBlockCard(section);
+  return finishBlockCard(section, cs);
 }
 function collectSocialBlockCard(section) {
   return {
@@ -1159,7 +1199,9 @@ function renderCustomSectionCards(customSections) {
 function collectCustomSections() {
   return [...draggableSections.querySelectorAll('[data-custom="1"]')].map(section => {
     const type = BLOCK_TYPES[section.dataset.blockType] ? section.dataset.blockType : 'textimage';
-    return BLOCK_TYPES[type].collect(section);
+    const cs = BLOCK_TYPES[type].collect(section);
+    if (section.dataset.customLabel) cs.customLabel = section.dataset.customLabel;
+    return cs;
   });
 }
 
@@ -1188,14 +1230,35 @@ function renderBlockPicker() {
     btn.addEventListener('click', () => {
       const def = BLOCK_TYPES[btn.dataset.blockType];
       if (!def) return;
-      const card = def.create(def.defaults());
-      draggableSections.appendChild(card);
-      closeBlockLibrary();
-      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      pendingBlockLibraryType = btn.dataset.blockType;
+      showBlockLibraryStep('name');
+      const nameInput = document.getElementById('blockLibraryNameInput');
+      nameInput.value = '';
+      nameInput.focus();
     });
   });
 }
 renderBlockPicker();
+
+function filterBlockPicker(query) {
+  const q = query.trim().toLowerCase();
+  const grid = document.getElementById('blockPickerGrid');
+  if (!grid) return;
+  let anyVisible = false;
+  grid.querySelectorAll('.admin-block-category').forEach(cat => {
+    let catHasVisible = false;
+    cat.querySelectorAll('.admin-block-picker-btn').forEach(btn => {
+      const label = btn.querySelector('.admin-block-picker-label').textContent.toLowerCase();
+      const match = !q || label.includes(q);
+      btn.hidden = !match;
+      if (match) catHasVisible = true;
+    });
+    cat.hidden = !catHasVisible;
+    if (catHasVisible) anyVisible = true;
+  });
+  const noResults = document.getElementById('blockLibraryNoResults');
+  if (noResults) noResults.hidden = anyVisible;
+}
 
 async function uploadPendingBlockImages(token, data) {
   if (!Object.keys(pendingBlockImages).length) return;
@@ -1291,6 +1354,12 @@ Sortable.create(draggableSections, {
   animation: 150,
   ghostClass: 'admin-sortable-ghost',
   chosenClass: 'dragging',
+  forceFallback: true,
+  fallbackClass: 'admin-sortable-drag-clone',
+  fallbackOnBody: true,
+  scroll: true,
+  scrollSensitivity: 120,
+  scrollSpeed: 18,
   onStart: () => document.body.classList.add('admin-dragging-active'),
   onEnd: () => document.body.classList.remove('admin-dragging-active')
 });
@@ -1602,6 +1671,7 @@ function collectFaq() {
 function quillToolbarOptions() {
   return [
     ['bold', 'italic', 'underline'],
+    [{ color: [] }, { background: [] }],
     [{ list: 'ordered' }, { list: 'bullet' }],
     ['link'],
     ['clean']
@@ -1959,16 +2029,49 @@ saveModalCommitInput.addEventListener('keydown', e => {
 
 // ---------- Block library modal ----------
 const blockLibraryOverlay = document.getElementById('blockLibraryOverlay');
+const blockLibrarySearch = document.getElementById('blockLibrarySearch');
+const blockLibraryStepPick = document.getElementById('blockLibraryStepPick');
+const blockLibraryStepName = document.getElementById('blockLibraryStepName');
+const blockLibraryNameInput = document.getElementById('blockLibraryNameInput');
+let pendingBlockLibraryType = null;
+
+function showBlockLibraryStep(step) {
+  blockLibraryStepPick.hidden = step !== 'pick';
+  blockLibraryStepName.hidden = step !== 'name';
+}
 
 function openBlockLibrary() {
   blockLibraryOverlay.hidden = false;
+  pendingBlockLibraryType = null;
+  blockLibrarySearch.value = '';
+  filterBlockPicker('');
+  showBlockLibraryStep('pick');
+  blockLibrarySearch.focus();
 }
 function closeBlockLibrary() {
   blockLibraryOverlay.hidden = true;
+  pendingBlockLibraryType = null;
+}
+function addPendingBlock() {
+  const def = BLOCK_TYPES[pendingBlockLibraryType];
+  if (!def) return;
+  const cs = def.defaults();
+  const name = blockLibraryNameInput.value.trim();
+  if (name) cs.customLabel = name;
+  const card = def.create(cs);
+  draggableSections.appendChild(card);
+  closeBlockLibrary();
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 document.getElementById('openBlockLibraryBtn').addEventListener('click', openBlockLibrary);
 document.getElementById('blockLibraryClose').addEventListener('click', closeBlockLibrary);
+document.getElementById('blockLibraryBack').addEventListener('click', () => showBlockLibraryStep('pick'));
+document.getElementById('blockLibraryAddConfirm').addEventListener('click', addPendingBlock);
+blockLibrarySearch.addEventListener('input', () => filterBlockPicker(blockLibrarySearch.value));
+blockLibraryNameInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); addPendingBlock(); }
+});
 blockLibraryOverlay.addEventListener('click', e => {
   if (e.target === blockLibraryOverlay) closeBlockLibrary();
 });

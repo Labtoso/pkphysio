@@ -98,7 +98,7 @@
       <button type="button" class="admin-quicknav-btn" data-target="section-leistungen">Leistungen</button>
       <button type="button" class="admin-quicknav-btn" data-target="section-faq">FAQ</button>
       <button type="button" class="admin-quicknav-btn" data-target="section-kontakt">Kontakt</button>
-      <button type="button" class="admin-quicknav-btn" data-target="section-block-library">Baustein hinzufügen</button>
+      <button type="button" class="admin-quicknav-btn admin-quicknav-btn-icon" data-target="section-block-library" title="Baustein hinzufügen" aria-label="Baustein hinzufügen">+</button>
     </nav>
   </div>
 
@@ -353,12 +353,10 @@
       <div id="removedSections" class="admin-removed-list"></div>
     </div>
 
-    <!-- BLOCK LIBRARY -->
-    <section class="admin-section admin-block-library" id="section-block-library">
-      <h2>Baustein hinzufügen</h2>
-      <p class="admin-hint">Öffne die Baustein-Bibliothek, wähle einen Baustein aus und ordne ihn danach mit dem ≡-Griff an die gewünschte Stelle.</p>
-      <button type="button" id="openBlockLibraryBtn" class="btn btn-primary admin-open-library-btn">+ Baustein hinzufügen</button>
-    </section>
+    <!-- BLOCK LIBRARY TRIGGER -->
+    <div class="admin-add-block-fab-wrap" id="section-block-library">
+      <button type="button" id="openBlockLibraryBtn" class="admin-add-block-fab" aria-label="Baustein hinzufügen" title="Baustein hinzufügen">+</button>
+    </div>
 
     <button id="saveBtnBottom" class="btn btn-primary admin-save-bottom" type="button">Speichern</button>
   </main>
@@ -367,10 +365,26 @@
 <!-- ---------- BLOCK LIBRARY MODAL ---------- -->
 <div id="blockLibraryOverlay" class="admin-modal-overlay" hidden>
   <div class="admin-modal admin-modal-wide" role="dialog" aria-modal="true" aria-labelledby="blockLibraryTitle">
-    <button type="button" id="blockLibraryClose" class="admin-modal-close" aria-label="Schließen">✕</button>
+    <button type="button" id="blockLibraryClose" class="admin-modal-close admin-modal-close-right" aria-label="Schließen">✕</button>
     <h2 id="blockLibraryTitle">Baustein hinzufügen</h2>
-    <p class="admin-hint">Baustein anklicken, um ihn an die Seite anzuhängen.</p>
-    <div id="blockPickerGrid" class="admin-block-picker-categories"></div>
+
+    <div id="blockLibraryStepPick">
+      <input type="search" id="blockLibrarySearch" class="admin-block-search" placeholder="Baustein suchen …" autocomplete="off">
+      <div id="blockPickerGrid" class="admin-block-picker-categories"></div>
+      <p id="blockLibraryNoResults" class="admin-search-empty" hidden>Keine Treffer.</p>
+    </div>
+
+    <div id="blockLibraryStepName" hidden>
+      <p class="admin-hint">Gib dem Baustein optional einen eigenen Namen, um ihn später leichter wiederzufinden.</p>
+      <label class="admin-field">
+        <span>Name (optional)</span>
+        <input type="text" id="blockLibraryNameInput" placeholder="z. B. Startbereich-Zitat" autocomplete="off">
+      </label>
+      <div class="admin-modal-actions">
+        <button type="button" id="blockLibraryBack" class="btn btn-outline">Zurück</button>
+        <button type="button" id="blockLibraryAddConfirm" class="btn btn-primary">Hinzufügen</button>
+      </div>
+    </div>
   </div>
 </div>
 
