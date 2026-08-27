@@ -188,6 +188,10 @@ function createTextImageCard(cs) {
       <label><input type="radio" name="cs-pos-${cs.id}" class="cs-pos" value="left" ${cs.imagePosition !== 'right' ? 'checked' : ''}> Bild links</label>
       <label><input type="radio" name="cs-pos-${cs.id}" class="cs-pos" value="right" ${cs.imagePosition === 'right' ? 'checked' : ''}> Bild rechts</label>
     </div>
+    <h3 class="admin-subheading">Weitere Unterabschnitte (optional)</h3>
+    <p class="admin-hint">Zusätzliche Überschrift-und-Text-Blöcke, die unter dem Haupttext dieses Bausteins erscheinen.</p>
+    <div class="cs-subblocks-list admin-repeater"></div>
+    <button type="button" class="admin-add-btn cs-subblock-add">+ Unterabschnitt hinzufügen</button>
   `;
   section.querySelector('.cs-text').innerHTML = cs.text || '';
   const preview = section.querySelector('.cs-image-preview');
@@ -204,6 +208,24 @@ function createTextImageCard(cs) {
     preview.src = '';
     fileInput.value = '';
   });
+  const subList = section.querySelector('.cs-subblocks-list');
+  function renderSubRow(item) {
+    const row = document.createElement('div');
+    row.className = 'admin-repeater-item';
+    row.innerHTML = `
+      <label class="admin-field"><span>Unterüberschrift (optional)</span><input class="cs-sub-heading" type="text" value="${escapeAttr(item.heading || '')}"></label>
+      <label class="admin-field">
+        <span>Text</span>
+        <div class="admin-richtext cs-sub-text"></div>
+      </label>
+    `;
+    row.querySelector('.cs-sub-text').innerHTML = item.text || '';
+    initQuillEditors(row);
+    row.appendChild(makeRemoveBtn(() => row.remove()));
+    subList.appendChild(row);
+  }
+  (cs.subblocks || []).forEach(renderSubRow);
+  section.querySelector('.cs-subblock-add').addEventListener('click', () => renderSubRow({ heading: '', text: '' }));
   initQuillEditors(section);
   return finishBlockCard(section);
 }
@@ -216,7 +238,11 @@ function collectTextImageCard(section) {
     title: section.querySelector('.cs-title').value,
     text: getQuillHtml(section.querySelector('.cs-text')),
     image: section.dataset.imagePath || '',
-    imagePosition: posEl ? posEl.value : 'left'
+    imagePosition: posEl ? posEl.value : 'left',
+    subblocks: [...section.querySelectorAll('.cs-subblocks-list .admin-repeater-item')].map(row => ({
+      heading: row.querySelector('.cs-sub-heading').value,
+      text: getQuillHtml(row.querySelector('.cs-sub-text'))
+    }))
   };
 }
 
@@ -504,12 +530,193 @@ function collectVideoBlockCard(section) {
   };
 }
 
+// -- Statistik-Reihe --
+function createStatsBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'stats';
+  section.innerHTML = `
+    ${blockHeaderHtml('Statistik-Reihe')}
+    <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
+    <label class="admin-field"><span>Überschrift (optional)</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
+    <div class="cs-stats-list admin-repeater"></div>
+    <button type="button" class="admin-add-btn cs-stats-add">+ Zahl hinzufügen</button>
+  `;
+  const list = section.querySelector('.cs-stats-list');
+  function renderRow(item) {
+    const row = document.createElement('div');
+    row.className = 'admin-repeater-item';
+    row.innerHTML = `
+      <label class="admin-field"><span>Zahl / Wert</span><input class="cs-stat-value" type="text" placeholder="15+" value="${escapeAttr(item.value || '')}"></label>
+      <label class="admin-field"><span>Beschreibung</span><input class="cs-stat-label" type="text" placeholder="Jahre Erfahrung" value="${escapeAttr(item.label || '')}"></label>
+    `;
+    row.appendChild(makeRemoveBtn(() => row.remove()));
+    list.appendChild(row);
+  }
+  (cs.items && cs.items.length ? cs.items : [{ value: '', label: '' }]).forEach(renderRow);
+  section.querySelector('.cs-stats-add').addEventListener('click', () => renderRow({ value: '', label: '' }));
+  return finishBlockCard(section);
+}
+function collectStatsBlockCard(section) {
+  return {
+    id: section.dataset.sectionKey,
+    type: 'stats',
+    eyebrow: section.querySelector('.cs-eyebrow').value,
+    title: section.querySelector('.cs-title').value,
+    items: [...section.querySelectorAll('.cs-stats-list .admin-repeater-item')].map(row => ({
+      value: row.querySelector('.cs-stat-value').value,
+      label: row.querySelector('.cs-stat-label').value
+    }))
+  };
+}
+
+// -- Öffnungszeiten --
+function createHoursBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'hours';
+  section.innerHTML = `
+    ${blockHeaderHtml('Öffnungszeiten')}
+    <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
+    <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
+    <div class="cs-hours-list admin-repeater"></div>
+    <button type="button" class="admin-add-btn cs-hours-add">+ Zeile hinzufügen</button>
+  `;
+  const list = section.querySelector('.cs-hours-list');
+  function renderRow(item) {
+    const row = document.createElement('div');
+    row.className = 'admin-repeater-item';
+    row.innerHTML = `
+      <label class="admin-field"><span>Tag(e)</span><input class="cs-hours-day" type="text" placeholder="Montag – Freitag" value="${escapeAttr(item.day || '')}"></label>
+      <label class="admin-field"><span>Uhrzeit</span><input class="cs-hours-time" type="text" placeholder="08:00 – 18:00 Uhr" value="${escapeAttr(item.time || '')}"></label>
+    `;
+    row.appendChild(makeRemoveBtn(() => row.remove()));
+    list.appendChild(row);
+  }
+  (cs.rows && cs.rows.length ? cs.rows : [{ day: '', time: '' }]).forEach(renderRow);
+  section.querySelector('.cs-hours-add').addEventListener('click', () => renderRow({ day: '', time: '' }));
+  return finishBlockCard(section);
+}
+function collectHoursBlockCard(section) {
+  return {
+    id: section.dataset.sectionKey,
+    type: 'hours',
+    eyebrow: section.querySelector('.cs-eyebrow').value,
+    title: section.querySelector('.cs-title').value,
+    rows: [...section.querySelectorAll('.cs-hours-list .admin-repeater-item')].map(row => ({
+      day: row.querySelector('.cs-hours-day').value,
+      time: row.querySelector('.cs-hours-time').value
+    }))
+  };
+}
+
+// -- Zwei-Spalten-Text --
+function createColumnsBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'columns';
+  section.innerHTML = `
+    ${blockHeaderHtml('Zwei-Spalten-Text')}
+    <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
+    <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
+    <h3 class="admin-subheading">Linke Spalte</h3>
+    <label class="admin-field"><span>Titel</span><input class="cs-col-left-title" type="text" value="${escapeAttr(cs.leftTitle || '')}"></label>
+    <label class="admin-field">
+      <span>Text</span>
+      <div class="admin-richtext cs-col-left-text"></div>
+    </label>
+    <h3 class="admin-subheading">Rechte Spalte</h3>
+    <label class="admin-field"><span>Titel</span><input class="cs-col-right-title" type="text" value="${escapeAttr(cs.rightTitle || '')}"></label>
+    <label class="admin-field">
+      <span>Text</span>
+      <div class="admin-richtext cs-col-right-text"></div>
+    </label>
+  `;
+  section.querySelector('.cs-col-left-text').innerHTML = cs.leftText || '';
+  section.querySelector('.cs-col-right-text').innerHTML = cs.rightText || '';
+  initQuillEditors(section);
+  return finishBlockCard(section);
+}
+function collectColumnsBlockCard(section) {
+  return {
+    id: section.dataset.sectionKey,
+    type: 'columns',
+    eyebrow: section.querySelector('.cs-eyebrow').value,
+    title: section.querySelector('.cs-title').value,
+    leftTitle: section.querySelector('.cs-col-left-title').value,
+    leftText: getQuillHtml(section.querySelector('.cs-col-left-text')),
+    rightTitle: section.querySelector('.cs-col-right-title').value,
+    rightText: getQuillHtml(section.querySelector('.cs-col-right-text'))
+  };
+}
+
+// -- Trenner --
+function createDividerBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'divider';
+  section.innerHTML = `
+    ${blockHeaderHtml('Trenner')}
+    <label class="admin-field">
+      <span>Stil</span>
+      <select class="cs-divider-style">
+        <option value="line" ${cs.style !== 'space' ? 'selected' : ''}>Linie mit Freiraum</option>
+        <option value="space" ${cs.style === 'space' ? 'selected' : ''}>Nur Freiraum (unsichtbar)</option>
+      </select>
+    </label>
+    <label class="admin-field"><span>Text auf der Linie (optional)</span><input class="cs-divider-label" type="text" value="${escapeAttr(cs.label || '')}"></label>
+  `;
+  return finishBlockCard(section);
+}
+function collectDividerBlockCard(section) {
+  return {
+    id: section.dataset.sectionKey,
+    type: 'divider',
+    style: section.querySelector('.cs-divider-style').value,
+    label: section.querySelector('.cs-divider-label').value
+  };
+}
+
+// -- Karte --
+function createMapBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'map';
+  section.innerHTML = `
+    ${blockHeaderHtml('Karte')}
+    <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
+    <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
+    <label class="admin-field"><span>Adresse</span><input class="cs-map-address" type="text" placeholder="Leer lassen für die Praxis-Adresse aus Kontakt" value="${escapeAttr(cs.address || '')}"></label>
+    <p class="admin-hint">Leer lassen, um automatisch die Adresse aus dem Kontakt-Bereich zu verwenden.</p>
+  `;
+  return finishBlockCard(section);
+}
+function collectMapBlockCard(section) {
+  return {
+    id: section.dataset.sectionKey,
+    type: 'map',
+    eyebrow: section.querySelector('.cs-eyebrow').value,
+    title: section.querySelector('.cs-title').value,
+    address: section.querySelector('.cs-map-address').value
+  };
+}
+
 // -- Block-Registry / Baustein-Bibliothek --
 const BLOCK_TYPES = {
   textimage: {
     label: 'Textblock mit Bild',
     icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="8" height="8" rx="1"/><circle cx="6" cy="7.2" r="1"/><path d="M3.8 10.8L6 8.6l2.2 2.2"/><line x1="13" y1="6" x2="21" y2="6"/><line x1="13" y1="9" x2="21" y2="9"/><line x1="3" y1="16" x2="21" y2="16"/><line x1="3" y1="19" x2="15" y2="19"/></svg>',
-    defaults: () => ({ id: blockUid(), type: 'textimage', eyebrow: '', title: 'Neue Überschrift', text: '', image: '', imagePosition: 'left' }),
+    defaults: () => ({ id: blockUid(), type: 'textimage', eyebrow: '', title: 'Neue Überschrift', text: '', image: '', imagePosition: 'left', subblocks: [] }),
     create: createTextImageCard,
     collect: collectTextImageCard
   },
@@ -554,6 +761,41 @@ const BLOCK_TYPES = {
     defaults: () => ({ id: blockUid(), type: 'video', eyebrow: '', title: 'Video', videoUrl: '' }),
     create: createVideoBlockCard,
     collect: collectVideoBlockCard
+  },
+  stats: {
+    label: 'Statistik-Reihe',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="14"/><line x1="3" y1="20" x2="21" y2="20"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'stats', eyebrow: '', title: '', items: [{ value: '15+', label: 'Jahre Erfahrung' }] }),
+    create: createStatsBlockCard,
+    collect: collectStatsBlockCard
+  },
+  hours: {
+    label: 'Öffnungszeiten',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'hours', eyebrow: '', title: 'Öffnungszeiten', rows: [{ day: 'Montag – Freitag', time: '08:00 – 18:00 Uhr' }] }),
+    create: createHoursBlockCard,
+    collect: collectHoursBlockCard
+  },
+  columns: {
+    label: 'Zwei-Spalten-Text',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'columns', eyebrow: '', title: '', leftTitle: '', leftText: '', rightTitle: '', rightText: '' }),
+    create: createColumnsBlockCard,
+    collect: collectColumnsBlockCard
+  },
+  divider: {
+    label: 'Trenner',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="9" x2="9" y2="9"/><line x1="15" y1="9" x2="21" y2="9"/><circle cx="12" cy="9" r="2"/><line x1="3" y1="16" x2="21" y2="16" stroke-dasharray="1 3"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'divider', style: 'line', label: '' }),
+    create: createDividerBlockCard,
+    collect: collectDividerBlockCard
+  },
+  map: {
+    label: 'Karte',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.3"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'map', eyebrow: '', title: 'Anfahrt', address: '' }),
+    create: createMapBlockCard,
+    collect: collectMapBlockCard
   }
 };
 
@@ -1280,8 +1522,48 @@ async function save() {
   }
 }
 
-document.getElementById('saveBtn').addEventListener('click', save);
-document.getElementById('saveBtnBottom').addEventListener('click', save);
+// ---------- Save modal ----------
+const saveModalOverlay = document.getElementById('saveModalOverlay');
+const saveModalCommitInput = document.getElementById('commitMessageInput');
+
+function openSaveModal() {
+  saveModalOverlay.hidden = false;
+  saveModalCommitInput.focus();
+}
+function closeSaveModal() {
+  saveModalOverlay.hidden = true;
+}
+
+document.getElementById('saveBtn').addEventListener('click', openSaveModal);
+document.getElementById('saveBtnBottom').addEventListener('click', openSaveModal);
+document.getElementById('saveModalClose').addEventListener('click', closeSaveModal);
+saveModalOverlay.addEventListener('click', e => {
+  if (e.target === saveModalOverlay) closeSaveModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !saveModalOverlay.hidden) closeSaveModal();
+});
+document.getElementById('saveModalConfirm').addEventListener('click', () => {
+  closeSaveModal();
+  save();
+});
+saveModalCommitInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    closeSaveModal();
+    save();
+  }
+});
+
+// ---------- Theme toggle ----------
+const adminThemeToggle = document.getElementById('themeToggle');
+adminThemeToggle.setAttribute('aria-pressed', String(document.documentElement.classList.contains('light')));
+adminThemeToggle.addEventListener('click', () => {
+  document.documentElement.classList.toggle('light');
+  const isLight = document.documentElement.classList.contains('light');
+  adminThemeToggle.setAttribute('aria-pressed', String(isLight));
+  try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch (e) {}
+});
 
 // ---------- Static rich-text toolbars & design sliders ----------
 initQuillEditors(document);

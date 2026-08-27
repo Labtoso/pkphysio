@@ -6,6 +6,15 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Website-Editor | Pascal Krieger</title>
 <link rel="icon" type="image/png" href="../Assets/logo_1x1.png">
+<script>
+  (function () {
+    try {
+      var stored = localStorage.getItem('theme');
+      var wantsLight = stored ? stored === 'light' : window.matchMedia('(prefers-color-scheme: light)').matches;
+      if (wantsLight) document.documentElement.classList.add('light');
+    } catch (e) {}
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -71,6 +80,9 @@
         <input type="search" id="adminSearch" placeholder="Feld oder Bereich suchen …" autocomplete="off">
       </div>
       <div class="admin-topbar-actions">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false" aria-label="Farbschema wechseln">
+          <span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>
+        </button>
         <button id="saveBtn" class="btn btn-primary" type="button">Speichern</button>
         <button id="logoutBtn" class="btn btn-outline" type="button">Abmelden</button>
       </div>
@@ -348,12 +360,22 @@
       <div id="blockPickerGrid" class="admin-block-picker-grid"></div>
     </section>
 
-    <label class="admin-field admin-commit-message">
-      <span>Commit-Nachricht (optional)</span>
-      <input type="text" id="commitMessageInput" placeholder="Inhalte übers Admin-Panel aktualisiert" autocomplete="off">
-    </label>
     <button id="saveBtnBottom" class="btn btn-primary admin-save-bottom" type="button">Speichern</button>
   </main>
+</div>
+
+<!-- ---------- SAVE MODAL ---------- -->
+<div id="saveModalOverlay" class="admin-modal-overlay" hidden>
+  <div class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="saveModalTitle">
+    <button type="button" id="saveModalClose" class="admin-modal-close" aria-label="Schließen">✕</button>
+    <h2 id="saveModalTitle">Speichern</h2>
+    <p class="admin-hint">Gib der Speicherung optional einen Namen. Ohne Namen wird der Standardtext verwendet.</p>
+    <label class="admin-field">
+      <span>Name (optional)</span>
+      <input type="text" id="commitMessageInput" placeholder="Inhalte übers Admin-Panel aktualisiert" autocomplete="off">
+    </label>
+    <button type="button" id="saveModalConfirm" class="btn btn-primary">Speichern</button>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js" integrity="sha384-HZZ/fukV+9G8gwTNjN7zQDG0Sp7MsZy5DDN6VfY3Be7V9dvQpEpR2jF2HlyFUUjU" crossorigin="anonymous"></script>

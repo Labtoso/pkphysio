@@ -241,6 +241,12 @@ const CUSTOM_BLOCK_RENDERERS = {
             <h2>${cs.title || ''}</h2>
           </div>
           <div class="custom-section-text reveal">${applyTemplate(cs.text || '', site)}</div>
+          ${(cs.subblocks || []).filter(sb => sb.heading || sb.text).map(sb => `
+            <div class="custom-subblock reveal">
+              ${sb.heading ? `<h3>${sb.heading}</h3>` : ''}
+              <div class="custom-section-text">${applyTemplate(sb.text || '', site)}</div>
+            </div>
+          `).join('')}
         </div>
       </div>
     `;
@@ -328,6 +334,91 @@ const CUSTOM_BLOCK_RENDERERS = {
           <h2>${cs.title || ''}</h2>
         </div>
         ${embed ? `<div class="custom-video-wrap reveal"><iframe src="${embed}" title="${cs.title || 'Video'}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>` : ''}
+      </div>
+    `;
+  },
+  stats(cs) {
+    const items = cs.items || [];
+    return `
+      <div class="container">
+        ${cs.title || cs.eyebrow ? `
+          <div class="section-head reveal custom-section-head">
+            <p class="eyebrow">${cs.eyebrow || ''}</p>
+            <h2>${cs.title || ''}</h2>
+          </div>` : ''}
+        <div class="custom-stats-grid reveal">
+          ${items.map(item => `
+            <div class="custom-stat">
+              <span class="custom-stat-value">${item.value || ''}</span>
+              <span class="custom-stat-label">${item.label || ''}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  },
+  hours(cs) {
+    const rows = cs.rows || [];
+    return `
+      <div class="container">
+        <div class="section-head reveal custom-section-head">
+          <p class="eyebrow">${cs.eyebrow || ''}</p>
+          <h2>${cs.title || ''}</h2>
+        </div>
+        <div class="custom-hours-list reveal">
+          ${rows.map(row => `
+            <div class="custom-hours-row">
+              <span class="custom-hours-day">${row.day || ''}</span>
+              <span class="custom-hours-time">${row.time || ''}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  },
+  columns(cs, site) {
+    return `
+      <div class="container">
+        ${cs.title || cs.eyebrow ? `
+          <div class="section-head reveal custom-section-head">
+            <p class="eyebrow">${cs.eyebrow || ''}</p>
+            <h2>${cs.title || ''}</h2>
+          </div>` : ''}
+        <div class="custom-columns-grid reveal">
+          <div class="custom-column">
+            ${cs.leftTitle ? `<h3>${cs.leftTitle}</h3>` : ''}
+            <div class="custom-section-text">${applyTemplate(cs.leftText || '', site)}</div>
+          </div>
+          <div class="custom-column">
+            ${cs.rightTitle ? `<h3>${cs.rightTitle}</h3>` : ''}
+            <div class="custom-section-text">${applyTemplate(cs.rightText || '', site)}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+  divider(cs) {
+    if (cs.style === 'space') return '<div class="custom-divider-space"></div>';
+    return `
+      <div class="container">
+        <div class="custom-divider-line reveal">
+          ${cs.label ? `<span>${cs.label}</span>` : ''}
+        </div>
+      </div>
+    `;
+  },
+  map(cs, site) {
+    const address = cs.address || site.address || '';
+    const src = 'https://maps.google.com/maps?q=' + encodeURIComponent(address) + '&t=&z=14&ie=UTF8&iwloc=&output=embed';
+    return `
+      <div class="container">
+        <div class="section-head reveal custom-section-head">
+          <p class="eyebrow">${cs.eyebrow || ''}</p>
+          <h2>${cs.title || ''}</h2>
+        </div>
+        <div class="custom-map-wrap reveal">
+          <iframe src="${src}" loading="lazy" title="${cs.title || 'Karte'}"></iframe>
+        </div>
       </div>
     `;
   }

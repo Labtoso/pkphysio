@@ -359,6 +359,8 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   .custom-section-inner.has-image { grid-template-columns: 1fr; }
   .custom-section-inner.has-image.custom-section-imgright { direction: ltr; }
 }
+.custom-subblock { margin-top: 28px; }
+.custom-subblock h3 { margin-bottom: 10px; }
 
 /* FAQ-Liste */
 .custom-block-accordion { max-width: 820px; margin: 0 auto; }
@@ -431,6 +433,84 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   box-shadow: var(--shadow-md);
 }
 .custom-video-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Statistik-Reihe */
+.custom-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 30px;
+  text-align: center;
+}
+.custom-stat { display: flex; flex-direction: column; gap: 6px; }
+.custom-stat-value {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  color: var(--color-primary);
+}
+.custom-stat-label { color: var(--color-ink-soft); font-size: .9rem; }
+
+/* Öffnungszeiten */
+.custom-hours-list { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; }
+.custom-hours-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: .98rem;
+}
+.custom-hours-row:last-child { border-bottom: none; }
+.custom-hours-day { color: var(--color-ink); font-weight: 600; }
+.custom-hours-time { color: var(--color-ink-soft); }
+
+/* Zwei-Spalten-Text */
+.custom-columns-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
+.custom-column h3 { margin-bottom: 14px; }
+@media (max-width: 760px) {
+  .custom-columns-grid { grid-template-columns: 1fr; gap: 36px; }
+}
+
+/* Trenner */
+.custom-block-divider { padding: 36px 0; }
+.custom-divider-space { height: 1px; }
+.custom-divider-line {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--color-ink-soft);
+  font-size: .85rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+.custom-divider-line::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  height: 1px;
+  background: var(--color-border);
+}
+.custom-divider-line span { position: relative; background: var(--color-bg); padding: 0 16px; }
+.section-alt .custom-divider-line span { background: var(--color-bg-alt); }
+
+/* Karte */
+.custom-map-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.custom-map-wrap iframe {
   position: absolute;
   inset: 0;
   width: 100%;

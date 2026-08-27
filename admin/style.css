@@ -556,6 +556,50 @@ body.admin-dragging-active .admin-drag-handle { cursor: grabbing; }
 
 .admin-save-bottom { width: 100%; justify-content: center; padding: 16px; }
 
+/* ---------- Save modal ---------- */
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, .6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.admin-modal {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 56px 32px 32px;
+  box-shadow: var(--shadow-lg, 0 20px 50px rgba(0, 0, 0, .55));
+}
+.admin-modal h2 { margin-bottom: 10px; }
+.admin-modal .admin-hint { margin-bottom: 20px; }
+.admin-modal .admin-field { margin-bottom: 22px; }
+.admin-modal .btn { width: 100%; justify-content: center; }
+.admin-modal-close {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  font-size: .9rem;
+  transition: border-color .2s ease, color .2s ease;
+}
+.admin-modal-close:hover { border-color: #ff6b6b; color: #ff6b6b; }
+
 @media (max-width: 640px) {
   .admin-topbar { padding: 14px 18px; flex-wrap: wrap; row-gap: 10px; }
   .admin-topbar-search { order: 3; flex: 1 1 100%; max-width: none; margin: 0; }
