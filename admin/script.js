@@ -711,10 +711,304 @@ function collectMapBlockCard(section) {
   };
 }
 
+// -- Team --
+function createTeamBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'team';
+  section.innerHTML = `
+    ${blockHeaderHtml('Team')}
+    <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
+    <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
+    <div class="cs-team-list admin-repeater"></div>
+    <button type="button" class="admin-add-btn cs-team-add">+ Teammitglied hinzufügen</button>
+  `;
+  const list = section.querySelector('.cs-team-list');
+  let slotSeq = 0;
+  function addMember(m) {
+    const slotIndex = slotSeq++;
+    const row = document.createElement('div');
+    row.className = 'admin-repeater-item admin-team-slot';
+    row.dataset.slotIndex = String(slotIndex);
+    row.dataset.imagePath = m.photo || '';
+    row.innerHTML = `
+      <div class="admin-image-row">
+        <img class="admin-image-preview cs-team-preview" src="${escapeAttr(blockImagePreviewSrc(m.photo))}">
+        <input type="file" accept="image/*" class="cs-team-file">
+        <button type="button" class="admin-image-remove-btn cs-team-remove-photo">Bild entfernen</button>
+      </div>
+      <label class="admin-field"><span>Name</span><input class="cs-team-name" type="text" value="${escapeAttr(m.name || '')}"></label>
+      <label class="admin-field"><span>Rolle / Funktion</span><input class="cs-team-role" type="text" value="${escapeAttr(m.role || '')}"></label>
+      <label class="admin-field"><span>Kurzbeschreibung (optional)</span><textarea class="cs-team-bio" rows="2">${escapeHtml(m.bio || '')}</textarea></label>
+    `;
+    const preview = row.querySelector('.cs-team-preview');
+    const fileInput = row.querySelector('.cs-team-file');
+    fileInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      pendingBlockImages[cs.id + '::' + slotIndex] = file;
+      preview.src = URL.createObjectURL(file);
+    });
+    row.querySelector('.cs-team-remove-photo').addEventListener('click', () => {
+      delete pendingBlockImages[cs.id + '::' + slotIndex];
+      row.dataset.imagePath = '';
+      preview.src = '';
+      fileInput.value = '';
+    });
+    row.appendChild(makeRemoveBtn(() => {
+      delete pendingBlockImages[cs.id + '::' + slotIndex];
+      row.remove();
+    }));
+    list.appendChild(row);
+  }
+  (cs.members && cs.members.length ? cs.members : [{ photo: '', name: '', role: '', bio: '' }]).forEach(addMember);
+  section.querySelector('.cs-team-add').addEventListener('click', () => addMember({ photo: '', name: '', role: '', bio: '' }));
+  return finishBlockCard(section);
+}
+function collectTeamBlockCard(section) {
+  return {
+    id: section.dataset.sectionKey,
+    type: 'team',
+    eyebrow: section.querySelector('.cs-eyebrow').value,
+    title: section.querySelector('.cs-title').value,
+    members: [...section.querySelectorAll('.admin-team-slot')].map(row => ({
+      photo: row.dataset.imagePath || '',
+      name: row.querySelector('.cs-team-name').value,
+      role: row.querySelector('.cs-team-role').value,
+      bio: row.querySelector('.cs-team-bio').value
+    }))
+  };
+}
+
+// -- Bewertungen --
+function createTestimonialsBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'testimonials';
+  section.innerHTML = `
+    ${blockHeaderHtml('Bewertungen')}
+    <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
+    <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
+    <div class="cs-testimonials-list admin-repeater"></div>
+    <button type="button" class="admin-add-btn cs-testimonial-add">+ Bewertung hinzufügen</button>
+  `;
+  const list = section.querySelector('.cs-testimonials-list');
+  function renderRow(item) {
+    const row = document.createElement('div');
+    row.className = 'admin-repeater-item';
+    row.innerHTML = `
+      <label class="admin-field"><span>Text</span><textarea class="cs-testimonial-text" rows="3">${escapeHtml(item.text || '')}</textarea></label>
+      <label class="admin-field"><span>Name</span><input class="cs-testimonial-author" type="text" value="${escapeAttr(item.author || '')}"></label>
+      <label class="admin-field"><span>Rolle / Info (optional)</span><input class="cs-testimonial-role" type="text" placeholder="Patientin seit 2022" value="${escapeAttr(item.role || '')}"></label>
+    `;
+    row.appendChild(makeRemoveBtn(() => row.remove()));
+    list.appendChild(row);
+  }
+  (cs.items && cs.items.length ? cs.items : [{ text: '', author: '', role: '' }]).forEach(renderRow);
+  section.querySelector('.cs-testimonial-add').addEventListener('click', () => renderRow({ text: '', author: '', role: '' }));
+  return finishBlockCard(section);
+}
+function collectTestimonialsBlockCard(section) {
+  return {
+    id: section.dataset.sectionKey,
+    type: 'testimonials',
+    eyebrow: section.querySelector('.cs-eyebrow').value,
+    title: section.querySelector('.cs-title').value,
+    items: [...section.querySelectorAll('.cs-testimonials-list .admin-repeater-item')].map(row => ({
+      text: row.querySelector('.cs-testimonial-text').value,
+      author: row.querySelector('.cs-testimonial-author').value,
+      role: row.querySelector('.cs-testimonial-role').value
+    }))
+  };
+}
+
+// -- Preisliste --
+function createPricingBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'pricing';
+  section.innerHTML = `
+    ${blockHeaderHtml('Preisliste')}
+    <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
+    <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
+    <div class="cs-pricing-list admin-repeater"></div>
+    <button type="button" class="admin-add-btn cs-pricing-add">+ Angebot hinzufügen</button>
+  `;
+  const list = section.querySelector('.cs-pricing-list');
+  function renderRow(item) {
+    const row = document.createElement('div');
+    row.className = 'admin-repeater-item';
+    row.innerHTML = `
+      <label class="admin-field"><span>Name</span><input class="cs-price-name" type="text" value="${escapeAttr(item.name || '')}"></label>
+      <div class="admin-color-row">
+        <label class="admin-field admin-field-inline"><span>Preis</span><input class="cs-price-value" type="text" placeholder="ab 60 €" value="${escapeAttr(item.price || '')}"></label>
+        <label class="admin-field admin-field-inline"><span>Zusatz (optional)</span><input class="cs-price-period" type="text" placeholder="/ Einheit" value="${escapeAttr(item.period || '')}"></label>
+      </div>
+      <label class="admin-field"><span>Beschreibung</span><textarea class="cs-price-desc" rows="2">${escapeHtml(item.description || '')}</textarea></label>
+      <label class="admin-field"><span>Leistungen (eine Zeile pro Punkt)</span><textarea class="cs-price-features" rows="3">${escapeHtml((item.features || []).join('\n'))}</textarea></label>
+      <label class="admin-field admin-field-inline"><input type="checkbox" class="cs-price-highlight" ${item.highlighted ? 'checked' : ''}> Hervorheben (empfohlen)</label>
+    `;
+    row.appendChild(makeRemoveBtn(() => row.remove()));
+    list.appendChild(row);
+  }
+  (cs.plans && cs.plans.length ? cs.plans : [{ name: '', price: '', period: '', description: '', features: [], highlighted: false }]).forEach(renderRow);
+  section.querySelector('.cs-pricing-add').addEventListener('click', () => renderRow({ name: '', price: '', period: '', description: '', features: [], highlighted: false }));
+  return finishBlockCard(section);
+}
+function collectPricingBlockCard(section) {
+  return {
+    id: section.dataset.sectionKey,
+    type: 'pricing',
+    eyebrow: section.querySelector('.cs-eyebrow').value,
+    title: section.querySelector('.cs-title').value,
+    plans: [...section.querySelectorAll('.cs-pricing-list .admin-repeater-item')].map(row => ({
+      name: row.querySelector('.cs-price-name').value,
+      price: row.querySelector('.cs-price-value').value,
+      period: row.querySelector('.cs-price-period').value,
+      description: row.querySelector('.cs-price-desc').value,
+      features: row.querySelector('.cs-price-features').value.split('\n').map(s => s.trim()).filter(Boolean),
+      highlighted: row.querySelector('.cs-price-highlight').checked
+    }))
+  };
+}
+
+// -- Logo-Leiste --
+function createLogosBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'logos';
+  section.innerHTML = `
+    ${blockHeaderHtml('Logo-Leiste')}
+    <label class="admin-field"><span>Kleiner Text über der Überschrift (optional)</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
+    <div class="cs-logos-list admin-repeater"></div>
+    <button type="button" class="admin-add-btn cs-logos-add">+ Logo hinzufügen</button>
+  `;
+  const list = section.querySelector('.cs-logos-list');
+  let slotSeq = 0;
+  function addLogo(l) {
+    const slotIndex = slotSeq++;
+    const row = document.createElement('div');
+    row.className = 'admin-repeater-item admin-logos-slot';
+    row.dataset.slotIndex = String(slotIndex);
+    row.dataset.imagePath = l.image || '';
+    row.innerHTML = `
+      <div class="admin-image-row">
+        <img class="admin-image-preview cs-logos-preview" src="${escapeAttr(blockImagePreviewSrc(l.image))}">
+        <input type="file" accept="image/*" class="cs-logos-file">
+        <button type="button" class="admin-image-remove-btn cs-logos-remove-photo">Bild entfernen</button>
+      </div>
+      <label class="admin-field"><span>Link (optional)</span><input class="cs-logos-url" type="text" placeholder="https://..." value="${escapeAttr(l.url || '')}"></label>
+    `;
+    const preview = row.querySelector('.cs-logos-preview');
+    const fileInput = row.querySelector('.cs-logos-file');
+    fileInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      pendingBlockImages[cs.id + '::' + slotIndex] = file;
+      preview.src = URL.createObjectURL(file);
+    });
+    row.querySelector('.cs-logos-remove-photo').addEventListener('click', () => {
+      delete pendingBlockImages[cs.id + '::' + slotIndex];
+      row.dataset.imagePath = '';
+      preview.src = '';
+      fileInput.value = '';
+    });
+    row.appendChild(makeRemoveBtn(() => {
+      delete pendingBlockImages[cs.id + '::' + slotIndex];
+      row.remove();
+    }));
+    list.appendChild(row);
+  }
+  (cs.logos && cs.logos.length ? cs.logos : ['']).forEach(l => addLogo(typeof l === 'string' ? { image: l, url: '' } : l));
+  section.querySelector('.cs-logos-add').addEventListener('click', () => addLogo({ image: '', url: '' }));
+  return finishBlockCard(section);
+}
+function collectLogosBlockCard(section) {
+  return {
+    id: section.dataset.sectionKey,
+    type: 'logos',
+    eyebrow: section.querySelector('.cs-eyebrow').value,
+    logos: [...section.querySelectorAll('.admin-logos-slot')].map(row => ({
+      image: row.dataset.imagePath || '',
+      url: row.querySelector('.cs-logos-url').value
+    })).filter(l => l.image)
+  };
+}
+
+// -- Social-Media-Icons --
+const SOCIAL_PLATFORMS = {
+  instagram: 'Instagram',
+  facebook: 'Facebook',
+  whatsapp: 'WhatsApp',
+  tiktok: 'TikTok',
+  youtube: 'YouTube',
+  linkedin: 'LinkedIn',
+  email: 'E-Mail',
+  phone: 'Telefon'
+};
+function createSocialBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'social';
+  section.innerHTML = `
+    ${blockHeaderHtml('Social-Media-Icons')}
+    <div class="cs-social-list admin-repeater"></div>
+    <button type="button" class="admin-add-btn cs-social-add">+ Icon hinzufügen</button>
+  `;
+  const list = section.querySelector('.cs-social-list');
+  function renderRow(item) {
+    const row = document.createElement('div');
+    row.className = 'admin-repeater-item';
+    const options = Object.entries(SOCIAL_PLATFORMS).map(([value, label]) =>
+      `<option value="${value}" ${item.platform === value ? 'selected' : ''}>${label}</option>`
+    ).join('');
+    row.innerHTML = `
+      <div class="admin-color-row">
+        <label class="admin-field admin-field-inline"><span>Plattform</span><select class="cs-social-platform">${options}</select></label>
+        <label class="admin-field admin-field-inline"><span>Link / Adresse</span><input class="cs-social-url" type="text" placeholder="https://..." value="${escapeAttr(item.url || '')}"></label>
+      </div>
+    `;
+    row.appendChild(makeRemoveBtn(() => row.remove()));
+    list.appendChild(row);
+  }
+  (cs.items && cs.items.length ? cs.items : [{ platform: 'instagram', url: '' }]).forEach(renderRow);
+  section.querySelector('.cs-social-add').addEventListener('click', () => renderRow({ platform: 'instagram', url: '' }));
+  return finishBlockCard(section);
+}
+function collectSocialBlockCard(section) {
+  return {
+    id: section.dataset.sectionKey,
+    type: 'social',
+    items: [...section.querySelectorAll('.cs-social-list .admin-repeater-item')].map(row => ({
+      platform: row.querySelector('.cs-social-platform').value,
+      url: row.querySelector('.cs-social-url').value
+    }))
+  };
+}
+
 // -- Block-Registry / Baustein-Bibliothek --
+const BLOCK_CATEGORIES = {
+  text: 'Text & Inhalt',
+  media: 'Medien',
+  data: 'Daten & Listen',
+  contact: 'Kontakt & Vertrauen',
+  layout: 'Struktur'
+};
+
 const BLOCK_TYPES = {
   textimage: {
     label: 'Textblock mit Bild',
+    category: 'text',
     icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="8" height="8" rx="1"/><circle cx="6" cy="7.2" r="1"/><path d="M3.8 10.8L6 8.6l2.2 2.2"/><line x1="13" y1="6" x2="21" y2="6"/><line x1="13" y1="9" x2="21" y2="9"/><line x1="3" y1="16" x2="21" y2="16"/><line x1="3" y1="19" x2="15" y2="19"/></svg>',
     defaults: () => ({ id: blockUid(), type: 'textimage', eyebrow: '', title: 'Neue Überschrift', text: '', image: '', imagePosition: 'left', subblocks: [] }),
     create: createTextImageCard,
@@ -722,48 +1016,63 @@ const BLOCK_TYPES = {
   },
   faq: {
     label: 'FAQ-Liste',
+    category: 'text',
     icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.2 9.5a2.8 2.8 0 015.4 1c0 1.8-2.6 1.6-2.6 3.6"/><line x1="12" y1="17" x2="12" y2="17.1"/></svg>',
     defaults: () => ({ id: blockUid(), type: 'faq', eyebrow: '', title: 'Häufige Fragen', items: [{ q: '', a: '' }] }),
     create: createFaqBlockCard,
     collect: collectFaqBlockCard
   },
-  table: {
-    label: 'Tabelle',
-    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="10" y1="4" x2="10" y2="20"/></svg>',
-    defaults: () => ({ id: blockUid(), type: 'table', eyebrow: '', title: 'Tabelle', columns: ['Spalte 1', 'Spalte 2'], rows: [['', '']] }),
-    create: createTableBlockCard,
-    collect: collectTableBlockCard
-  },
-  gallery: {
-    label: 'Bildergalerie',
-    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>',
-    defaults: () => ({ id: blockUid(), type: 'gallery', eyebrow: '', title: 'Galerie', images: [] }),
-    create: createGalleryBlockCard,
-    collect: collectGalleryBlockCard
-  },
   quote: {
     label: 'Zitat',
+    category: 'text',
     icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8c-2.2 0-3.5 1.6-3.5 3.7 0 1.8 1.1 3 2.7 3 1.3 0 2.3-.9 2.3-2.2 0-1.1-.8-1.9-1.9-1.9-.2 0-.4 0-.5.1.2-1.3 1.3-2.2 2.6-2.3"/><path d="M16 8c-2.2 0-3.5 1.6-3.5 3.7 0 1.8 1.1 3 2.7 3 1.3 0 2.3-.9 2.3-2.2 0-1.1-.8-1.9-1.9-1.9-.2 0-.4 0-.5.1.2-1.3 1.3-2.2 2.6-2.3"/></svg>',
     defaults: () => ({ id: blockUid(), type: 'quote', text: '', author: '' }),
     create: createQuoteBlockCard,
     collect: collectQuoteBlockCard
   },
-  cta: {
-    label: 'Call-to-Action',
-    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="7" rx="3.5"/><line x1="9" y1="12.5" x2="15" y2="12.5"/></svg>',
-    defaults: () => ({ id: blockUid(), type: 'cta', eyebrow: '', title: 'Bereit für den ersten Termin?', text: '', buttonLabel: 'Jetzt anrufen', buttonUrl: '' }),
-    create: createCtaBlockCard,
-    collect: collectCtaBlockCard
+  columns: {
+    label: 'Zwei-Spalten-Text',
+    category: 'text',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'columns', eyebrow: '', title: '', leftTitle: '', leftText: '', rightTitle: '', rightText: '' }),
+    create: createColumnsBlockCard,
+    collect: collectColumnsBlockCard
+  },
+  gallery: {
+    label: 'Bildergalerie',
+    category: 'media',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'gallery', eyebrow: '', title: 'Galerie', images: [] }),
+    create: createGalleryBlockCard,
+    collect: collectGalleryBlockCard
   },
   video: {
     label: 'Video',
+    category: 'media',
     icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10.5 9.5l5 2.5-5 2.5z" fill="currentColor" stroke="none"/></svg>',
     defaults: () => ({ id: blockUid(), type: 'video', eyebrow: '', title: 'Video', videoUrl: '' }),
     create: createVideoBlockCard,
     collect: collectVideoBlockCard
   },
+  logos: {
+    label: 'Logo-Leiste',
+    category: 'media',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="3"/><rect x="12" y="6" width="8" height="5" rx="1"/><rect x="12" y="13" width="8" height="5" rx="1"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'logos', eyebrow: '', logos: [] }),
+    create: createLogosBlockCard,
+    collect: collectLogosBlockCard
+  },
+  table: {
+    label: 'Tabelle',
+    category: 'data',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="10" y1="4" x2="10" y2="20"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'table', eyebrow: '', title: 'Tabelle', columns: ['Spalte 1', 'Spalte 2'], rows: [['', '']] }),
+    create: createTableBlockCard,
+    collect: collectTableBlockCard
+  },
   stats: {
     label: 'Statistik-Reihe',
+    category: 'data',
     icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="14"/><line x1="3" y1="20" x2="21" y2="20"/></svg>',
     defaults: () => ({ id: blockUid(), type: 'stats', eyebrow: '', title: '', items: [{ value: '15+', label: 'Jahre Erfahrung' }] }),
     create: createStatsBlockCard,
@@ -771,31 +1080,67 @@ const BLOCK_TYPES = {
   },
   hours: {
     label: 'Öffnungszeiten',
+    category: 'data',
     icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
     defaults: () => ({ id: blockUid(), type: 'hours', eyebrow: '', title: 'Öffnungszeiten', rows: [{ day: 'Montag – Freitag', time: '08:00 – 18:00 Uhr' }] }),
     create: createHoursBlockCard,
     collect: collectHoursBlockCard
   },
-  columns: {
-    label: 'Zwei-Spalten-Text',
-    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/></svg>',
-    defaults: () => ({ id: blockUid(), type: 'columns', eyebrow: '', title: '', leftTitle: '', leftText: '', rightTitle: '', rightText: '' }),
-    create: createColumnsBlockCard,
-    collect: collectColumnsBlockCard
+  pricing: {
+    label: 'Preisliste',
+    category: 'data',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l7-7 8 8-7 7z"/><circle cx="9.5" cy="9.5" r="1.4" fill="currentColor" stroke="none"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'pricing', eyebrow: '', title: 'Preise', plans: [{ name: '', price: '', period: '', description: '', features: [], highlighted: false }] }),
+    create: createPricingBlockCard,
+    collect: collectPricingBlockCard
   },
-  divider: {
-    label: 'Trenner',
-    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="9" x2="9" y2="9"/><line x1="15" y1="9" x2="21" y2="9"/><circle cx="12" cy="9" r="2"/><line x1="3" y1="16" x2="21" y2="16" stroke-dasharray="1 3"/></svg>',
-    defaults: () => ({ id: blockUid(), type: 'divider', style: 'line', label: '' }),
-    create: createDividerBlockCard,
-    collect: collectDividerBlockCard
+  cta: {
+    label: 'Call-to-Action',
+    category: 'contact',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="7" rx="3.5"/><line x1="9" y1="12.5" x2="15" y2="12.5"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'cta', eyebrow: '', title: 'Bereit für den ersten Termin?', text: '', buttonLabel: 'Jetzt anrufen', buttonUrl: '' }),
+    create: createCtaBlockCard,
+    collect: collectCtaBlockCard
   },
   map: {
     label: 'Karte',
+    category: 'contact',
     icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.3"/></svg>',
     defaults: () => ({ id: blockUid(), type: 'map', eyebrow: '', title: 'Anfahrt', address: '' }),
     create: createMapBlockCard,
     collect: collectMapBlockCard
+  },
+  team: {
+    label: 'Team',
+    category: 'contact',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c.8-3.4 3-5 5.5-5s4.7 1.6 5.5 5"/><circle cx="17.5" cy="9" r="2.2"/><path d="M15 19c.5-2.5 1.9-3.8 3.6-3.8"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'team', eyebrow: '', title: 'Unser Team', members: [{ photo: '', name: '', role: '', bio: '' }] }),
+    create: createTeamBlockCard,
+    collect: collectTeamBlockCard
+  },
+  testimonials: {
+    label: 'Bewertungen',
+    category: 'contact',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17.3l-5.4 3 1-6-4.4-4.3 6-.9L12 3l2.8 6.1 6 .9-4.4 4.3 1 6z"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'testimonials', eyebrow: '', title: 'Das sagen meine Patient:innen', items: [{ text: '', author: '', role: '' }] }),
+    create: createTestimonialsBlockCard,
+    collect: collectTestimonialsBlockCard
+  },
+  social: {
+    label: 'Social-Media-Icons',
+    category: 'contact',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2.6"/><circle cx="17" cy="6" r="2.6"/><circle cx="17" cy="18" r="2.6"/><line x1="8.2" y1="10.8" x2="14.8" y2="7.2"/><line x1="8.2" y1="13.2" x2="14.8" y2="16.8"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'social', items: [{ platform: 'instagram', url: '' }] }),
+    create: createSocialBlockCard,
+    collect: collectSocialBlockCard
+  },
+  divider: {
+    label: 'Trenner',
+    category: 'layout',
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="9" x2="9" y2="9"/><line x1="15" y1="9" x2="21" y2="9"/><circle cx="12" cy="9" r="2"/><line x1="3" y1="16" x2="21" y2="16" stroke-dasharray="1 3"/></svg>',
+    defaults: () => ({ id: blockUid(), type: 'divider', style: 'line', label: '' }),
+    create: createDividerBlockCard,
+    collect: collectDividerBlockCard
   }
 };
 
@@ -821,11 +1166,23 @@ function collectCustomSections() {
 function renderBlockPicker() {
   const grid = document.getElementById('blockPickerGrid');
   if (!grid) return;
-  grid.innerHTML = Object.entries(BLOCK_TYPES).map(([type, def]) => `
-    <button type="button" class="admin-block-picker-btn" data-block-type="${type}">
-      <span class="admin-block-picker-icon">${def.icon}</span>
-      <span class="admin-block-picker-label">${escapeHtml(def.label)}</span>
-    </button>
+  const byCategory = {};
+  Object.entries(BLOCK_TYPES).forEach(([type, def]) => {
+    const cat = def.category || 'text';
+    (byCategory[cat] = byCategory[cat] || []).push([type, def]);
+  });
+  grid.innerHTML = Object.keys(BLOCK_CATEGORIES).filter(cat => byCategory[cat]).map(cat => `
+    <div class="admin-block-category">
+      <h3 class="admin-block-category-title">${escapeHtml(BLOCK_CATEGORIES[cat])}</h3>
+      <div class="admin-block-picker-grid">
+        ${byCategory[cat].map(([type, def]) => `
+          <button type="button" class="admin-block-picker-btn" data-block-type="${type}">
+            <span class="admin-block-picker-icon">${def.icon}</span>
+            <span class="admin-block-picker-label">${escapeHtml(def.label)}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
   `).join('');
   grid.querySelectorAll('.admin-block-picker-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -833,6 +1190,7 @@ function renderBlockPicker() {
       if (!def) return;
       const card = def.create(def.defaults());
       draggableSections.appendChild(card);
+      closeBlockLibrary();
       card.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
   });
@@ -879,6 +1237,50 @@ async function uploadPendingBlockImages(token, data) {
         }
       }
       cs.images = images;
+    }
+
+    if (type === 'team') {
+      const rows = [...section.querySelectorAll('.admin-team-slot')];
+      for (const row of rows) {
+        const slotIndex = row.dataset.slotIndex;
+        const key = id + '::' + slotIndex;
+        if (pendingBlockImages[key]) {
+          const file = pendingBlockImages[key];
+          const path = 'Assets/Blocks/' + id + '-' + slotIndex + '-' + sanitizeFilename(file.name);
+          const base64 = await fileToBase64(file);
+          const existingSha = await ghGetSha(token, path);
+          await ghPutBinaryFile(token, path, base64, 'Team-Foto hochgeladen über Admin-Panel', existingSha);
+          row.dataset.imagePath = path;
+          delete pendingBlockImages[key];
+        }
+      }
+      cs.members = rows.map(row => ({
+        photo: row.dataset.imagePath || '',
+        name: row.querySelector('.cs-team-name').value,
+        role: row.querySelector('.cs-team-role').value,
+        bio: row.querySelector('.cs-team-bio').value
+      }));
+    }
+
+    if (type === 'logos') {
+      const rows = [...section.querySelectorAll('.admin-logos-slot')];
+      for (const row of rows) {
+        const slotIndex = row.dataset.slotIndex;
+        const key = id + '::' + slotIndex;
+        if (pendingBlockImages[key]) {
+          const file = pendingBlockImages[key];
+          const path = 'Assets/Blocks/' + id + '-' + slotIndex + '-' + sanitizeFilename(file.name);
+          const base64 = await fileToBase64(file);
+          const existingSha = await ghGetSha(token, path);
+          await ghPutBinaryFile(token, path, base64, 'Logo hochgeladen über Admin-Panel', existingSha);
+          row.dataset.imagePath = path;
+          delete pendingBlockImages[key];
+        }
+      }
+      cs.logos = rows.map(row => ({
+        image: row.dataset.imagePath || '',
+        url: row.querySelector('.cs-logos-url').value
+      })).filter(l => l.image);
     }
   }
 }
@@ -1553,6 +1955,25 @@ saveModalCommitInput.addEventListener('keydown', e => {
     closeSaveModal();
     save();
   }
+});
+
+// ---------- Block library modal ----------
+const blockLibraryOverlay = document.getElementById('blockLibraryOverlay');
+
+function openBlockLibrary() {
+  blockLibraryOverlay.hidden = false;
+}
+function closeBlockLibrary() {
+  blockLibraryOverlay.hidden = true;
+}
+
+document.getElementById('openBlockLibraryBtn').addEventListener('click', openBlockLibrary);
+document.getElementById('blockLibraryClose').addEventListener('click', closeBlockLibrary);
+blockLibraryOverlay.addEventListener('click', e => {
+  if (e.target === blockLibraryOverlay) closeBlockLibrary();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !blockLibraryOverlay.hidden) closeBlockLibrary();
 });
 
 // ---------- Theme toggle ----------

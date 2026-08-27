@@ -333,6 +333,16 @@ body {
 .admin-block-picker-btn:hover { border-color: var(--color-primary); color: var(--color-primary); transform: translateY(-2px); }
 .admin-block-picker-icon { display: flex; }
 .admin-block-picker-label { font-size: .82rem; font-weight: 600; text-align: center; }
+.admin-open-library-btn { margin-top: 16px; width: auto; }
+.admin-block-picker-categories { display: flex; flex-direction: column; gap: 28px; margin-top: 20px; }
+.admin-block-category-title {
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 12px;
+}
 
 /* ---------- Table block editor ---------- */
 .admin-table-editor {
@@ -577,6 +587,11 @@ body.admin-dragging-active .admin-drag-handle { cursor: grabbing; }
   border-radius: var(--radius);
   padding: 56px 32px 32px;
   box-shadow: var(--shadow-lg, 0 20px 50px rgba(0, 0, 0, .55));
+}
+.admin-modal-wide {
+  max-width: 760px;
+  max-height: 82vh;
+  overflow-y: auto;
 }
 .admin-modal h2 { margin-bottom: 10px; }
 .admin-modal .admin-hint { margin-bottom: 20px; }

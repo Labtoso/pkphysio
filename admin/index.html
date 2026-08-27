@@ -356,12 +356,22 @@
     <!-- BLOCK LIBRARY -->
     <section class="admin-section admin-block-library" id="section-block-library">
       <h2>Baustein hinzufügen</h2>
-      <p class="admin-hint">Baustein anklicken, um ihn unten an die Seite anzuhängen. Danach mit dem ≡-Griff an die gewünschte Stelle ziehen.</p>
-      <div id="blockPickerGrid" class="admin-block-picker-grid"></div>
+      <p class="admin-hint">Öffne die Baustein-Bibliothek, wähle einen Baustein aus und ordne ihn danach mit dem ≡-Griff an die gewünschte Stelle.</p>
+      <button type="button" id="openBlockLibraryBtn" class="btn btn-primary admin-open-library-btn">+ Baustein hinzufügen</button>
     </section>
 
     <button id="saveBtnBottom" class="btn btn-primary admin-save-bottom" type="button">Speichern</button>
   </main>
+</div>
+
+<!-- ---------- BLOCK LIBRARY MODAL ---------- -->
+<div id="blockLibraryOverlay" class="admin-modal-overlay" hidden>
+  <div class="admin-modal admin-modal-wide" role="dialog" aria-modal="true" aria-labelledby="blockLibraryTitle">
+    <button type="button" id="blockLibraryClose" class="admin-modal-close" aria-label="Schließen">✕</button>
+    <h2 id="blockLibraryTitle">Baustein hinzufügen</h2>
+    <p class="admin-hint">Baustein anklicken, um ihn an die Seite anzuhängen.</p>
+    <div id="blockPickerGrid" class="admin-block-picker-categories"></div>
+  </div>
 </div>
 
 <!-- ---------- SAVE MODAL ---------- -->
