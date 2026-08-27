@@ -1,0 +1,144 @@
+body {
+  background: var(--color-bg);
+}
+
+/* ---------- Login / PIN ---------- */
+.admin-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.admin-login-card {
+  width: 100%;
+  max-width: 460px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 40px;
+}
+.admin-login-card h1 { margin-bottom: 14px; }
+.admin-login-card .lead { margin-bottom: 28px; }
+.admin-login-card .btn { width: 100%; justify-content: center; margin-top: 6px; }
+.admin-login-card .btn:disabled,
+.admin-login-card input:disabled { opacity: .5; cursor: not-allowed; }
+
+.admin-error {
+  color: #ff6b6b;
+  font-size: .9rem;
+  margin-top: 12px;
+  min-height: 1.2em;
+}
+
+.admin-help {
+  margin-top: 28px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 20px;
+  font-size: .88rem;
+  color: var(--color-ink-soft);
+}
+.admin-help summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 12px;
+}
+.admin-help ol { list-style: decimal; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.admin-note {
+  margin-top: 14px;
+  font-size: .82rem;
+  color: var(--color-ink-soft);
+  font-style: italic;
+}
+
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.admin-field span {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+}
+.admin-field input,
+.admin-field textarea,
+.admin-field select {
+  font-family: var(--font-body);
+  font-size: .95rem;
+  color: var(--color-ink);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  resize: vertical;
+}
+.admin-field input:focus,
+.admin-field textarea:focus,
+.admin-field select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+/* ---------- Menu ---------- */
+.admin-menu {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+}
+.admin-menu-theme-toggle { position: absolute; top: 24px; right: 24px; }
+.admin-menu-inner { width: 100%; max-width: 720px; text-align: center; }
+.admin-menu-inner h1 { margin-bottom: 14px; }
+.admin-menu-inner .lead { max-width: 480px; margin: 0 auto 40px; }
+.admin-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  text-align: left;
+  margin-bottom: 32px;
+}
+.admin-menu-card {
+  display: block;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 28px;
+  color: var(--color-ink);
+  transition: border-color .2s ease, transform .15s ease;
+}
+.admin-menu-card:hover { border-color: var(--color-primary); transform: translateY(-3px); }
+.admin-menu-card-icon { display: inline-flex; color: var(--color-primary); margin-bottom: 16px; }
+.admin-menu-card h2 { font-size: 1.15rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.admin-menu-card p { color: var(--color-ink-soft); font-size: .9rem; }
+.admin-badge-soon {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.admin-menu-logout { width: auto; padding: 10px 24px; }
+
+/* ---------- Home button (standalone, e.g. on the Statistik page) ---------- */
+.admin-home-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  color: var(--color-ink-soft);
+  transition: border-color .2s ease, color .2s ease;
+}
+.admin-home-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.admin-home-btn-standalone { position: absolute; top: 24px; left: 24px; }

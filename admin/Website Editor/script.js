@@ -4,10 +4,10 @@ const REPO_NAME = 'pkphysio';
 const REPO_BRANCH = 'main';
 const CONTENT_PATH = 'content.js';
 const TOKEN_KEY = 'pk_admin_token';
-
-// SHA-256 hash of the access password (never the plaintext). Only gates the
-// login form itself; it is not a substitute for the GitHub token check.
-const PIN_HASH = 'eec9bb67f607e0a241a430dd814b9407ef7a46084ddbdd7f4fb2f8e44760ad45';
+// PIN gate and login now live on the /admin landing page. This screen only
+// checks whether a token already exists in this tab's session (see the
+// "Initial screen" block at the bottom) — if not, it sends the user back
+// there instead of showing its own login form.
 const PIN_SESSION_KEY = 'pk_admin_pin_ok';
 const PIN_ATTEMPTS_KEY = 'pk_admin_pin_attempts';
 const PIN_LOCK_KEY = 'pk_admin_pin_lock_until';
@@ -118,15 +118,7 @@ function serializeContentJs(data) {
 let state = { token: null, sha: null, data: null };
 
 // ---------- DOM refs ----------
-const pinScreen = document.getElementById('pinScreen');
-const pinInput = document.getElementById('pinInput');
-const pinBtn = document.getElementById('pinBtn');
-const pinError = document.getElementById('pinError');
-const loginScreen = document.getElementById('loginScreen');
 const editorScreen = document.getElementById('editorScreen');
-const tokenInput = document.getElementById('tokenInput');
-const loginBtn = document.getElementById('loginBtn');
-const loginError = document.getElementById('loginError');
 const saveStatus = document.getElementById('saveStatus');
 const draggableSections = document.getElementById('draggableSections');
 
@@ -1859,7 +1851,7 @@ async function uploadPendingFonts(token, data) {
   data.customFonts = collectCustomFonts();
 }
 
-// ---------- Login ----------
+// ---------- Login (token already verified on /admin; this just loads content) ----------
 function withTimeout(promise, ms) {
   return Promise.race([
     promise,
@@ -1868,20 +1860,14 @@ function withTimeout(promise, ms) {
 }
 
 function showEditor() {
-  loginScreen.style.display = 'none';
   editorScreen.style.display = 'block';
   updateStickybarHeight();
 }
-function showLogin() {
-  pinScreen.style.display = 'none';
-  editorScreen.style.display = 'none';
-  loginScreen.style.display = 'flex';
+function backToAdminHome() {
+  window.location.href = '../index.html';
 }
 
 async function login(token) {
-  loginError.textContent = '';
-  loginBtn.disabled = true;
-  loginBtn.textContent = 'Prüfe Zugang …';
   try {
     const { sha, text } = await withTimeout(ghGetFile(token), 10000);
     const data = parseContentJs(text);
@@ -1906,37 +1892,20 @@ async function login(token) {
 
     showEditor();
   } catch (err) {
-    if (err.status === 401) {
-      loginError.textContent = 'Token ungültig oder abgelaufen.';
-    } else if (err.status === 404) {
-      loginError.textContent = 'Repository oder content.js nicht gefunden. Wurde der Code schon nach GitHub gepusht?';
-    } else if (err.status === 403) {
-      loginError.textContent = 'Kein Zugriff. Prüfe, ob das Token Zugriff auf "pkphysio" mit "Contents: Read and write" hat.';
-    } else {
-      loginError.textContent = err.message || 'Unbekannter Fehler.';
-    }
-  } finally {
-    loginBtn.disabled = false;
-    loginBtn.textContent = 'Anmelden';
+    // Token missing/invalid/expired — clear it and send the user back to the
+    // login screen on /admin instead of showing a dead editor here.
+    try { sessionStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    backToAdminHome();
   }
 }
-
-loginBtn.addEventListener('click', () => {
-  loginError.textContent = '';
-  const token = tokenInput.value.trim();
-  if (!token) {
-    loginError.textContent = 'Bitte ein Token eingeben.';
-    return;
-  }
-  login(token);
-});
-tokenInput.addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn.click(); });
 
 document.getElementById('logoutBtn').addEventListener('click', () => {
   state = { token: null, sha: null, data: null };
   try { sessionStorage.removeItem(TOKEN_KEY); } catch (e) {}
-  tokenInput.value = '';
-  showLogin();
+  try { sessionStorage.removeItem(PIN_SESSION_KEY); } catch (e) {}
+  try { sessionStorage.removeItem(PIN_ATTEMPTS_KEY); } catch (e) {}
+  try { sessionStorage.removeItem(PIN_LOCK_KEY); } catch (e) {}
+  backToAdminHome();
 });
 
 // ---------- Save ----------
@@ -2099,95 +2068,6 @@ document.getElementById('design_textScale').addEventListener('input', e => {
   document.getElementById('design_textScale_val').textContent = e.target.value;
 });
 
-// ---------- PIN gate (obscures the login form from casual visitors; the
-// GitHub token is still the real access control) ----------
-async function sha256Hex(text) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-function pinLockRemainingMs() {
-  let until = 0;
-  try { until = Number(sessionStorage.getItem(PIN_LOCK_KEY) || 0); } catch (e) {}
-  return Math.max(0, until - Date.now());
-}
-
-function pinDelayForAttempts(n) {
-  const steps = [0, 0, 0, 5, 15, 30, 60, 120, 300];
-  return (steps[Math.min(n, steps.length - 1)] ?? 300) * 1000;
-}
-
-let pinLockTimer = null;
-function updatePinLockUI() {
-  const remaining = pinLockRemainingMs();
-  clearTimeout(pinLockTimer);
-  if (remaining > 0) {
-    pinBtn.disabled = true;
-    pinInput.disabled = true;
-    pinError.textContent = 'Zu viele Versuche. Bitte warte ' + Math.ceil(remaining / 1000) + ' Sekunden.';
-    pinLockTimer = setTimeout(updatePinLockUI, 1000);
-  } else {
-    pinBtn.disabled = false;
-    pinInput.disabled = false;
-    if (pinError.textContent.startsWith('Zu viele Versuche')) pinError.textContent = '';
-  }
-}
-
-function showPinGate() {
-  loginScreen.style.display = 'none';
-  editorScreen.style.display = 'none';
-  pinScreen.style.display = 'flex';
-  updatePinLockUI();
-}
-
-async function submitPin() {
-  if (pinLockRemainingMs() > 0) return;
-  const value = pinInput.value;
-  if (!value) return;
-
-  pinBtn.disabled = true;
-  pinBtn.textContent = 'Prüfe …';
-  const hash = await sha256Hex(value);
-  pinBtn.textContent = 'Weiter';
-
-  if (hash === PIN_HASH) {
-    try {
-      sessionStorage.setItem(PIN_SESSION_KEY, '1');
-      sessionStorage.removeItem(PIN_ATTEMPTS_KEY);
-      sessionStorage.removeItem(PIN_LOCK_KEY);
-    } catch (e) {}
-    pinInput.value = '';
-    pinError.textContent = '';
-    showLogin();
-  } else {
-    let attempts = 0;
-    try {
-      attempts = Number(sessionStorage.getItem(PIN_ATTEMPTS_KEY) || 0) + 1;
-      sessionStorage.setItem(PIN_ATTEMPTS_KEY, String(attempts));
-      const delay = pinDelayForAttempts(attempts);
-      if (delay > 0) sessionStorage.setItem(PIN_LOCK_KEY, String(Date.now() + delay));
-    } catch (e) {}
-    pinInput.value = '';
-    pinInput.focus();
-    pinError.textContent = 'Falsches Passwort.';
-    updatePinLockUI();
-  }
-}
-
-pinBtn.addEventListener('click', submitPin);
-pinInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitPin(); });
-
-// ---------- Initial screen ----------
-(function () {
-  let pinAlreadyOk = false;
-  try { pinAlreadyOk = sessionStorage.getItem(PIN_SESSION_KEY) === '1'; } catch (e) {}
-  if (pinAlreadyOk) {
-    showLogin();
-  } else {
-    showPinGate();
-  }
-})();
-
 // ---------- Spellcheck: turn off everywhere, including fields added later ----------
 function disableSpellcheck(root) {
   const candidates = [];
@@ -2208,15 +2088,15 @@ new MutationObserver(mutations => {
   });
 }).observe(editorScreen, { childList: true, subtree: true });
 
-// ---------- Auto-login if a token is already in this tab's session ----------
+// ---------- Initial screen: need a token from /admin, or back we go ----------
 (function () {
-  try {
-    const existing = sessionStorage.getItem(TOKEN_KEY);
-    if (existing) {
-      tokenInput.value = existing;
-      login(existing);
-    }
-  } catch (e) {}
+  let token = null;
+  try { token = sessionStorage.getItem(TOKEN_KEY); } catch (e) {}
+  if (token) {
+    login(token);
+  } else {
+    backToAdminHome();
+  }
 })();
 
 // ---------- Sticky bar height (for scroll offset) ----------

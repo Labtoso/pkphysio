@@ -24,58 +24,16 @@
 </head>
 <body>
 
-<!-- ---------- PIN GATE ---------- -->
-<div id="pinScreen" class="admin-login" style="display:none">
-  <div class="admin-login-card">
-    <p class="eyebrow">Website-Editor</p>
-    <h1>Zugang</h1>
-    <p class="lead">Bitte Zugangs-Passwort eingeben, um zum Login zu gelangen.</p>
-
-    <label class="admin-field">
-      <span>Passwort</span>
-      <input type="password" id="pinInput" placeholder="Passwort" autocomplete="off">
-    </label>
-
-    <button id="pinBtn" class="btn btn-primary" type="button">Weiter</button>
-    <p id="pinError" class="admin-error"></p>
-  </div>
-</div>
-
-<!-- ---------- LOGIN ---------- -->
-<div id="loginScreen" class="admin-login" style="display:none">
-  <div class="admin-login-card">
-    <p class="eyebrow">Website-Editor</p>
-    <h1>Anmelden</h1>
-    <p class="lead">Melde dich mit einem GitHub-Zugriffstoken an, um die Texte dieser Website zu bearbeiten.</p>
-
-    <label class="admin-field">
-      <span>GitHub-Token</span>
-      <input type="password" id="tokenInput" placeholder="github_pat_..." autocomplete="off">
-    </label>
-
-    <button id="loginBtn" class="btn btn-primary" type="button">Anmelden</button>
-    <p id="loginError" class="admin-error"></p>
-
-    <details class="admin-help">
-      <summary>Wie bekomme ich ein Token?</summary>
-      <ol>
-        <li>Auf GitHub: Einstellungen (oben rechts beim Profilbild) → <strong>Settings</strong></li>
-        <li>Ganz unten links: <strong>Developer settings</strong></li>
-        <li><strong>Personal access tokens</strong> → <strong>Fine-grained tokens</strong> → <strong>Generate new token</strong></li>
-        <li>Bei "Repository access" → <strong>Only select repositories</strong> → <em>pkphysio</em> auswählen</li>
-        <li>Bei "Permissions" → <strong>Contents</strong> → auf <strong>Read and write</strong> stellen</li>
-        <li>Token generieren, kopieren und hier oben einfügen</li>
-      </ol>
-      <p class="admin-note">Das Token wird nur in diesem Browser-Tab gespeichert und nie irgendwo hochgeladen. Nach dem Schließen des Tabs ist es weg.</p>
-    </details>
-  </div>
-</div>
-
 <!-- ---------- EDITOR ---------- -->
-<div id="editorScreen" class="admin-editor">
+<div id="editorScreen" class="admin-editor" style="display:none">
   <div class="admin-stickybar">
     <header class="admin-topbar">
-      <span class="admin-topbar-title">Website-Editor</span>
+      <div class="admin-topbar-brand">
+        <a href="../index.html" class="admin-home-btn" title="Zur Übersicht" aria-label="Zur Übersicht">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/><path d="M10 19v-5h4v5"/></svg>
+        </a>
+        <span class="admin-topbar-title">Website-Editor</span>
+      </div>
       <div class="admin-topbar-search">
         <input type="search" id="adminSearch" placeholder="Feld oder Bereich suchen …" autocomplete="off">
       </div>
