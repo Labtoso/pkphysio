@@ -1259,8 +1259,11 @@ async function save() {
     }
 
     const newText = serializeContentJs(state.data);
-    const newSha = await ghPutFile(state.token, state.sha, newText, 'Inhalte über Admin-Panel aktualisiert');
+    const commitMessageInput = document.getElementById('commitMessageInput');
+    const commitMessage = (commitMessageInput.value.trim()) || 'Inhalte übers Admin-Panel aktualisiert';
+    const newSha = await ghPutFile(state.token, state.sha, newText, commitMessage);
     state.sha = newSha;
+    commitMessageInput.value = '';
     const actionsUrl = `https://github.com/${REPO_OWNER}/${REPO_NAME}/actions`;
     saveStatus.className = 'admin-status success';
     saveStatus.innerHTML = 'Gespeichert. Die Website aktualisiert sich in der Regel innerhalb von ein bis zwei Minuten. ' +

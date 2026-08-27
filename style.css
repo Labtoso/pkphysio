@@ -144,7 +144,7 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 :root.light .logo-img-dark { display: none; }
 :root.light .logo-img-light { display: block; }
 
-.nav { display: flex; align-items: center; gap: 28px; margin-left: auto; }
+.nav { display: flex; align-items: center; gap: 28px; margin-left: auto; position: relative; }
 .nav-link {
   position: relative;
   font-weight: 500;
@@ -572,9 +572,10 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 }
 
 @media (max-width: 860px) {
-  .nav { position: fixed; top: 92px; left: 0; right: 0; background: var(--color-bg); flex-direction: column; gap: 0; padding: 8px 24px 20px; box-shadow: var(--shadow-md); transform: translateY(-130%); opacity: 0; transition: transform .3s ease, opacity .3s ease; margin: 0; }
+  .nav { position: fixed; top: 92px; left: 0; right: 0; background: var(--color-bg); flex-direction: column; gap: 0; padding: 8px 24px 60px; box-shadow: var(--shadow-md); transform: translateY(-130%); opacity: 0; transition: transform .3s ease, opacity .3s ease; margin: 0; }
   .nav.open { transform: translateY(0); opacity: 1; }
   .nav-link { padding: 14px 0; border-bottom: 1px solid var(--color-border); }
+  .nav .theme-toggle { position: absolute; bottom: 18px; right: 24px; }
   .burger { display: flex; }
   .btn-header { display: none; }
   .hero { padding: 150px 0 80px; }
