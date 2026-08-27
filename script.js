@@ -197,7 +197,7 @@ function renderContent(data) {
     <li><div><strong>Adresse</strong><p>${site.address}</p></div></li>
     <li><div><strong>Telefon</strong><p><a href="tel:${site.phoneHref}">${site.phone}</a></p></div></li>
     <li><div><strong>E-Mail</strong><p><a href="mailto:${site.email}">${site.email}</a></p></div></li>
-    <li><div><strong>Instagram</strong><p><a href="${site.instagramUrl}" target="_blank" rel="noopener">${site.instagramHandle}</a></p></div></li>
+    <li><div><strong>Instagram</strong><p><a href="${site.instagramUrl}" target="_blank" rel="noopener" data-goatcounter-click="instagram">${site.instagramHandle}</a></p></div></li>
   `;
 
   document.getElementById('kontaktMap').src =
@@ -330,7 +330,7 @@ const CUSTOM_BLOCK_RENDERERS = {
         <p class="eyebrow">${cs.eyebrow || ''}</p>
         <h2>${cs.title || ''}</h2>
         ${cs.text ? `<p class="custom-cta-text">${applyTemplate(cs.text, site)}</p>` : ''}
-        ${cs.buttonLabel && url ? `<a class="btn btn-primary" href="${url}"${external ? ' target="_blank" rel="noopener"' : ''}>${cs.buttonLabel}</a>` : ''}
+        ${cs.buttonLabel && url ? `<a class="btn btn-primary" href="${url}"${external ? ' target="_blank" rel="noopener"' : ''} data-goatcounter-click="cta_block">${cs.buttonLabel}</a>` : ''}
       </div>
     `;
   },
@@ -514,7 +514,7 @@ const CUSTOM_BLOCK_RENDERERS = {
           ${items.map(item => {
             const label = SOCIAL_ICON_LABELS[item.platform] || '?';
             const href = socialHref(item);
-            return `<a class="custom-social-icon" href="${href}" target="_blank" rel="noopener" aria-label="${SOCIAL_PLATFORM_NAMES[item.platform] || item.platform}"><span>${label}</span></a>`;
+            return `<a class="custom-social-icon" href="${href}" target="_blank" rel="noopener" aria-label="${SOCIAL_PLATFORM_NAMES[item.platform] || item.platform}" data-goatcounter-click="social_${item.platform}"><span>${label}</span></a>`;
           }).join('')}
         </div>
       </div>
