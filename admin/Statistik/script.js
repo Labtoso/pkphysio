@@ -55,7 +55,7 @@ function dayLabel(d) {
 
 // ---------- GoatCounter API ----------
 function gcAuthHeader(token) {
-  return 'Basic ' + btoa(token + ':');
+  return 'Bearer ' + token;
 }
 async function gcFetch(code, token, path, params) {
   const url = new URL(`https://${code}.goatcounter.com/api/v0${path}`);
