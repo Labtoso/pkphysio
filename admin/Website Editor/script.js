@@ -1864,7 +1864,7 @@ function showEditor() {
   updateStickybarHeight();
 }
 function backToAdminHome() {
-  window.location.href = '../index.html';
+  window.location.href = '../';
 }
 
 async function login(token) {
