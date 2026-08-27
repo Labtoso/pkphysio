@@ -228,6 +228,15 @@ function toEmbedUrl(url) {
   return '';
 }
 
+const SOCIAL_ICON_LABELS = { instagram: 'IG', facebook: 'FB', whatsapp: 'WA', tiktok: 'TT', youtube: 'YT', linkedin: 'in', email: '@', phone: 'Tel' };
+const SOCIAL_PLATFORM_NAMES = { instagram: 'Instagram', facebook: 'Facebook', whatsapp: 'WhatsApp', tiktok: 'TikTok', youtube: 'YouTube', linkedin: 'LinkedIn', email: 'E-Mail', phone: 'Telefon' };
+function socialHref(item) {
+  const url = (item.url || '').trim();
+  if (item.platform === 'email') return url.startsWith('mailto:') ? url : 'mailto:' + url;
+  if (item.platform === 'phone') return url.startsWith('tel:') ? url : 'tel:' + url.replace(/\s+/g, '');
+  return url;
+}
+
 const CUSTOM_BLOCK_RENDERERS = {
   textimage(cs, site) {
     const hasImage = !!cs.image;
@@ -418,6 +427,95 @@ const CUSTOM_BLOCK_RENDERERS = {
         </div>
         <div class="custom-map-wrap reveal">
           <iframe src="${src}" loading="lazy" title="${cs.title || 'Karte'}"></iframe>
+        </div>
+      </div>
+    `;
+  },
+  team(cs) {
+    const members = cs.members || [];
+    return `
+      <div class="container">
+        <div class="section-head reveal custom-section-head">
+          <p class="eyebrow">${cs.eyebrow || ''}</p>
+          <h2>${cs.title || ''}</h2>
+        </div>
+        <div class="custom-team-grid reveal">
+          ${members.map(m => `
+            <div class="custom-team-card">
+              ${m.photo ? `<img src="${m.photo}" alt="${m.name || ''}" loading="lazy" class="custom-team-photo">` : '<div class="custom-team-photo custom-team-photo-placeholder"></div>'}
+              <h3>${m.name || ''}</h3>
+              ${m.role ? `<p class="custom-team-role">${m.role}</p>` : ''}
+              ${m.bio ? `<p class="custom-team-bio">${m.bio}</p>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  },
+  testimonials(cs) {
+    const items = cs.items || [];
+    return `
+      <div class="container">
+        <div class="section-head reveal custom-section-head">
+          <p class="eyebrow">${cs.eyebrow || ''}</p>
+          <h2>${cs.title || ''}</h2>
+        </div>
+        <div class="custom-testimonials-grid reveal">
+          ${items.map(item => `
+            <div class="custom-testimonial-card">
+              <p class="custom-testimonial-text">${item.text || ''}</p>
+              <p class="custom-testimonial-author">${item.author || ''}${item.role ? ` <span>· ${item.role}</span>` : ''}</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  },
+  pricing(cs) {
+    const plans = cs.plans || [];
+    return `
+      <div class="container">
+        <div class="section-head reveal custom-section-head">
+          <p class="eyebrow">${cs.eyebrow || ''}</p>
+          <h2>${cs.title || ''}</h2>
+        </div>
+        <div class="custom-pricing-grid reveal">
+          ${plans.map(plan => `
+            <div class="custom-pricing-card${plan.highlighted ? ' highlighted' : ''}">
+              <h3>${plan.name || ''}</h3>
+              <p class="custom-pricing-value">${plan.price || ''}${plan.period ? `<span>${plan.period}</span>` : ''}</p>
+              ${plan.description ? `<p class="custom-pricing-desc">${plan.description}</p>` : ''}
+              ${(plan.features || []).length ? `<ul class="custom-pricing-features">${plan.features.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  },
+  logos(cs) {
+    const logos = cs.logos || [];
+    return `
+      <div class="container">
+        ${cs.eyebrow ? `<p class="eyebrow custom-logos-eyebrow reveal">${cs.eyebrow}</p>` : ''}
+        <div class="custom-logos-row reveal">
+          ${logos.map(l => {
+            const img = `<img src="${l.image}" loading="lazy" alt="">`;
+            return l.url ? `<a href="${l.url}" target="_blank" rel="noopener">${img}</a>` : img;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  },
+  social(cs) {
+    const items = cs.items || [];
+    return `
+      <div class="container">
+        <div class="custom-social-row reveal">
+          ${items.map(item => {
+            const label = SOCIAL_ICON_LABELS[item.platform] || '?';
+            const href = socialHref(item);
+            return `<a class="custom-social-icon" href="${href}" target="_blank" rel="noopener" aria-label="${SOCIAL_PLATFORM_NAMES[item.platform] || item.platform}"><span>${label}</span></a>`;
+          }).join('')}
         </div>
       </div>
     `;
