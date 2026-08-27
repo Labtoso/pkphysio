@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin | Pascal Krieger</title>
+<link rel="icon" type="image/png" href="../Assets/logo_1x1.png">
+<script>
+  (function () {
+    try {
+      var stored = localStorage.getItem('theme');
+      var wantsLight = stored ? stored === 'light' : window.matchMedia('(prefers-color-scheme: light)').matches;
+      if (wantsLight) document.documentElement.classList.add('light');
+    } catch (e) {}
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ---------- PIN GATE ---------- -->
+<div id="pinScreen" class="admin-login" style="display:none">
+  <div class="admin-login-card">
+    <p class="eyebrow">Admin</p>
+    <h1>Zugang</h1>
+    <p class="lead">Bitte Zugangs-Passwort eingeben, um zum Login zu gelangen.</p>
+
+    <label class="admin-field">
+      <span>Passwort</span>
+      <input type="password" id="pinInput" placeholder="Passwort" autocomplete="off">
+    </label>
+
+    <button id="pinBtn" class="btn btn-primary" type="button">Weiter</button>
+    <p id="pinError" class="admin-error"></p>
+  </div>
+</div>
+
+<!-- ---------- LOGIN ---------- -->
+<div id="loginScreen" class="admin-login" style="display:none">
+  <div class="admin-login-card">
+    <p class="eyebrow">Admin</p>
+    <h1>Anmelden</h1>
+    <p class="lead">Melde dich mit einem GitHub-Zugriffstoken an, um auf den Admin-Bereich zuzugreifen.</p>
+
+    <label class="admin-field">
+      <span>GitHub-Token</span>
+      <input type="password" id="tokenInput" placeholder="github_pat_..." autocomplete="off">
+    </label>
+
+    <button id="loginBtn" class="btn btn-primary" type="button">Anmelden</button>
+    <p id="loginError" class="admin-error"></p>
+
+    <details class="admin-help">
+      <summary>Wie bekomme ich ein Token?</summary>
+      <ol>
+        <li>Auf GitHub: Einstellungen (oben rechts beim Profilbild) → <strong>Settings</strong></li>
+        <li>Ganz unten links: <strong>Developer settings</strong></li>
+        <li><strong>Personal access tokens</strong> → <strong>Fine-grained tokens</strong> → <strong>Generate new token</strong></li>
+        <li>Bei "Repository access" → <strong>Only select repositories</strong> → <em>pkphysio</em> auswählen</li>
+        <li>Bei "Permissions" → <strong>Contents</strong> → auf <strong>Read and write</strong> stellen</li>
+        <li>Token generieren, kopieren und hier oben einfügen</li>
+      </ol>
+      <p class="admin-note">Das Token wird nur in diesem Browser-Tab gespeichert und nie irgendwo hochgeladen. Nach dem Schließen des Tabs ist es weg.</p>
+    </details>
+  </div>
+</div>
+
+<!-- ---------- MENU ---------- -->
+<div id="menuScreen" class="admin-menu" style="display:none">
+  <button class="theme-toggle admin-menu-theme-toggle" id="themeToggle" type="button" aria-pressed="false" aria-label="Farbschema wechseln">
+    <span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>
+  </button>
+  <div class="admin-menu-inner">
+    <p class="eyebrow">Admin</p>
+    <h1>Womit möchtest du starten?</h1>
+    <p class="lead">Wähle einen Bereich aus.</p>
+
+    <div class="admin-menu-grid">
+      <a href="Website%20Editor/index.html" class="admin-menu-card">
+        <span class="admin-menu-card-icon"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-4L16 5l3 3L8 19l-4 1z"/><path d="M14 7l3 3"/></svg></span>
+        <h2>Website-Editor</h2>
+        <p>Texte, Bilder, Design und Bausteine der Website bearbeiten.</p>
+      </a>
+      <a href="Statistik/index.html" class="admin-menu-card">
+        <span class="admin-menu-card-icon"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="20" x2="5" y2="12"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="19" y1="20" x2="19" y2="14"/><line x1="3" y1="20" x2="21" y2="20"/></svg></span>
+        <h2>Statistiken <span class="admin-badge-soon">Bald verfügbar</span></h2>
+        <p>Besucherzahlen und Kennzahlen der Website einsehen.</p>
+      </a>
+    </div>
+
+    <button id="menuLogoutBtn" class="btn btn-outline admin-menu-logout" type="button">Abmelden</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
