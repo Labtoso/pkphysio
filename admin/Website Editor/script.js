@@ -138,7 +138,7 @@ function blockUid() {
   return 'custom-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
 }
 function blockImagePreviewSrc(path) {
-  return path ? '../' + path : '';
+  return path ? '../../' + path : '';
 }
 const PENCIL_ICON = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-4L16 5l3 3L8 19l-4 1z"/><path d="M14 7l3 3"/></svg>';
 
@@ -1738,7 +1738,7 @@ IMAGE_KEYS.forEach(key => {
 
 function fillImagePreviews(images) {
   IMAGE_KEYS.forEach(key => {
-    document.getElementById('preview_' + key).src = '../' + images[key];
+    document.getElementById('preview_' + key).src = '../../' + images[key];
   });
 }
 

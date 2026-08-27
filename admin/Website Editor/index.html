@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Website-Editor | Pascal Krieger</title>
-<link rel="icon" type="image/png" href="../Assets/logo_1x1.png">
+<link rel="icon" type="image/png" href="../../Assets/logo_1x1.png">
 <script>
   (function () {
     try {
@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="../../style.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.bubble.css" integrity="sha384-1p1L5n/ntE3sHKd2FQZmckXnRjjkgWlN9qvfQ2rQuCXYhgCEhcmPSjjVcbttjWKu" crossorigin="anonymous">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -366,23 +366,25 @@
 <div id="blockLibraryOverlay" class="admin-modal-overlay" hidden>
   <div class="admin-modal admin-modal-wide" role="dialog" aria-modal="true" aria-labelledby="blockLibraryTitle">
     <button type="button" id="blockLibraryClose" class="admin-modal-close admin-modal-close-right" aria-label="Schließen">✕</button>
-    <h2 id="blockLibraryTitle">Baustein hinzufügen</h2>
+    <div class="admin-modal-body">
+      <h2 id="blockLibraryTitle">Baustein hinzufügen</h2>
 
-    <div id="blockLibraryStepPick">
-      <input type="search" id="blockLibrarySearch" class="admin-block-search" placeholder="Baustein suchen …" autocomplete="off">
-      <div id="blockPickerGrid" class="admin-block-picker-categories"></div>
-      <p id="blockLibraryNoResults" class="admin-search-empty" hidden>Keine Treffer.</p>
-    </div>
+      <div id="blockLibraryStepPick">
+        <input type="search" id="blockLibrarySearch" class="admin-block-search" placeholder="Baustein suchen …" autocomplete="off">
+        <div id="blockPickerGrid" class="admin-block-picker-categories"></div>
+        <p id="blockLibraryNoResults" class="admin-search-empty" hidden>Keine Treffer.</p>
+      </div>
 
-    <div id="blockLibraryStepName" hidden>
-      <p class="admin-hint">Gib dem Baustein optional einen eigenen Namen, um ihn später leichter wiederzufinden.</p>
-      <label class="admin-field">
-        <span>Name (optional)</span>
-        <input type="text" id="blockLibraryNameInput" placeholder="z. B. Startbereich-Zitat" autocomplete="off">
-      </label>
-      <div class="admin-modal-actions">
-        <button type="button" id="blockLibraryBack" class="btn btn-outline">Zurück</button>
-        <button type="button" id="blockLibraryAddConfirm" class="btn btn-primary">Hinzufügen</button>
+      <div id="blockLibraryStepName" hidden>
+        <p class="admin-hint">Gib dem Baustein optional einen eigenen Namen, um ihn später leichter wiederzufinden.</p>
+        <label class="admin-field">
+          <span>Name (optional)</span>
+          <input type="text" id="blockLibraryNameInput" placeholder="z. B. Startbereich-Zitat" autocomplete="off">
+        </label>
+        <div class="admin-modal-actions">
+          <button type="button" id="blockLibraryBack" class="btn btn-outline">Zurück</button>
+          <button type="button" id="blockLibraryAddConfirm" class="btn btn-primary">Hinzufügen</button>
+        </div>
       </div>
     </div>
   </div>
