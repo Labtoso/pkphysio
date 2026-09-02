@@ -1,4 +1,3 @@
-/* ---------- Reset & base ---------- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -79,7 +78,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 
 .lead { color: var(--color-ink-soft); font-size: 1.05rem; max-width: 60ch; }
 
-/* ---------- Buttons ---------- */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -105,7 +103,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .btn-outline:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .btn-header { padding: 10px 18px; font-size: .85rem; }
 
-/* ---------- Progress bar ---------- */
 .progress-bar {
   position: fixed;
   top: 0; left: 0;
@@ -116,7 +113,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   transition: width .1s ease-out;
 }
 
-/* ---------- Header ---------- */
 .site-header {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -211,7 +207,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .burger.open span:nth-child(2) { opacity: 0; }
 .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* ---------- Hero ---------- */
 .hero {
   padding: 206px 0 110px;
   border-bottom: 1px solid var(--color-border);
@@ -221,13 +216,11 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .hero-text { color: var(--color-ink-soft); font-size: 1.1rem; max-width: 56ch; margin-bottom: 34px; }
 .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
 
-/* ---------- Sections ---------- */
 .section { padding: 110px 0; }
 .section-alt { background: var(--color-bg-alt); }
 .section-head { max-width: 640px; margin-bottom: 50px; }
 .offers-head { margin-top: 90px; }
 
-/* ---------- About ---------- */
 .about-grid {
   display: grid;
   grid-template-columns: var(--portrait-width, 430px) 1fr;
@@ -265,7 +258,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .timeline strong { font-family: var(--font-head); font-size: .92rem; color: var(--color-ink); }
 .timeline p { color: var(--color-ink-soft); font-size: .95rem; }
 
-/* ---------- Services ---------- */
 .services-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -324,7 +316,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   gap: 28px;
 }
 
-/* ---------- Custom sections ---------- */
 .custom-section-inner { max-width: 760px; margin: 0 auto; }
 .custom-section-head { max-width: 100%; text-align: center; margin-left: auto; margin-right: auto; }
 .custom-section-head .eyebrow { text-align: center; }
@@ -332,7 +323,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .custom-section-text p { margin-bottom: 1em; }
 .custom-section-text p:last-child { margin-bottom: 0; }
 
-/* Textblock mit Bild */
 .custom-section-inner.has-image {
   max-width: 1100px;
   display: grid;
@@ -362,10 +352,8 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .custom-subblock { margin-top: 28px; }
 .custom-subblock h3 { margin-bottom: 10px; }
 
-/* FAQ-Liste */
 .custom-block-accordion { max-width: 820px; margin: 0 auto; }
 
-/* Tabelle */
 .custom-table-wrap { overflow-x: auto; }
 .custom-table { width: 100%; border-collapse: collapse; }
 .custom-table th, .custom-table td {
@@ -384,7 +372,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 }
 .custom-table tr:last-child td { border-bottom: none; }
 
-/* Bildergalerie */
 .custom-gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -398,7 +385,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   box-shadow: var(--shadow-sm);
 }
 
-/* Zitat */
 .custom-quote-container { max-width: 760px; margin: 0 auto; text-align: center; }
 .custom-quote p {
   font-family: var(--font-head);
@@ -418,12 +404,10 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   font-weight: 600;
 }
 
-/* Call-to-Action */
 .custom-cta-container { max-width: 640px; margin: 0 auto; text-align: center; }
 .custom-cta-container .eyebrow { text-align: center; }
 .custom-cta-text { color: var(--color-ink-soft); font-size: 1.05rem; margin: 16px 0 30px; }
 
-/* Video */
 .custom-video-wrap {
   position: relative;
   width: 100%;
@@ -440,7 +424,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   border: 0;
 }
 
-/* Statistik-Reihe */
 .custom-stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -456,7 +439,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 }
 .custom-stat-label { color: var(--color-ink-soft); font-size: .9rem; }
 
-/* Öffnungszeiten */
 .custom-hours-list { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; }
 .custom-hours-row {
   display: flex;
@@ -470,14 +452,12 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .custom-hours-day { color: var(--color-ink); font-weight: 600; }
 .custom-hours-time { color: var(--color-ink-soft); }
 
-/* Zwei-Spalten-Text */
 .custom-columns-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
 .custom-column h3 { margin-bottom: 14px; }
 @media (max-width: 760px) {
   .custom-columns-grid { grid-template-columns: 1fr; gap: 36px; }
 }
 
-/* Trenner */
 .custom-block-divider { padding: 36px 0; }
 .custom-divider-space { height: 1px; }
 .custom-divider-line {
@@ -501,7 +481,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .custom-divider-line span { position: relative; background: var(--color-bg); padding: 0 16px; }
 .section-alt .custom-divider-line span { background: var(--color-bg-alt); }
 
-/* Karte */
 .custom-map-wrap {
   position: relative;
   width: 100%;
@@ -518,7 +497,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   border: 0;
 }
 
-/* Team */
 .custom-team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 34px; }
 .custom-team-card { text-align: center; }
 .custom-team-photo { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; margin: 0 auto 18px; display: block; box-shadow: var(--shadow-sm); }
@@ -527,7 +505,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .custom-team-role { color: var(--color-primary); font-size: .88rem; font-weight: 600; margin-bottom: 10px; }
 .custom-team-bio { color: var(--color-ink-soft); font-size: .92rem; }
 
-/* Bewertungen */
 .custom-testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
 .custom-testimonial-card {
   background: var(--color-surface);
@@ -541,7 +518,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .custom-testimonial-author { color: var(--color-ink-soft); font-size: .88rem; font-weight: 600; }
 .custom-testimonial-author span { font-weight: 400; }
 
-/* Preisliste */
 .custom-pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; align-items: start; }
 .custom-pricing-card {
   background: var(--color-surface);
@@ -557,13 +533,11 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .custom-pricing-features li { position: relative; padding-left: 20px; font-size: .9rem; color: var(--color-ink-soft); }
 .custom-pricing-features li::before { content: ""; position: absolute; left: 0; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--color-primary); }
 
-/* Logo-Leiste */
 .custom-logos-eyebrow { text-align: center; }
 .custom-logos-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 40px; }
 .custom-logos-row img { max-height: 48px; max-width: 140px; object-fit: contain; opacity: .75; filter: grayscale(1); transition: opacity .2s ease, filter .2s ease; }
 .custom-logos-row img:hover { opacity: 1; filter: grayscale(0); }
 
-/* Social-Media-Icons */
 .custom-social-row { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
 .custom-social-icon {
   width: 46px;
@@ -582,7 +556,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 }
 .custom-social-icon:hover { border-color: var(--color-primary); color: var(--color-primary); transform: translateY(-3px); }
 
-/* ---------- FAQ ---------- */
 .faq-layout { max-width: 820px; margin: 0 auto; }
 .faq-layout .section-head { max-width: 100%; text-align: center; margin-left: auto; margin-right: auto; }
 .faq-layout .eyebrow { text-align: center; }
@@ -633,10 +606,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   text-decoration: underline;
 }
 
-/* Lists authored via the admin rich text editor.
-   Note: .service-card/.accordion-panel target the ul directly (not "p ul") because
-   the browser auto-closes the template's <p> when it hits a block-level <ul>,
-   so the list ends up a sibling of the p, not nested inside it. */
 .hero-text ul, .lead ul, .service-card ul, .accordion-panel ul, .custom-section-text ul {
   display: flex;
   flex-direction: column;
@@ -662,14 +631,11 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   flex-direction: column;
   gap: 8px;
 }
-/* These two lists render as a sibling of the auto-closed <p>, so they don't
-   inherit its color/size from ".service-card p" / ".accordion-panel p" — restore it. */
 .service-card ul, .service-card ol, .accordion-panel ul, .accordion-panel ol {
   color: var(--color-ink-soft);
   font-size: .95rem;
 }
 
-/* ---------- Kontakt ---------- */
 .kontakt-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -699,7 +665,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 }
 :root.light .kontakt-map iframe { filter: none; }
 
-/* ---------- Reveal animation ---------- */
 .reveal {
   opacity: 0;
   transform: translateY(24px);
@@ -707,7 +672,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 }
 .reveal.in-view { opacity: 1; transform: translateY(0); }
 
-/* ---------- Responsive ---------- */
 @media (max-width: 980px) {
   .about-grid, .kontakt-grid { grid-template-columns: 1fr; }
   .about-visual { max-width: 380px; margin: 0 auto; }

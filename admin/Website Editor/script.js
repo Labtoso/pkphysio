@@ -1,18 +1,12 @@
-// ---------- Config ----------
 const REPO_OWNER = 'Labtoso';
 const REPO_NAME = 'pkphysio';
 const REPO_BRANCH = 'main';
 const CONTENT_PATH = 'content.js';
 const TOKEN_KEY = 'pk_admin_token';
-// PIN gate and login now live on the /admin landing page. This screen only
-// checks whether a token already exists in this tab's session (see the
-// "Initial screen" block at the bottom) — if not, it sends the user back
-// there instead of showing its own login form.
 const PIN_SESSION_KEY = 'pk_admin_pin_ok';
 const PIN_ATTEMPTS_KEY = 'pk_admin_pin_attempts';
 const PIN_LOCK_KEY = 'pk_admin_pin_lock_until';
 
-// ---------- Base64 helpers (UTF-8 safe) ----------
 function utf8ToBase64(str) {
   return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, hex) => String.fromCharCode('0x' + hex)));
 }
@@ -20,7 +14,6 @@ function base64ToUtf8(b64) {
   return decodeURIComponent(atob(b64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
 }
 
-// ---------- GitHub API ----------
 function ghHeaders(token) {
   return {
     Authorization: 'token ' + token,
@@ -114,17 +107,14 @@ function serializeContentJs(data) {
   return 'window.SITE_CONTENT = ' + JSON.stringify(data, null, 2) + ';\n';
 }
 
-// ---------- State ----------
 let state = { token: null, sha: null, data: null };
 
-// ---------- DOM refs ----------
 const editorScreen = document.getElementById('editorScreen');
 const saveStatus = document.getElementById('saveStatus');
 const draggableSections = document.getElementById('draggableSections');
 
-// ---------- Custom blocks (page builder) ----------
-const pendingBlockImages = {}; // imageKey -> File
-const tableBlockData = new WeakMap(); // section -> { columns, rows }
+const pendingBlockImages = {};
+const tableBlockData = new WeakMap();
 
 function blockUid() {
   return 'custom-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
@@ -192,7 +182,6 @@ function finishBlockCard(section, cs) {
   return section;
 }
 
-// -- Textblock mit Bild --
 function createTextImageCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -278,7 +267,6 @@ function collectTextImageCard(section) {
   };
 }
 
-// -- FAQ-Liste --
 function createFaqBlockCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -325,7 +313,6 @@ function collectFaqBlockCard(section) {
   };
 }
 
-// -- Tabelle --
 function createTableBlockCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -430,7 +417,6 @@ function collectTableBlockCard(section) {
   };
 }
 
-// -- Bildergalerie --
 function createGalleryBlockCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -485,7 +471,6 @@ function collectGalleryBlockCard(section) {
   };
 }
 
-// -- Zitat --
 function createQuoteBlockCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -508,7 +493,6 @@ function collectQuoteBlockCard(section) {
   };
 }
 
-// -- Call-to-Action --
 function createCtaBlockCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -537,7 +521,6 @@ function collectCtaBlockCard(section) {
   };
 }
 
-// -- Video --
 function createVideoBlockCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -562,7 +545,6 @@ function collectVideoBlockCard(section) {
   };
 }
 
-// -- Statistik-Reihe --
 function createStatsBlockCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -604,7 +586,6 @@ function collectStatsBlockCard(section) {
   };
 }
 
-// -- Öffnungszeiten --
 function createHoursBlockCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -646,7 +627,6 @@ function collectHoursBlockCard(section) {
   };
 }
 
-// -- Zwei-Spalten-Text --
 function createColumnsBlockCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -688,7 +668,6 @@ function collectColumnsBlockCard(section) {
   };
 }
 
-// -- Trenner --
 function createDividerBlockCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -717,7 +696,6 @@ function collectDividerBlockCard(section) {
   };
 }
 
-// -- Karte --
 function createMapBlockCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -743,7 +721,6 @@ function collectMapBlockCard(section) {
   };
 }
 
-// -- Team --
 function createTeamBlockCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -814,7 +791,6 @@ function collectTeamBlockCard(section) {
   };
 }
 
-// -- Bewertungen --
 function createTestimonialsBlockCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -858,7 +834,6 @@ function collectTestimonialsBlockCard(section) {
   };
 }
 
-// -- Preisliste --
 function createPricingBlockCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -910,7 +885,6 @@ function collectPricingBlockCard(section) {
   };
 }
 
-// -- Logo-Leiste --
 function createLogosBlockCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -975,7 +949,6 @@ function collectLogosBlockCard(section) {
   };
 }
 
-// -- Social-Media-Icons --
 const SOCIAL_PLATFORMS = {
   instagram: 'Instagram',
   facebook: 'Facebook',
@@ -1028,7 +1001,6 @@ function collectSocialBlockCard(section) {
   };
 }
 
-// -- Block-Registry / Baustein-Bibliothek --
 const BLOCK_CATEGORIES = {
   text: 'Text & Inhalt',
   media: 'Medien',
@@ -1340,7 +1312,6 @@ async function uploadPendingBlockImages(token, data) {
   }
 }
 
-// ---------- Drag & drop reordering (SortableJS) ----------
 Sortable.create(draggableSections, {
   handle: '.admin-drag-handle',
   animation: 150,
@@ -1367,7 +1338,6 @@ function collectSectionOrder() {
   return [...draggableSections.querySelectorAll('.draggable')].map(el => el.dataset.sectionKey);
 }
 
-// ---------- Hide/show core sections ----------
 function setSectionHidden(section, hidden) {
   section.classList.toggle('hidden-section', hidden);
   section.dataset.hidden = hidden ? '1' : '';
@@ -1392,7 +1362,6 @@ function collectHiddenSections() {
   return [...draggableSections.querySelectorAll('.draggable[data-hidden="1"]')].map(el => el.dataset.sectionKey);
 }
 
-// ---------- Remove/restore core sections ----------
 const CORE_SECTION_NAMES = {
   hero: 'Startbereich',
   about: 'Über mich',
@@ -1577,7 +1546,6 @@ function readFixedFields(data) {
   data.kontakt.text = getQuillHtml('kontakt_text');
 }
 
-// ---------- Repeaters ----------
 function makeRemoveBtn(onRemove) {
   const btn = document.createElement('button');
   btn.type = 'button';
@@ -1659,7 +1627,6 @@ function collectFaq() {
   }));
 }
 
-// ---------- Rich text editor (Quill, bubble theme: options appear on text selection) ----------
 function quillToolbarOptions() {
   return [
     ['bold', 'italic', 'underline'],
@@ -1715,7 +1682,6 @@ document.querySelectorAll('[data-add]').forEach(btn => {
   });
 });
 
-// ---------- Images ----------
 const IMAGE_KEYS = ['portrait', 'logoDark', 'logoLight', 'favicon'];
 const pendingImages = {};
 
@@ -1747,7 +1713,6 @@ async function uploadPendingImages(token, data) {
   }
 }
 
-// ---------- Fonts ----------
 const FONT_OPTIONS = {
   poppins: 'Poppins',
   inter: 'Inter',
@@ -1756,7 +1721,7 @@ const FONT_OPTIONS = {
   lora: 'Lora',
   roboto: 'Roboto'
 };
-const pendingFonts = {}; // tempId -> File
+const pendingFonts = {};
 
 function populateFontSelects(customFonts) {
   const selects = [document.getElementById('design_headingFont'), document.getElementById('design_bodyFont')];
@@ -1851,7 +1816,6 @@ async function uploadPendingFonts(token, data) {
   data.customFonts = collectCustomFonts();
 }
 
-// ---------- Login (token already verified on /admin; this just loads content) ----------
 function withTimeout(promise, ms) {
   return Promise.race([
     promise,
@@ -1892,8 +1856,6 @@ async function login(token) {
 
     showEditor();
   } catch (err) {
-    // Token missing/invalid/expired — clear it and send the user back to the
-    // login screen on /admin instead of showing a dead editor here.
     try { sessionStorage.removeItem(TOKEN_KEY); } catch (e) {}
     backToAdminHome();
   }
@@ -1908,7 +1870,6 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
   backToAdminHome();
 });
 
-// ---------- Save ----------
 async function save() {
   if (!state.data) return;
   readFixedFields(state.data);
@@ -1963,7 +1924,6 @@ async function save() {
   }
 }
 
-// ---------- Save modal ----------
 const saveModalOverlay = document.getElementById('saveModalOverlay');
 const saveModalCommitInput = document.getElementById('commitMessageInput');
 
@@ -1996,7 +1956,6 @@ saveModalCommitInput.addEventListener('keydown', e => {
   }
 });
 
-// ---------- Block library modal ----------
 const blockLibraryOverlay = document.getElementById('blockLibraryOverlay');
 const blockLibrarySearch = document.getElementById('blockLibrarySearch');
 const blockLibraryStepPick = document.getElementById('blockLibraryStepPick');
@@ -2048,7 +2007,6 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !blockLibraryOverlay.hidden) closeBlockLibrary();
 });
 
-// ---------- Theme toggle ----------
 const adminThemeToggle = document.getElementById('themeToggle');
 adminThemeToggle.setAttribute('aria-pressed', String(document.documentElement.classList.contains('light')));
 adminThemeToggle.addEventListener('click', () => {
@@ -2058,7 +2016,6 @@ adminThemeToggle.addEventListener('click', () => {
   try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch (e) {}
 });
 
-// ---------- Static rich-text toolbars & design sliders ----------
 initQuillEditors(document);
 
 document.getElementById('design_borderRadius').addEventListener('input', e => {
@@ -2068,7 +2025,6 @@ document.getElementById('design_textScale').addEventListener('input', e => {
   document.getElementById('design_textScale_val').textContent = e.target.value;
 });
 
-// ---------- Spellcheck: turn off everywhere, including fields added later ----------
 function disableSpellcheck(root) {
   const candidates = [];
   if (root.matches && root.matches('input[type="text"], textarea, [contenteditable="true"]')) candidates.push(root);
@@ -2088,7 +2044,6 @@ new MutationObserver(mutations => {
   });
 }).observe(editorScreen, { childList: true, subtree: true });
 
-// ---------- Initial screen: need a token from /admin, or back we go ----------
 (function () {
   let token = null;
   try { token = sessionStorage.getItem(TOKEN_KEY); } catch (e) {}
@@ -2099,7 +2054,6 @@ new MutationObserver(mutations => {
   }
 })();
 
-// ---------- Sticky bar height (for scroll offset) ----------
 const adminStickybar = document.querySelector('.admin-stickybar');
 function updateStickybarHeight() {
   if (adminStickybar) {
@@ -2109,7 +2063,6 @@ function updateStickybarHeight() {
 window.addEventListener('resize', updateStickybarHeight);
 updateStickybarHeight();
 
-// ---------- Quick nav (jump to section) ----------
 document.querySelectorAll('.admin-quicknav-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const target = document.getElementById(btn.dataset.target);
@@ -2117,7 +2070,6 @@ document.querySelectorAll('.admin-quicknav-btn').forEach(btn => {
   });
 });
 
-// ---------- Search / filter ----------
 const adminSearchInput = document.getElementById('adminSearch');
 const adminSearchEmpty = document.getElementById('adminSearchEmpty');
 

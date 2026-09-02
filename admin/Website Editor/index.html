@@ -24,7 +24,6 @@
 </head>
 <body>
 
-<!-- ---------- EDITOR ---------- -->
 <div id="editorScreen" class="admin-editor" style="display:none">
   <div class="admin-stickybar">
     <header class="admin-topbar">
@@ -65,7 +64,6 @@
 
   <main class="admin-content">
 
-    <!-- DESIGN -->
     <section class="admin-section" id="section-design">
       <h2>Design</h2>
 
@@ -122,14 +120,12 @@
       </div>
     </section>
 
-    <!-- SEO / TAB -->
     <section class="admin-section" id="section-seo">
       <h2>Seiten-Titel &amp; Browser-Tab</h2>
       <label class="admin-field"><span>Titel (im Browser-Tab)</span><input id="meta_title" type="text"></label>
       <label class="admin-field"><span>Beschreibung (für Suchmaschinen)</span><textarea id="meta_description" rows="2"></textarea></label>
     </section>
 
-    <!-- NAVIGATION -->
     <section class="admin-section" id="section-navigation">
       <h2>Navigation &amp; Buttons</h2>
       <label class="admin-field"><span>Menüpunkt: Über mich</span><input id="nav_ueberMich" type="text"></label>
@@ -140,7 +136,6 @@
       <label class="admin-field"><span>Button im Kontakt-Bereich</span><input id="btn_kontaktCta" type="text"></label>
     </section>
 
-    <!-- BILDER -->
     <section class="admin-section" id="section-bilder">
       <h2>Bilder</h2>
       <p class="admin-hint">Neues Bild auswählen, um das aktuelle zu ersetzen. Wird erst beim Klick auf "Speichern" hochgeladen.</p>
@@ -180,10 +175,8 @@
 
     <h2 class="admin-page-heading">Seiteninhalt <span>ziehen zum Umsortieren</span></h2>
 
-    <!-- ---------- DRAGGABLE PAGE SECTIONS ---------- -->
     <div id="draggableSections">
 
-      <!-- HERO -->
       <section class="admin-section draggable" data-section-key="hero" id="section-hero">
         <div class="admin-section-header">
           <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Startbereich (oben auf der Seite)</h2>
@@ -203,7 +196,6 @@
         <label class="admin-field"><span>Button-Text (zu "Über mich" springen)</span><input id="hero_ctaSecondary" type="text"></label>
       </section>
 
-      <!-- ÜBER MICH -->
       <section class="admin-section draggable" data-section-key="about" id="section-about">
         <div class="admin-section-header">
           <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Über mich</h2>
@@ -224,7 +216,6 @@
         <button type="button" class="admin-add-btn" data-add="timeline">+ Eintrag hinzufügen</button>
       </section>
 
-      <!-- LEISTUNGEN + ANGEBOTE -->
       <section class="admin-section draggable" data-section-key="leistungen" id="section-leistungen">
         <div class="admin-section-header">
           <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Leistungen &amp; Angebote</h2>
@@ -258,7 +249,6 @@
         <button type="button" class="admin-add-btn" data-add="angebote">+ Angebot hinzufügen</button>
       </section>
 
-      <!-- FAQ -->
       <section class="admin-section draggable" data-section-key="faq" id="section-faq">
         <div class="admin-section-header">
           <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> FAQ</h2>
@@ -276,7 +266,6 @@
         <p class="admin-note">Tipp: In einer Antwort kann <code>{{phone}}</code> geschrieben werden – das wird automatisch durch die eingetragene Telefonnummer als klickbaren Link ersetzt.</p>
       </section>
 
-      <!-- KONTAKT -->
       <section class="admin-section draggable" data-section-key="kontakt" id="section-kontakt">
         <div class="admin-section-header">
           <h2><span class="admin-drag-handle" title="Ziehen zum Verschieben">≡</span> Kontakt</h2>
@@ -303,15 +292,12 @@
       </section>
 
     </div>
-    <!-- ---------- END DRAGGABLE PAGE SECTIONS ---------- -->
 
-    <!-- REMOVED SECTIONS (restorable) -->
     <div id="removedSectionsWrap" class="admin-removed-wrap" hidden>
       <p class="admin-hint">Entfernte Sektionen (nicht mehr auf der Website sichtbar):</p>
       <div id="removedSections" class="admin-removed-list"></div>
     </div>
 
-    <!-- BLOCK LIBRARY TRIGGER -->
     <div class="admin-add-block-fab-wrap" id="section-block-library">
       <button type="button" id="openBlockLibraryBtn" class="admin-add-block-fab" aria-label="Baustein hinzufügen" title="Baustein hinzufügen"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
     </div>
@@ -320,7 +306,6 @@
   </main>
 </div>
 
-<!-- ---------- BLOCK LIBRARY MODAL ---------- -->
 <div id="blockLibraryOverlay" class="admin-modal-overlay" hidden>
   <div class="admin-modal admin-modal-wide" role="dialog" aria-modal="true" aria-labelledby="blockLibraryTitle">
     <button type="button" id="blockLibraryClose" class="admin-modal-close admin-modal-close-right" aria-label="Schließen"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>
@@ -348,7 +333,6 @@
   </div>
 </div>
 
-<!-- ---------- SAVE MODAL ---------- -->
 <div id="saveModalOverlay" class="admin-modal-overlay" hidden>
   <div class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="saveModalTitle">
     <button type="button" id="saveModalClose" class="admin-modal-close" aria-label="Schließen"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>
