@@ -1,23 +1,18 @@
-// ---------- Config ----------
 const REPO_OWNER = 'Labtoso';
 const REPO_NAME = 'pkphysio';
 const REPO_BRANCH = 'main';
 const CONTENT_PATH = 'content.js';
 const TOKEN_KEY = 'pk_admin_token';
 
-// SHA-256 hash of the access password (never the plaintext). Only gates the
-// login form itself; it is not a substitute for the GitHub token check.
 const PIN_HASH = 'eec9bb67f607e0a241a430dd814b9407ef7a46084ddbdd7f4fb2f8e44760ad45';
 const PIN_SESSION_KEY = 'pk_admin_pin_ok';
 const PIN_ATTEMPTS_KEY = 'pk_admin_pin_attempts';
 const PIN_LOCK_KEY = 'pk_admin_pin_lock_until';
 
-// ---------- Base64 helpers (UTF-8 safe) ----------
 function base64ToUtf8(b64) {
   return decodeURIComponent(atob(b64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
 }
 
-// ---------- GitHub API ----------
 function ghHeaders(token) {
   return {
     Authorization: 'token ' + token,
@@ -44,7 +39,6 @@ function withTimeout(promise, ms) {
   ]);
 }
 
-// ---------- DOM refs ----------
 const pinScreen = document.getElementById('pinScreen');
 const pinInput = document.getElementById('pinInput');
 const pinBtn = document.getElementById('pinBtn');
@@ -55,7 +49,6 @@ const loginBtn = document.getElementById('loginBtn');
 const loginError = document.getElementById('loginError');
 const menuScreen = document.getElementById('menuScreen');
 
-// ---------- Screens ----------
 function showMenu() {
   pinScreen.style.display = 'none';
   loginScreen.style.display = 'none';
@@ -73,7 +66,6 @@ function showPinGate() {
   updatePinLockUI();
 }
 
-// ---------- Login (just verifies the token works, then shows the menu) ----------
 async function verifyAndEnter(token) {
   loginError.textContent = '';
   loginBtn.disabled = true;
@@ -120,8 +112,6 @@ document.getElementById('menuLogoutBtn').addEventListener('click', () => {
   showPinGate();
 });
 
-// ---------- PIN gate (obscures the login form from casual visitors; the
-// GitHub token is still the real access control) ----------
 async function sha256Hex(text) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
   return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -191,7 +181,6 @@ async function submitPin() {
 pinBtn.addEventListener('click', submitPin);
 pinInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitPin(); });
 
-// ---------- Theme toggle ----------
 const themeToggle = document.getElementById('themeToggle');
 themeToggle.setAttribute('aria-pressed', String(document.documentElement.classList.contains('light')));
 themeToggle.addEventListener('click', () => {
@@ -201,7 +190,6 @@ themeToggle.addEventListener('click', () => {
   try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch (e) {}
 });
 
-// ---------- Initial screen ----------
 (function () {
   let token = null;
   try { token = sessionStorage.getItem(TOKEN_KEY); } catch (e) {}

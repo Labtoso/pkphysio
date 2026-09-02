@@ -2,7 +2,6 @@ body {
   background: var(--color-bg);
 }
 
-/* ---------- Login / PIN ---------- */
 .admin-login {
   min-height: 100vh;
   display: flex;
@@ -82,7 +81,6 @@ body {
   border-color: var(--color-primary);
 }
 
-/* ---------- Menu ---------- */
 .admin-menu {
   min-height: 100vh;
   display: flex;
@@ -128,7 +126,6 @@ body {
 }
 .admin-menu-logout { width: auto; padding: 10px 24px; }
 
-/* ---------- Home button (standalone, e.g. on the Statistik page) ---------- */
 .admin-home-btn {
   display: inline-flex;
   align-items: center;

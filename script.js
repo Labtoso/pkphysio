@@ -1,4 +1,3 @@
-// ---------- Design (colors, fonts, sizes) ----------
 const FONT_OPTIONS = {
   poppins: '"Poppins", sans-serif',
   inter: '"Inter", sans-serif',
@@ -68,7 +67,6 @@ function applyDesign(design, customFonts) {
   root.setProperty('--font-body', resolveFont(design.bodyFont, customFonts));
 }
 
-// ---------- Render content from content.js ----------
 function applyTemplate(text, site) {
   return String(text)
     .replaceAll('{{phone}}', '<a href="tel:' + site.phoneHref + '">' + site.phone + '</a>')
@@ -80,12 +78,10 @@ function renderContent(data) {
 
   applyDesign(data.design, data.customFonts);
 
-  // tel-links (href everywhere, text only where marked)
   document.querySelectorAll('.tel-link').forEach(el => {
     el.href = 'tel:' + site.phoneHref;
   });
 
-  // Meta / tab
   if (data.meta) {
     document.title = data.meta.title;
     const descEl = document.getElementById('pageDescription');
@@ -94,7 +90,6 @@ function renderContent(data) {
   const faviconEl = document.getElementById('favicon');
   if (faviconEl && data.images) faviconEl.href = data.images.favicon;
 
-  // Nav
   if (data.nav) {
     document.getElementById('navUeberMich').textContent = data.nav.ueberMich;
     document.getElementById('navLeistungen').textContent = data.nav.leistungen;
@@ -102,20 +97,17 @@ function renderContent(data) {
     document.getElementById('navKontakt').textContent = data.nav.kontakt;
   }
 
-  // Images
   if (data.images) {
     document.getElementById('logoImgDark').src = data.images.logoDark;
     document.getElementById('logoImgLight').src = data.images.logoLight;
     document.getElementById('portraitImg').src = data.images.portrait;
   }
 
-  // Buttons
   if (data.buttons) {
     document.getElementById('headerCta').textContent = data.buttons.headerCta;
     document.getElementById('kontaktCta').textContent = data.buttons.kontaktCta;
   }
 
-  // Hero
   document.getElementById('heroEyebrow').textContent = data.hero.eyebrow;
   document.getElementById('heroTitle').textContent = data.hero.title;
   document.getElementById('heroSubtitle').textContent = data.hero.subtitle;
@@ -123,7 +115,6 @@ function renderContent(data) {
   document.getElementById('heroCtaPrimary').textContent = data.hero.ctaPrimary;
   document.getElementById('heroCtaSecondary').textContent = data.hero.ctaSecondary;
 
-  // About
   document.getElementById('aboutEyebrow').textContent = data.about.eyebrow;
   document.getElementById('aboutTitle').textContent = data.about.title;
   document.getElementById('aboutText').innerHTML = data.about.text;
@@ -139,7 +130,6 @@ function renderContent(data) {
     </li>
   `).join('');
 
-  // Leistungen
   document.getElementById('leistungenEyebrow').textContent = data.leistungen.eyebrow;
   document.getElementById('leistungenTitle').textContent = data.leistungen.title;
 
@@ -172,7 +162,6 @@ function renderContent(data) {
     </div>
   `).join('');
 
-  // FAQ
   document.getElementById('faqEyebrow').textContent = data.faq.eyebrow;
   document.getElementById('faqTitle').textContent = data.faq.title;
   document.getElementById('faqText').textContent = data.faq.text;
@@ -187,7 +176,6 @@ function renderContent(data) {
     </div>
   `).join('');
 
-  // Kontakt
   document.getElementById('kontaktEyebrow').textContent = data.kontakt.eyebrow;
   document.getElementById('kontaktTitle').textContent = data.kontakt.title;
   document.getElementById('kontaktText').innerHTML = data.kontakt.text;
@@ -203,7 +191,6 @@ function renderContent(data) {
   document.getElementById('kontaktMap').src =
     'https://maps.google.com/maps?q=' + encodeURIComponent(site.address) + '&t=&z=14&ie=UTF8&iwloc=&output=embed';
 
-  // Custom sections + section order
   renderCustomSections(data.customSections || [], site);
   reorderSections(
     data.order || ['hero', 'about', 'leistungen', 'faq', 'kontakt'],
@@ -539,7 +526,6 @@ function renderCustomSections(customSections, site) {
 function reorderSections(order, hiddenSections) {
   const main = document.getElementById('top');
 
-  // Any core section missing entirely from "order" was removed in the admin panel.
   Object.keys(SECTION_ID_MAP).forEach(key => {
     if (order.includes(key)) return;
     const el = document.getElementById(SECTION_ID_MAP[key]);
@@ -559,7 +545,6 @@ if (window.SITE_CONTENT) {
   renderContent(window.SITE_CONTENT);
 }
 
-// ---------- Header scroll state + progress bar ----------
 const header = document.getElementById('siteHeader');
 const progressBar = document.getElementById('progressBar');
 
@@ -573,7 +558,6 @@ function onScroll() {
 document.addEventListener('scroll', onScroll, { passive: true });
 onScroll();
 
-// ---------- Mobile menu ----------
 const burger = document.getElementById('burgerBtn');
 const nav = document.getElementById('mainNav');
 
@@ -591,7 +575,6 @@ nav.querySelectorAll('.nav-link').forEach(link => {
   });
 });
 
-// ---------- Active nav link on scroll ----------
 const sections = document.querySelectorAll('main section[id]');
 const navLinks = document.querySelectorAll('.nav-link');
 
@@ -607,7 +590,6 @@ const navObserver = new IntersectionObserver((entries) => {
 
 sections.forEach(section => navObserver.observe(section));
 
-// ---------- Scroll reveal ----------
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -619,7 +601,6 @@ const revealObserver = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-// ---------- Theme toggle ----------
 const themeToggle = document.getElementById('themeToggle');
 
 themeToggle.setAttribute('aria-pressed', String(document.documentElement.classList.contains('light')));
@@ -631,7 +612,6 @@ themeToggle.addEventListener('click', () => {
   try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch (e) {}
 });
 
-// ---------- FAQ accordion ----------
 document.querySelectorAll('.accordion-trigger').forEach(trigger => {
   trigger.addEventListener('click', () => {
     const item = trigger.closest('.accordion-item');

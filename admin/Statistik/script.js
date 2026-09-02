@@ -1,7 +1,3 @@
-// ---------- Statistik-Dashboard (GoatCounter) ----------
-// Liest die Zahlen über die GoatCounter-API. Schreibt nie etwas — reine
-// Anzeige. Der API-Token wird nur im Browser-Tab gehalten (sessionStorage),
-// nie in eine Datei geschrieben.
 const GC_CODE_KEY = 'pk_gc_code';
 const GC_TOKEN_KEY = 'pk_gc_token';
 
@@ -11,12 +7,7 @@ const CLICK_LABELS = {
   phone_kontakt: 'Telefon (Kontakt)',
   instagram: 'Instagram'
 };
-// Alles, was mit "social_" oder "cta_block" beginnt, wird zusätzlich
-// automatisch mit eingesammelt (siehe collectClicks unten) — deckt auch
-// Social-Media-Icons pro Plattform und CTA-Bausteine ab, ohne dass hier
-// jede einzelne Plattform gepflegt werden muss.
 
-// ---------- DOM refs ----------
 const connectScreen = document.getElementById('connectScreen');
 const dashboardScreen = document.getElementById('dashboardScreen');
 const gcCodeInput = document.getElementById('gcCodeInput');
@@ -24,7 +15,6 @@ const gcTokenInput = document.getElementById('gcTokenInput');
 const gcConnectBtn = document.getElementById('gcConnectBtn');
 const gcConnectError = document.getElementById('gcConnectError');
 
-// ---------- Date helpers ----------
 function isoHour(d) {
   const r = new Date(d);
   r.setMinutes(0, 0, 0);
@@ -42,7 +32,7 @@ function startOfDay(d) {
 }
 function startOfWeek(d) {
   const r = startOfDay(d);
-  const day = (r.getDay() + 6) % 7; // Montag = 0
+  const day = (r.getDay() + 6) % 7;
   r.setDate(r.getDate() - day);
   return r;
 }
@@ -53,7 +43,6 @@ function dayLabel(d) {
   return String(d.getDate()) + '.';
 }
 
-// ---------- GoatCounter API ----------
 function gcAuthHeader(token) {
   return 'Bearer ' + token;
 }
@@ -77,7 +66,6 @@ async function gcHits(code, token, start, end, limit) {
   return data.hits || [];
 }
 
-// ---------- Rendering ----------
 function deltaText(current, previous) {
   if (previous === 0) return current === 0 ? '±0 %' : '+∞ %';
   const pct = Math.round(((current - previous) / previous) * 100);
@@ -94,7 +82,6 @@ function renderStatTile(container, label, current, previous) {
   container.appendChild(tile);
 }
 function renderTrendChart(container, hits, days, today) {
-  // Summiere alle Nicht-Event-Pfade (also echte Seitenaufrufe) pro Tag.
   const byDay = {};
   for (let i = days - 1; i >= 0; i--) {
     byDay[addDays(startOfDay(today), -i).toISOString().slice(0, 10)] = 0;
@@ -183,7 +170,6 @@ async function loadDashboard(code, token) {
   }
 }
 
-// ---------- Connect screen ----------
 function showConnect() {
   connectScreen.style.display = 'flex';
   dashboardScreen.style.display = 'none';
@@ -230,7 +216,6 @@ document.getElementById('gcDisconnectBtn').addEventListener('click', () => {
   showConnect();
 });
 
-// ---------- Initial screen ----------
 (function () {
   let code = null, token = null;
   try {
@@ -245,7 +230,6 @@ document.getElementById('gcDisconnectBtn').addEventListener('click', () => {
   }
 })();
 
-// ---------- Theme toggle (same mechanism/key as the rest of the site) ----------
 const themeToggle = document.getElementById('themeToggle');
 themeToggle.setAttribute('aria-pressed', String(document.documentElement.classList.contains('light')));
 themeToggle.addEventListener('click', () => {

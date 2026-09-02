@@ -18,7 +18,6 @@ body { background: var(--color-bg); }
 .stats-theme-toggle { position: fixed; top: 24px; right: 24px; z-index: 10; }
 .admin-home-btn-standalone { position: fixed; z-index: 10; }
 
-/* ---------- Stat tiles ---------- */
 .stat-tiles-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -38,11 +37,9 @@ body { background: var(--color-bg); }
 .stat-tile-value { font-family: var(--font-head); font-weight: 800; font-size: 2.2rem; color: var(--color-primary); }
 .stat-tile-delta { font-size: .82rem; color: var(--color-ink-soft); }
 
-/* ---------- Sections ---------- */
 .stats-section { margin-bottom: 48px; }
 .stats-section h2 { font-size: 1.1rem; margin-bottom: 20px; }
 
-/* ---------- Trend chart (bars) ---------- */
 .trend-chart {
   display: flex;
   align-items: flex-end;
@@ -72,7 +69,6 @@ body { background: var(--color-bg); }
 }
 .trend-bar-day { font-size: .7rem; color: var(--color-ink-soft); }
 
-/* ---------- Click breakdown (horizontal bars) ---------- */
 .click-row {
   display: grid;
   grid-template-columns: 180px 1fr 44px;
