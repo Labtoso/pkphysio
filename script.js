@@ -73,7 +73,7 @@ function applyTemplate(text, site) {
     .replaceAll('{{phoneHref}}', site.phoneHref);
 }
 
-const KONTAKT_MAP_COORDS = { lat: 48.0465791, lon: 15.7109788 };
+const KONTAKT_MAP_COORDS = { lat: 48.045429, lon: 15.7110385 };
 
 function loadKontaktMap() {
   const frame = document.getElementById('kontaktMap');
