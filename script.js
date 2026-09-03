@@ -85,6 +85,16 @@ function loadKontaktMap() {
   frame.src = 'https://www.openstreetmap.org/export/embed.html?bbox=' + bbox + '&layer=mapnik&marker=' + lat + ',' + lon;
 }
 
+function getMapsAppLink(address) {
+  const ua = navigator.userAgent || '';
+  const isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const query = encodeURIComponent(address);
+  if (isIOS) {
+    return { href: 'https://maps.apple.com/?q=' + query, label: 'In Karten öffnen' };
+  }
+  return { href: 'https://www.google.com/maps/search/?api=1&query=' + query, label: 'In Google Maps öffnen' };
+}
+
 function renderContent(data) {
   const site = data.site;
 
@@ -192,9 +202,10 @@ function renderContent(data) {
   document.getElementById('kontaktTitle').textContent = data.kontakt.title;
   document.getElementById('kontaktText').innerHTML = data.kontakt.text;
 
+  const mapsLink = getMapsAppLink(site.address);
   const contactList = document.getElementById('contactList');
   contactList.innerHTML = `
-    <li><div><strong>Adresse</strong><p>${site.address}</p><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address)}" target="_blank" rel="noopener">In Google Maps öffnen</a></div></li>
+    <li><div><strong>Adresse</strong><p>${site.address}</p><a class="map-link" href="${mapsLink.href}" target="_blank" rel="noopener">${mapsLink.label}</a></div></li>
     <li><div><strong>Telefon</strong><p><a href="tel:${site.phoneHref}">${site.phone}</a></p></div></li>
     <li><div><strong>E-Mail</strong><p><a href="mailto:${site.email}">${site.email}</a></p></div></li>
     <li><div><strong>Instagram</strong><p><a href="${site.instagramUrl}" target="_blank" rel="noopener" data-goatcounter-click="instagram">${site.instagramHandle}</a></p></div></li>
