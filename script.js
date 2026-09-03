@@ -73,16 +73,13 @@ function applyTemplate(text, site) {
     .replaceAll('{{phoneHref}}', site.phoneHref);
 }
 
-const KONTAKT_MAP_COORDS = { lat: 48.045429, lon: 15.7110385 };
+const KONTAKT_MAP_EMBED_URL =
+  'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d544.7829841735172!2d15.710761639315093!3d48.04512172982965!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476d8e874edccf03%3A0x6dfbe136023b1fcc!2sKleinzeller%20Landstra%C3%9Fe%2028A%2C%203162%20Rainfeld!5e0!3m2!1sde!2sat!4v1788435867577!5m2!1sde!2sat';
 
 function loadKontaktMap() {
   const frame = document.getElementById('kontaktMap');
   if (!frame) return;
-  const { lat, lon } = KONTAKT_MAP_COORDS;
-  const dLat = 0.004;
-  const dLon = 0.006;
-  const bbox = [lon - dLon, lat - dLat, lon + dLon, lat + dLat].join(',');
-  frame.src = 'https://www.openstreetmap.org/export/embed.html?bbox=' + bbox + '&layer=mapnik&marker=' + lat + ',' + lon;
+  frame.src = KONTAKT_MAP_EMBED_URL;
 }
 
 function getMapsAppLink(address) {
