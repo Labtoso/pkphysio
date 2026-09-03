@@ -73,6 +73,18 @@ function applyTemplate(text, site) {
     .replaceAll('{{phoneHref}}', site.phoneHref);
 }
 
+const KONTAKT_MAP_COORDS = { lat: 48.0465791, lon: 15.7109788 };
+
+function loadKontaktMap() {
+  const frame = document.getElementById('kontaktMap');
+  if (!frame) return;
+  const { lat, lon } = KONTAKT_MAP_COORDS;
+  const dLat = 0.004;
+  const dLon = 0.006;
+  const bbox = [lon - dLon, lat - dLat, lon + dLon, lat + dLat].join(',');
+  frame.src = 'https://www.openstreetmap.org/export/embed.html?bbox=' + bbox + '&layer=mapnik&marker=' + lat + ',' + lon;
+}
+
 function renderContent(data) {
   const site = data.site;
 
@@ -182,14 +194,13 @@ function renderContent(data) {
 
   const contactList = document.getElementById('contactList');
   contactList.innerHTML = `
-    <li><div><strong>Adresse</strong><p>${site.address}</p></div></li>
+    <li><div><strong>Adresse</strong><p>${site.address}</p><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address)}" target="_blank" rel="noopener">In Google Maps öffnen</a></div></li>
     <li><div><strong>Telefon</strong><p><a href="tel:${site.phoneHref}">${site.phone}</a></p></div></li>
     <li><div><strong>E-Mail</strong><p><a href="mailto:${site.email}">${site.email}</a></p></div></li>
     <li><div><strong>Instagram</strong><p><a href="${site.instagramUrl}" target="_blank" rel="noopener" data-goatcounter-click="instagram">${site.instagramHandle}</a></p></div></li>
   `;
 
-  document.getElementById('kontaktMap').src =
-    'https://maps.google.com/maps?q=' + encodeURIComponent(site.address) + '&t=&z=14&ie=UTF8&iwloc=&output=embed';
+  loadKontaktMap();
 
   renderCustomSections(data.customSections || [], site);
   reorderSections(
