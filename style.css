@@ -650,6 +650,7 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .contact-list strong { font-family: var(--font-head); font-size: .88rem; display: block; margin-bottom: 2px; }
 .contact-list p, .contact-list a { color: var(--color-ink-soft); font-size: .95rem; }
 .contact-list a:hover { color: var(--color-primary); }
+.map-link { display: inline-block; margin-top: 4px; font-size: .85rem; text-decoration: underline; text-underline-offset: 2px; }
 
 .kontakt-map {
   border-radius: var(--radius);
