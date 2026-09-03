@@ -1,2 +1,4 @@
 User-agent: *
 Disallow: /admin/
+
+Sitemap: https://labtoso.github.io/pkphysio/sitemap.xml
