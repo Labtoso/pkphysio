@@ -1,6 +1,8 @@
 (function () {
   try {
-    if (!sessionStorage.getItem('pk_admin_token')) {
+    var nav = sessionStorage.getItem('pk_admin_nav');
+    if (nav) sessionStorage.removeItem('pk_admin_nav');
+    if (!nav || !sessionStorage.getItem('pk_admin_token')) {
       window.location.href = '../';
     }
   } catch (e) {

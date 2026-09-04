@@ -3,6 +3,7 @@ const REPO_NAME = 'pkphysio';
 const REPO_BRANCH = 'main';
 const CONTENT_PATH = 'content.js';
 const TOKEN_KEY = 'pk_admin_token';
+const NAV_TOKEN_KEY = 'pk_admin_nav';
 
 const PIN_HASH = 'eec9bb67f607e0a241a430dd814b9407ef7a46084ddbdd7f4fb2f8e44760ad45';
 const PIN_SESSION_KEY = 'pk_admin_pin_ok';
@@ -103,8 +104,16 @@ loginBtn.addEventListener('click', () => {
 });
 tokenInput.addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn.click(); });
 
+document.querySelectorAll('.admin-menu-card').forEach(link => {
+  link.addEventListener('click', () => {
+    const token = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2);
+    try { sessionStorage.setItem(NAV_TOKEN_KEY, token); } catch (e) {}
+  });
+});
+
 document.getElementById('menuLogoutBtn').addEventListener('click', () => {
   try { sessionStorage.removeItem(TOKEN_KEY); } catch (e) {}
+  try { sessionStorage.removeItem(NAV_TOKEN_KEY); } catch (e) {}
   try { sessionStorage.removeItem(PIN_SESSION_KEY); } catch (e) {}
   try { sessionStorage.removeItem(PIN_ATTEMPTS_KEY); } catch (e) {}
   try { sessionStorage.removeItem(PIN_LOCK_KEY); } catch (e) {}
