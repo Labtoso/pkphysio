@@ -417,6 +417,32 @@ function collectTableBlockCard(section) {
   };
 }
 
+const GALLERY_LAYOUTS = [
+  ['grid', 'Raster'],
+  ['masonry', 'Mauerwerk'],
+  ['carousel', 'Karussell'],
+  ['featured', 'Hervorgehoben'],
+  ['mosaic', 'Mosaik'],
+  ['offset', 'Versetzt'],
+  ['justified', 'Zeilenweise'],
+  ['circles', 'Kreise'],
+  ['stack', 'Liste'],
+  ['diagonal', 'Diagonal']
+];
+const GALLERY_SIZES = [
+  ['small', 'Klein'],
+  ['medium', 'Mittel'],
+  ['large', 'Groß'],
+  ['xlarge', 'Sehr groß']
+];
+const GALLERY_ANIMATIONS = [
+  ['fade', 'Sanft einblenden'],
+  ['zoom', 'Hineinzoomen'],
+  ['slide', 'Von der Seite'],
+  ['flip', 'Kippen'],
+  ['blur', 'Unschärfe auflösen']
+];
+
 function createGalleryBlockCard(cs) {
   const section = document.createElement('section');
   section.className = 'admin-section draggable';
@@ -427,6 +453,30 @@ function createGalleryBlockCard(cs) {
     ${blockHeaderHtml(cs, 'Bildergalerie')}
     <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input class="cs-eyebrow" type="text" value="${escapeAttr(cs.eyebrow || '')}"></label>
     <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
+    <div class="admin-color-row">
+      <label class="admin-field admin-field-inline"><span>Layout</span>
+        <select class="cs-gallery-layout">
+          ${GALLERY_LAYOUTS.map(([v, l]) => `<option value="${v}" ${cs.layout === v ? 'selected' : ''}>${l}</option>`).join('')}
+        </select>
+      </label>
+      <label class="admin-field admin-field-inline"><span>Spalten</span>
+        <select class="cs-gallery-columns">
+          ${[2, 3, 4, 5, 6].map(n => `<option value="${n}" ${(cs.columns || 3) === n ? 'selected' : ''}>${n}</option>`).join('')}
+        </select>
+      </label>
+    </div>
+    <div class="admin-color-row">
+      <label class="admin-field admin-field-inline"><span>Bildgröße</span>
+        <select class="cs-gallery-size">
+          ${GALLERY_SIZES.map(([v, l]) => `<option value="${v}" ${(cs.size || 'medium') === v ? 'selected' : ''}>${l}</option>`).join('')}
+        </select>
+      </label>
+      <label class="admin-field admin-field-inline"><span>Animation</span>
+        <select class="cs-gallery-animation">
+          ${GALLERY_ANIMATIONS.map(([v, l]) => `<option value="${v}" ${(cs.animation || 'fade') === v ? 'selected' : ''}>${l}</option>`).join('')}
+        </select>
+      </label>
+    </div>
     <div class="cs-gallery-list admin-repeater"></div>
     <button type="button" class="admin-add-btn cs-gallery-add">+ Bild hinzufügen</button>
   `;
@@ -467,6 +517,10 @@ function collectGalleryBlockCard(section) {
     type: 'gallery',
     eyebrow: section.querySelector('.cs-eyebrow').value,
     title: section.querySelector('.cs-title').value,
+    layout: section.querySelector('.cs-gallery-layout').value,
+    columns: Number(section.querySelector('.cs-gallery-columns').value) || 3,
+    size: section.querySelector('.cs-gallery-size').value,
+    animation: section.querySelector('.cs-gallery-animation').value,
     images: [...section.querySelectorAll('.admin-gallery-slot')].map(row => row.dataset.imagePath || '').filter(Boolean)
   };
 }
@@ -1046,7 +1100,7 @@ const BLOCK_TYPES = {
     label: 'Bildergalerie',
     category: 'media',
     icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>',
-    defaults: () => ({ id: blockUid(), type: 'gallery', eyebrow: '', title: 'Galerie', images: [] }),
+    defaults: () => ({ id: blockUid(), type: 'gallery', eyebrow: '', title: 'Galerie', layout: 'grid', columns: 3, size: 'medium', animation: 'fade', images: [] }),
     create: createGalleryBlockCard,
     collect: collectGalleryBlockCard
   },
@@ -1312,6 +1366,43 @@ async function uploadPendingBlockImages(token, data) {
   }
 }
 
+const AUTO_SCROLL_ZONE = 140;
+const AUTO_SCROLL_MAX_SPEED = 32;
+let autoScrollSpeed = 0;
+let autoScrollRAF = null;
+
+function autoScrollStep() {
+  if (autoScrollSpeed === 0) {
+    autoScrollRAF = null;
+    return;
+  }
+  window.scrollBy(0, autoScrollSpeed);
+  autoScrollRAF = requestAnimationFrame(autoScrollStep);
+}
+function updateAutoScroll(clientY) {
+  if (typeof clientY !== 'number') return;
+  const vh = window.innerHeight;
+  if (clientY < AUTO_SCROLL_ZONE) {
+    const intensity = (AUTO_SCROLL_ZONE - clientY) / AUTO_SCROLL_ZONE;
+    autoScrollSpeed = -Math.ceil(intensity * AUTO_SCROLL_MAX_SPEED);
+  } else if (clientY > vh - AUTO_SCROLL_ZONE) {
+    const intensity = (clientY - (vh - AUTO_SCROLL_ZONE)) / AUTO_SCROLL_ZONE;
+    autoScrollSpeed = Math.ceil(intensity * AUTO_SCROLL_MAX_SPEED);
+  } else {
+    autoScrollSpeed = 0;
+  }
+  if (autoScrollSpeed !== 0 && autoScrollRAF === null) {
+    autoScrollRAF = requestAnimationFrame(autoScrollStep);
+  }
+}
+function stopAutoScroll() {
+  autoScrollSpeed = 0;
+  if (autoScrollRAF !== null) {
+    cancelAnimationFrame(autoScrollRAF);
+    autoScrollRAF = null;
+  }
+}
+
 Sortable.create(draggableSections, {
   handle: '.admin-drag-handle',
   animation: 150,
@@ -1320,11 +1411,16 @@ Sortable.create(draggableSections, {
   forceFallback: true,
   fallbackClass: 'admin-sortable-drag-clone',
   fallbackOnBody: true,
-  scroll: true,
-  scrollSensitivity: 120,
-  scrollSpeed: 18,
+  scroll: false,
   onStart: () => document.body.classList.add('admin-dragging-active'),
-  onEnd: () => document.body.classList.remove('admin-dragging-active')
+  onMove: evt => {
+    const oe = evt.originalEvent;
+    if (oe) updateAutoScroll(oe.touches ? oe.touches[0].clientY : oe.clientY);
+  },
+  onEnd: () => {
+    document.body.classList.remove('admin-dragging-active');
+    stopAutoScroll();
+  }
 });
 
 function applySectionOrder(order) {
