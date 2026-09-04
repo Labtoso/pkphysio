@@ -1864,6 +1864,7 @@ async function login(token) {
 document.getElementById('logoutBtn').addEventListener('click', () => {
   state = { token: null, sha: null, data: null };
   try { sessionStorage.removeItem(TOKEN_KEY); } catch (e) {}
+  try { sessionStorage.removeItem('pk_admin_nav'); } catch (e) {}
   try { sessionStorage.removeItem(PIN_SESSION_KEY); } catch (e) {}
   try { sessionStorage.removeItem(PIN_ATTEMPTS_KEY); } catch (e) {}
   try { sessionStorage.removeItem(PIN_LOCK_KEY); } catch (e) {}
