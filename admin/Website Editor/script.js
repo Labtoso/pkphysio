@@ -427,7 +427,9 @@ const GALLERY_LAYOUTS = [
   ['justified', 'Zeilenweise'],
   ['circles', 'Kreise'],
   ['stack', 'Liste'],
-  ['diagonal', 'Diagonal']
+  ['diagonal', 'Diagonal'],
+  ['marquee-left', 'Laufband nach links'],
+  ['marquee-right', 'Laufband nach rechts']
 ];
 const GALLERY_SIZES = [
   ['small', 'Klein'],
