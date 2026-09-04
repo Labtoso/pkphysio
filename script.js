@@ -306,14 +306,18 @@ const CUSTOM_BLOCK_RENDERERS = {
   },
   gallery(cs) {
     const images = cs.images || [];
+    const layout = cs.layout || 'grid';
+    const size = cs.size || 'medium';
+    const animation = cs.animation || 'fade';
+    const columns = cs.columns || 3;
     return `
       <div class="container">
         <div class="section-head reveal custom-section-head">
           <p class="eyebrow">${cs.eyebrow || ''}</p>
           <h2>${cs.title || ''}</h2>
         </div>
-        <div class="custom-gallery-grid reveal">
-          ${images.map(src => `<img src="${src}" loading="lazy">`).join('')}
+        <div class="custom-gallery-grid gallery-layout-${layout} gallery-size-${size}" style="--gallery-cols:${columns}">
+          ${images.map((src, i) => `<img src="${src}" loading="lazy" class="reveal gallery-anim-${animation}" style="transition-delay:${Math.min(i, 8) * 70}ms">`).join('')}
         </div>
       </div>
     `;

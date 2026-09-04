@@ -381,16 +381,50 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 
 .custom-gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(max(140px, calc((100% - (var(--gallery-cols, 3) - 1) * 20px) / var(--gallery-cols, 3))), 1fr));
   gap: 20px;
 }
 .custom-gallery-grid img {
+  display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: var(--gallery-ratio, 4 / 3);
   object-fit: cover;
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
 }
+
+.gallery-size-small { --gallery-ratio: 1 / 1; --gallery-row-h: 110px; --gallery-justify-h: 150px; --gallery-circle-d: 90px; }
+.gallery-size-medium { --gallery-ratio: 4 / 3; --gallery-row-h: 150px; --gallery-justify-h: 210px; --gallery-circle-d: 120px; }
+.gallery-size-large { --gallery-ratio: 3 / 2; --gallery-row-h: 190px; --gallery-justify-h: 270px; --gallery-circle-d: 150px; }
+.gallery-size-xlarge { --gallery-ratio: 16 / 9; --gallery-row-h: 230px; --gallery-justify-h: 330px; --gallery-circle-d: 180px; }
+
+.gallery-layout-masonry { display: block; columns: 200px var(--gallery-cols, 3); column-gap: 20px; }
+.gallery-layout-masonry img { aspect-ratio: auto; height: auto; margin-bottom: 20px; break-inside: avoid; }
+
+.gallery-layout-carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; }
+.gallery-layout-carousel img { flex: 0 0 max(140px, calc((100% - (var(--gallery-cols, 3) - 1) * 20px) / var(--gallery-cols, 3))); width: auto; scroll-snap-align: start; }
+
+.gallery-layout-featured { grid-auto-rows: var(--gallery-row-h, 150px); }
+.gallery-layout-featured img { width: 100%; height: 100%; aspect-ratio: auto; }
+.gallery-layout-featured img:first-child { grid-column: span 2; grid-row: span 2; }
+
+.gallery-layout-mosaic { grid-auto-rows: var(--gallery-row-h, 150px); }
+.gallery-layout-mosaic img { width: 100%; height: 100%; aspect-ratio: auto; }
+.gallery-layout-mosaic img:nth-child(6n+1) { grid-column: span 2; grid-row: span 2; }
+
+.gallery-layout-offset img:nth-child(even) { margin-top: 32px; }
+
+.gallery-layout-justified { display: flex; flex-wrap: wrap; }
+.gallery-layout-justified img { flex: 1 1 auto; width: auto; min-width: 140px; height: var(--gallery-justify-h, 210px); aspect-ratio: auto; }
+
+.gallery-layout-circles { display: flex; flex-wrap: wrap; justify-content: center; }
+.gallery-layout-circles img { width: var(--gallery-circle-d, 120px); height: var(--gallery-circle-d, 120px); aspect-ratio: 1 / 1; border-radius: 50%; }
+
+.gallery-layout-stack { display: flex; flex-direction: column; }
+.gallery-layout-stack img { aspect-ratio: 16 / 9; }
+
+.gallery-layout-diagonal img:nth-child(odd) { translate: 0 -14px; rotate: -1.2deg; }
+.gallery-layout-diagonal img:nth-child(even) { translate: 0 14px; rotate: 1.2deg; }
 
 .custom-quote-container { max-width: 760px; margin: 0 auto; text-align: center; }
 .custom-quote p {
@@ -676,15 +710,30 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .reveal {
   opacity: 0;
   transform: translateY(24px);
-  transition: opacity .7s ease, transform .7s ease;
+  transition: opacity .7s ease, transform .7s ease, filter .7s ease;
 }
 .reveal.in-view { opacity: 1; transform: translateY(0); }
+
+.gallery-anim-fade { transform: translateY(24px); }
+.gallery-anim-fade.in-view { transform: translateY(0); }
+.gallery-anim-zoom { transform: scale(.85); }
+.gallery-anim-zoom.in-view { transform: scale(1); }
+.gallery-anim-slide { transform: translateX(-40px); }
+.gallery-anim-slide.in-view { transform: translateX(0); }
+.gallery-anim-slide:nth-child(even) { transform: translateX(40px); }
+.gallery-anim-slide:nth-child(even).in-view { transform: translateX(0); }
+.gallery-anim-flip { transform: perspective(800px) rotateY(35deg); }
+.gallery-anim-flip.in-view { transform: perspective(800px) rotateY(0deg); }
+.gallery-anim-blur { transform: none; filter: blur(10px); }
+.gallery-anim-blur.in-view { filter: blur(0); }
 
 @media (max-width: 980px) {
   .about-grid, .kontakt-grid { grid-template-columns: 1fr; }
   .about-visual { max-width: 380px; margin: 0 auto; }
   .services-grid, .offers-grid { grid-template-columns: 1fr; }
   .kontakt-map { aspect-ratio: 16/10; }
+  .gallery-layout-carousel img { flex-basis: calc(70% - 10px); }
+  .gallery-layout-diagonal img { translate: none; rotate: none; }
 }
 
 @media (max-width: 860px) {
