@@ -175,7 +175,7 @@ function finishBlockCard(section, cs) {
   removeBtn.type = 'button';
   removeBtn.className = 'admin-remove-core-btn';
   removeBtn.textContent = 'Entfernen';
-  removeBtn.addEventListener('click', () => section.remove());
+  removeBtn.addEventListener('click', () => openRemoveBlockModal(section));
   const actions = section.querySelector('.admin-header-actions');
   if (actions) actions.appendChild(removeBtn);
   else section.appendChild(removeBtn);
@@ -1954,6 +1954,76 @@ saveModalCommitInput.addEventListener('keydown', e => {
     e.preventDefault();
     closeSaveModal();
     save();
+  }
+});
+
+const removeBlockOverlay = document.getElementById('removeBlockOverlay');
+const removeBlockStepConfirm = document.getElementById('removeBlockStepConfirm');
+const removeBlockStepType = document.getElementById('removeBlockStepType');
+const removeBlockName = document.getElementById('removeBlockName');
+const removeBlockNameRepeat = document.getElementById('removeBlockNameRepeat');
+const removeBlockTypeInput = document.getElementById('removeBlockTypeInput');
+const removeBlockConfirmBtn = document.getElementById('removeBlockConfirm');
+let pendingRemoveSection = null;
+let pendingRemoveName = '';
+
+function getBlockDisplayName(section) {
+  const label = section.querySelector('.admin-block-label');
+  if (label) return label.textContent.trim();
+  const input = section.querySelector('.admin-block-label-input');
+  if (input) return (input.value.trim() || input.placeholder || 'Baustein');
+  return 'Baustein';
+}
+
+function showRemoveBlockStep(step) {
+  removeBlockStepConfirm.hidden = step !== 'confirm';
+  removeBlockStepType.hidden = step !== 'type';
+}
+
+function openRemoveBlockModal(section) {
+  pendingRemoveSection = section;
+  pendingRemoveName = getBlockDisplayName(section);
+  removeBlockName.textContent = pendingRemoveName;
+  removeBlockNameRepeat.textContent = pendingRemoveName;
+  removeBlockTypeInput.value = '';
+  removeBlockConfirmBtn.disabled = true;
+  showRemoveBlockStep('confirm');
+  removeBlockOverlay.hidden = false;
+}
+function closeRemoveBlockModal() {
+  removeBlockOverlay.hidden = true;
+  pendingRemoveSection = null;
+  pendingRemoveName = '';
+}
+
+document.getElementById('removeBlockClose').addEventListener('click', closeRemoveBlockModal);
+document.getElementById('removeBlockCancel').addEventListener('click', closeRemoveBlockModal);
+removeBlockOverlay.addEventListener('click', e => {
+  if (e.target === removeBlockOverlay) closeRemoveBlockModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !removeBlockOverlay.hidden) closeRemoveBlockModal();
+});
+
+document.getElementById('removeBlockContinue').addEventListener('click', () => {
+  showRemoveBlockStep('type');
+  removeBlockTypeInput.focus();
+});
+document.getElementById('removeBlockBack').addEventListener('click', () => {
+  showRemoveBlockStep('confirm');
+});
+removeBlockTypeInput.addEventListener('input', () => {
+  removeBlockConfirmBtn.disabled = removeBlockTypeInput.value.trim() !== pendingRemoveName;
+});
+removeBlockConfirmBtn.addEventListener('click', () => {
+  if (removeBlockConfirmBtn.disabled || !pendingRemoveSection) return;
+  pendingRemoveSection.remove();
+  closeRemoveBlockModal();
+});
+removeBlockTypeInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    if (!removeBlockConfirmBtn.disabled) removeBlockConfirmBtn.click();
   }
 });
 

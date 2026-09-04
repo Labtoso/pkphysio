@@ -341,6 +341,34 @@
   </div>
 </div>
 
+<div id="removeBlockOverlay" class="admin-modal-overlay" hidden>
+  <div class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="removeBlockTitle">
+    <button type="button" id="removeBlockClose" class="admin-modal-close" aria-label="Schließen"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>
+
+    <div id="removeBlockStepConfirm">
+      <h2 id="removeBlockTitle">Baustein entfernen?</h2>
+      <p class="admin-hint">Möchtest du den Baustein „<strong id="removeBlockName"></strong>" wirklich entfernen? Das kann nicht rückgängig gemacht werden.</p>
+      <div class="admin-modal-actions">
+        <button type="button" id="removeBlockCancel" class="btn btn-outline">Abbrechen</button>
+        <button type="button" id="removeBlockContinue" class="btn btn-danger">Ja, entfernen</button>
+      </div>
+    </div>
+
+    <div id="removeBlockStepType" hidden>
+      <h2>Löschen bestätigen</h2>
+      <p class="admin-hint">Gib zur Bestätigung den Namen „<strong id="removeBlockNameRepeat"></strong>" ein.</p>
+      <label class="admin-field">
+        <span>Name des Bausteins</span>
+        <input type="text" id="removeBlockTypeInput" autocomplete="off">
+      </label>
+      <div class="admin-modal-actions">
+        <button type="button" id="removeBlockBack" class="btn btn-outline">Zurück</button>
+        <button type="button" id="removeBlockConfirm" class="btn btn-danger" disabled>Endgültig löschen</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js" integrity="sha384-HZZ/fukV+9G8gwTNjN7zQDG0Sp7MsZy5DDN6VfY3Be7V9dvQpEpR2jF2HlyFUUjU" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js" integrity="sha384-utBUCeG4SYaCm4m7GQZYr8Hy8Fpy3V4KGjBZaf4WTKOcwhCYpt/0PfeEe3HNlwx8" crossorigin="anonymous"></script>
 <script src="script.js"></script>
