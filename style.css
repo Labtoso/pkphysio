@@ -260,7 +260,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   background: var(--color-primary);
   margin-top: 7px;
   flex-shrink: 0;
-  box-shadow: 0 0 0 4px var(--color-primary-light);
 }
 .timeline strong { font-family: var(--font-head); font-size: .92rem; color: var(--color-ink); }
 .timeline p { color: var(--color-ink-soft); font-size: .95rem; }

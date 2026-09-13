@@ -124,7 +124,6 @@ function renderContent(data) {
 
   if (data.buttons) {
     document.getElementById('headerCta').textContent = data.buttons.headerCta;
-    document.getElementById('kontaktCta').textContent = data.buttons.kontaktCta;
   }
 
   document.getElementById('heroEyebrow').textContent = data.hero.eyebrow;
