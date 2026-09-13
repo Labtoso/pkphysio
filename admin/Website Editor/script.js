@@ -1550,7 +1550,6 @@ function fillFixedFields(data) {
   document.getElementById('nav_faq').value = data.nav.faq;
   document.getElementById('nav_kontakt').value = data.nav.kontakt;
   document.getElementById('btn_headerCta').value = data.buttons.headerCta;
-  document.getElementById('btn_kontaktCta').value = data.buttons.kontaktCta;
 
   document.getElementById('site_phone').value = data.site.phone;
   document.getElementById('site_phoneHref').value = data.site.phoneHref;
@@ -1606,7 +1605,6 @@ function readFixedFields(data) {
   data.nav.faq = document.getElementById('nav_faq').value;
   data.nav.kontakt = document.getElementById('nav_kontakt').value;
   data.buttons.headerCta = document.getElementById('btn_headerCta').value;
-  data.buttons.kontaktCta = document.getElementById('btn_kontaktCta').value;
 
   data.site.phone = document.getElementById('site_phone').value.trim();
   data.site.phoneHref = document.getElementById('site_phoneHref').value.trim();

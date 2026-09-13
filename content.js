@@ -30,8 +30,7 @@ window.SITE_CONTENT = {
     "kontakt": "Kontakt"
   },
   "buttons": {
-    "headerCta": "Termin anfragen",
-    "kontaktCta": "Jetzt anrufen"
+    "headerCta": "Termin anfragen"
   },
   "images": {
     "portrait": "Assets/Pascal_Krieger.avif",
