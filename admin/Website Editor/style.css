@@ -625,6 +625,7 @@ body.admin-dragging-active .admin-drag-handle { cursor: grabbing; }
   flex-direction: column;
 }
 .admin-modal-body { overflow-y: auto; min-height: 0; }
+.admin-modal-wide .admin-modal-body { margin-right: -20px; padding-right: 20px; }
 .admin-modal h2 { margin-bottom: 10px; }
 .admin-modal .admin-hint { margin-bottom: 20px; }
 .admin-modal .admin-field { margin-bottom: 22px; }
