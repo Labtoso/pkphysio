@@ -92,14 +92,54 @@ function getMapsAppLink(address) {
   return { href: 'https://www.google.com/maps/search/?api=1&query=' + query, label: 'In Google Maps öffnen' };
 }
 
+let contactChoiceModal = null;
+function ensureContactChoiceModal() {
+  if (contactChoiceModal) return contactChoiceModal;
+  const el = document.createElement('div');
+  el.className = 'contact-choice-overlay';
+  el.innerHTML = `
+    <div class="contact-choice-modal" role="dialog" aria-modal="true" aria-labelledby="contactChoiceTitle">
+      <button type="button" class="contact-choice-close" aria-label="Schließen">✕</button>
+      <h3 id="contactChoiceTitle">Wie möchtest du Kontakt aufnehmen?</h3>
+      <div class="contact-choice-actions">
+        <a class="btn btn-primary" id="contactChoiceCall" data-goatcounter-click="contact_choice_call">Anrufen</a>
+        <a class="btn btn-outline" id="contactChoiceEmail" data-goatcounter-click="contact_choice_email">E-Mail schreiben</a>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(el);
+
+  function close() { el.classList.remove('is-open'); }
+  el.open = () => el.classList.add('is-open');
+  el.querySelector('.contact-choice-close').addEventListener('click', close);
+  el.addEventListener('click', e => { if (e.target === el) close(); });
+  document.addEventListener('keydown', e => {
+    if (!el.classList.contains('is-open')) return;
+    if (e.key === 'Escape') close();
+  });
+
+  contactChoiceModal = el;
+  return el;
+}
+
+function wireContactChoiceButtons(site) {
+  const modal = ensureContactChoiceModal();
+  modal.querySelector('#contactChoiceCall').href = 'tel:' + site.phoneHref;
+  modal.querySelector('#contactChoiceEmail').href = 'mailto:' + site.email;
+  document.querySelectorAll('.contact-cta').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      modal.open();
+    });
+  });
+}
+
 function renderContent(data) {
   const site = data.site;
 
   applyDesign(data.design, data.customFonts);
 
-  document.querySelectorAll('.tel-link').forEach(el => {
-    el.href = 'tel:' + site.phoneHref;
-  });
+  wireContactChoiceButtons(site);
 
   if (data.meta) {
     document.title = data.meta.title;
