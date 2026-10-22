@@ -2,6 +2,16 @@
 
 Neueste Änderungen stehen oben.
 
+## 22.10.2026 – Termin-Auswahl mit Pfeil
+
+### Geändert
+- „Termin vereinbaren“ (oben in der Kopfleiste und im Startbereich) öffnet jetzt ein kleines Auswahlfeld mit Pfeil direkt unter dem Knopf: „Anrufen“ mit Telefonnummer oder „E-Mail schreiben“ mit Adresse.
+- Das Auswahlfeld schließt bei Klick daneben, mit Escape oder erneutem Klick auf den Knopf. Am Handy passt es sich der Bildschirmbreite an.
+- Website spricht Besucher durchgehend mit „Sie“ an.
+
+### Entfernt
+- Das große Fenster in der Bildschirmmitte mit „Wie möchtest du Kontakt aufnehmen?“.
+
 ## 22.10.2026 – Überschriften: Überlappung ganz weg
 
 ### Gefixt

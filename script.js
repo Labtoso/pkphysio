@@ -92,44 +92,83 @@ function getMapsAppLink(address) {
   return { href: 'https://www.google.com/maps/search/?api=1&query=' + query, label: 'In Google Maps öffnen' };
 }
 
-let contactChoiceModal = null;
-function ensureContactChoiceModal() {
-  if (contactChoiceModal) return contactChoiceModal;
+const PHONE_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>';
+const MAIL_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>';
+
+let contactPopover = null;
+let contactPopoverAnchor = null;
+
+function ensureContactPopover(site) {
+  if (contactPopover) return contactPopover;
   const el = document.createElement('div');
-  el.className = 'contact-choice-overlay';
+  el.className = 'contact-popover';
+  el.setAttribute('role', 'menu');
   el.innerHTML = `
-    <div class="contact-choice-modal" role="dialog" aria-modal="true" aria-labelledby="contactChoiceTitle">
-      <button type="button" class="contact-choice-close" aria-label="Schließen"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
-      <h3 id="contactChoiceTitle">Wie möchtest du Kontakt aufnehmen?</h3>
-      <div class="contact-choice-actions">
-        <a class="btn btn-primary" id="contactChoiceCall" data-goatcounter-click="contact_choice_call">Anrufen</a>
-        <a class="btn btn-outline" id="contactChoiceEmail" data-goatcounter-click="contact_choice_email">E-Mail schreiben</a>
-      </div>
-    </div>
+    <span class="contact-popover-arrow"></span>
+    <a class="contact-popover-item" role="menuitem" href="tel:${site.phoneHref}" data-goatcounter-click="contact_choice_call">
+      ${PHONE_ICON}<span><strong>Anrufen</strong><small>${site.phone}</small></span>
+    </a>
+    <a class="contact-popover-item" role="menuitem" href="mailto:${site.email}" data-goatcounter-click="contact_choice_email">
+      ${MAIL_ICON}<span><strong>E-Mail schreiben</strong><small>${site.email}</small></span>
+    </a>
   `;
   document.body.appendChild(el);
 
-  function close() { el.classList.remove('is-open'); }
-  el.open = () => el.classList.add('is-open');
-  el.querySelector('.contact-choice-close').addEventListener('click', close);
-  el.addEventListener('click', e => { if (e.target === el) close(); });
-  document.addEventListener('keydown', e => {
+  document.addEventListener('click', e => {
     if (!el.classList.contains('is-open')) return;
-    if (e.key === 'Escape') close();
+    if (el.contains(e.target) || (contactPopoverAnchor && contactPopoverAnchor.contains(e.target))) return;
+    closeContactPopover();
   });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && el.classList.contains('is-open')) {
+      closeContactPopover();
+      if (contactPopoverAnchor) contactPopoverAnchor.focus();
+    }
+  });
+  window.addEventListener('scroll', positionContactPopover, { passive: true });
+  window.addEventListener('resize', positionContactPopover);
 
-  contactChoiceModal = el;
+  contactPopover = el;
   return el;
 }
 
+function positionContactPopover() {
+  if (!contactPopover || !contactPopoverAnchor || !contactPopover.classList.contains('is-open')) return;
+  const rect = contactPopoverAnchor.getBoundingClientRect();
+  const width = contactPopover.offsetWidth;
+  const margin = 12;
+  const anchorCenter = rect.left + rect.width / 2;
+  const left = Math.min(Math.max(anchorCenter - width / 2, margin), window.innerWidth - width - margin);
+  contactPopover.style.top = (rect.bottom + 12) + 'px';
+  contactPopover.style.left = left + 'px';
+  contactPopover.style.setProperty('--arrow-x', (anchorCenter - left) + 'px');
+}
+
+function openContactPopover(anchor) {
+  contactPopoverAnchor = anchor;
+  contactPopover.classList.add('is-open');
+  anchor.setAttribute('aria-expanded', 'true');
+  positionContactPopover();
+}
+
+function closeContactPopover() {
+  if (!contactPopover) return;
+  contactPopover.classList.remove('is-open');
+  if (contactPopoverAnchor) contactPopoverAnchor.setAttribute('aria-expanded', 'false');
+}
+
 function wireContactChoiceButtons(site) {
-  const modal = ensureContactChoiceModal();
-  modal.querySelector('#contactChoiceCall').href = 'tel:' + site.phoneHref;
-  modal.querySelector('#contactChoiceEmail').href = 'mailto:' + site.email;
+  const popover = ensureContactPopover(site);
   document.querySelectorAll('.contact-cta').forEach(btn => {
+    btn.setAttribute('aria-haspopup', 'menu');
+    btn.setAttribute('aria-expanded', 'false');
     btn.addEventListener('click', e => {
       e.preventDefault();
-      modal.open();
+      if (popover.classList.contains('is-open') && contactPopoverAnchor === btn) {
+        closeContactPopover();
+      } else {
+        openContactPopover(btn);
+      }
     });
   });
 }
