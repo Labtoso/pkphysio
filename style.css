@@ -77,6 +77,7 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .eyebrow:empty, .lead:empty { display: none; }
 
 .lead { color: var(--color-ink-soft); font-size: 1.05rem; max-width: 60ch; }
+.lead p + p, .hero-text p + p { margin-top: .8em; }
 
 .btn {
   display: inline-flex;
@@ -711,7 +712,10 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   transition: max-height .15s ease, padding .15s ease;
   padding: 0 24px;
 }
-.accordion-panel p { color: var(--color-ink-soft); padding-bottom: 20px; }
+.accordion-answer { color: var(--color-ink-soft); padding-bottom: 20px; }
+.accordion-answer p + p, .accordion-answer ul + p, .accordion-answer p + ul { margin-top: 10px; }
+.accordion-answer ul:first-child { margin-top: 0; }
+.accordion-answer ul:last-child { margin-bottom: 0; }
 .accordion-panel a { color: var(--color-primary); font-weight: 600; }
 
 .hero-text a,

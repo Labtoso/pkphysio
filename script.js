@@ -100,7 +100,7 @@ function ensureContactChoiceModal() {
   el.innerHTML = `
     <div class="contact-choice-modal" role="dialog" aria-modal="true" aria-labelledby="contactChoiceTitle">
       <button type="button" class="contact-choice-close" aria-label="Schließen"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
-      <h3 id="contactChoiceTitle">Wie möchten Sie mich erreichen?</h3>
+      <h3 id="contactChoiceTitle">Wie möchtest du Kontakt aufnehmen?</h3>
       <div class="contact-choice-actions">
         <a class="btn btn-primary" id="contactChoiceCall" data-goatcounter-click="contact_choice_call">Anrufen</a>
         <a class="btn btn-outline" id="contactChoiceEmail" data-goatcounter-click="contact_choice_email">E-Mail schreiben</a>
@@ -229,7 +229,7 @@ function renderContent(data) {
     <div class="accordion-item">
       <button class="accordion-trigger">${item.q}</button>
       <div class="accordion-panel">
-        <p>${applyTemplate(item.a, site)}</p>
+        <div class="accordion-answer">${applyTemplate(item.a, site)}</div>
       </div>
     </div>
   `).join('');
@@ -318,7 +318,7 @@ const CUSTOM_BLOCK_RENDERERS = {
             <div class="accordion-item">
               <button class="accordion-trigger">${item.q}</button>
               <div class="accordion-panel">
-                <p>${applyTemplate(item.a, site)}</p>
+                <div class="accordion-answer">${applyTemplate(item.a, site)}</div>
               </div>
             </div>
           `).join('')}
