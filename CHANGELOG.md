@@ -2,6 +2,16 @@
 
 Neueste Änderungen stehen oben.
 
+## 22.10.2026 – Admin: Anmeldung wählen
+
+### Neu
+- Admin-Panel: Beim Öffnen wählt man zwischen „Mit GitHub anmelden“ und „Mit Passwort und Token“ (die bisherige Anmeldung). Beide sind gleichwertig, Zugang gibt es nur mit Schreibrechten auf pkphysio.
+- „Andere Anmeldung wählen“ führt von Passwort und Token zurück zur Auswahl.
+
+### Geändert
+- Die Passwort-Abfrage ist wieder da, aber nur für den Weg über das Token.
+- Solange der Anmelde-Dienst nicht eingerichtet ist, ist „Mit GitHub anmelden“ ausgegraut und mit Hinweis versehen.
+
 ## 22.10.2026 – Admin: Anmeldung mit GitHub
 
 ### Neu

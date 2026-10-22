@@ -20,21 +20,52 @@
 <div id="loginScreen" class="admin-login" style="display:none">
   <div class="admin-login-card">
     <h1>Admin</h1>
-    <p class="lead">Mit dem GitHub-Konto anmelden, das Schreibrechte auf pkphysio hat.</p>
+    <p class="lead">Anmeldung wählen. Zugang hat nur, wer Schreibrechte auf pkphysio hat.</p>
 
-    <button id="githubLoginBtn" class="btn btn-primary admin-github-btn" type="button">
-      <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
-      <span>Mit GitHub anmelden</span>
-    </button>
+    <div class="admin-login-choice">
+      <button id="githubLoginBtn" class="btn btn-primary admin-github-btn" type="button">
+        <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        <span>Mit GitHub anmelden</span>
+      </button>
+      <button id="classicLoginBtn" class="btn btn-outline" type="button">Mit Passwort und Token</button>
+    </div>
+    <p id="githubLoginHint" class="admin-note" hidden>„Mit GitHub anmelden“ ist noch nicht eingerichtet.</p>
     <p id="loginError" class="admin-error"></p>
+    <p class="admin-note">Die Anmeldung bleibt nur in diesem Browser-Tab gespeichert. Nach dem Schließen des Tabs ist sie weg.</p>
+  </div>
+</div>
 
-    <details class="admin-help" id="tokenLogin">
-      <summary>Stattdessen mit Token anmelden</summary>
-      <label class="admin-field">
-        <span>GitHub-Token</span>
-        <input type="password" id="tokenInput" placeholder="github_pat_..." autocomplete="off">
-      </label>
-      <button id="loginBtn" class="btn btn-outline" type="button">Mit Token anmelden</button>
+<div id="pinScreen" class="admin-login" style="display:none">
+  <div class="admin-login-card">
+    <h1>Admin</h1>
+    <p class="lead">Passwort eingeben. Danach folgt die Anmeldung mit Token.</p>
+
+    <label class="admin-field">
+      <span>Passwort</span>
+      <input type="password" id="pinInput" placeholder="Passwort" autocomplete="off">
+    </label>
+
+    <button id="pinBtn" class="btn btn-primary" type="button">Weiter</button>
+    <p id="pinError" class="admin-error"></p>
+    <button class="admin-back" type="button" data-back>Andere Anmeldung wählen</button>
+  </div>
+</div>
+
+<div id="tokenScreen" class="admin-login" style="display:none">
+  <div class="admin-login-card">
+    <h1>Anmelden</h1>
+    <p class="lead">Mit einem GitHub-Token anmelden, das Schreibrechte auf pkphysio hat.</p>
+
+    <label class="admin-field">
+      <span>GitHub-Token</span>
+      <input type="password" id="tokenInput" placeholder="github_pat_..." autocomplete="off">
+    </label>
+
+    <button id="loginBtn" class="btn btn-primary" type="button">Anmelden</button>
+    <p id="tokenError" class="admin-error"></p>
+
+    <details class="admin-help">
+      <summary>Wie bekomme ich ein Token?</summary>
       <ol>
         <li>Auf GitHub: Profilbild oben rechts → <strong>Settings</strong> → <strong>Developer settings</strong></li>
         <li><strong>Personal access tokens</strong> → <strong>Fine-grained tokens</strong> → <strong>Generate new token</strong></li>
@@ -43,7 +74,7 @@
         <li>Token generieren, kopieren und oben einfügen</li>
       </ol>
     </details>
-    <p class="admin-note">Die Anmeldung bleibt nur in diesem Browser-Tab gespeichert. Nach dem Schließen des Tabs ist sie weg.</p>
+    <button class="admin-back" type="button" data-back>Andere Anmeldung wählen</button>
   </div>
 </div>
 

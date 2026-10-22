@@ -21,4 +21,4 @@ Ablauf: Admin-Panel → Worker `/login` → GitHub fragt nach Erlaubnis → Work
    - Die Client ID kommt in `wrangler.toml` bei `GITHUB_CLIENT_ID` (nicht geheim), danach erneut `npx wrangler deploy`.
 5. In `admin/script.js` bei `LOGIN_URL` die Worker-Adresse eintragen und pushen.
 
-Ohne `LOGIN_URL` zeigt das Admin-Panel nur die Anmeldung mit Token.
+Ohne `LOGIN_URL` ist „Mit GitHub anmelden“ ausgegraut, „Mit Passwort und Token“ funktioniert immer.

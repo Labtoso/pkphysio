@@ -6,9 +6,14 @@ const TOKEN_KEY = 'pk_admin_token';
 const NAV_TOKEN_KEY = 'pk_admin_nav';
 
 // Adresse des kleinen Anmelde-Dienstes (Ordner anmelde-dienst/), z. B. https://pkphysio-login.<name>.workers.dev
-// Leer = nur Anmeldung mit Token.
+// Leer = „Mit GitHub anmelden“ ist ausgegraut, nur Passwort und Token.
 const LOGIN_URL = '';
 const LOGIN_STATE_KEY = 'pk_admin_login_state';
+
+const PIN_HASH = 'eec9bb67f607e0a241a430dd814b9407ef7a46084ddbdd7f4fb2f8e44760ad45';
+const PIN_SESSION_KEY = 'pk_admin_pin_ok';
+const PIN_ATTEMPTS_KEY = 'pk_admin_pin_attempts';
+const PIN_LOCK_KEY = 'pk_admin_pin_lock_until';
 
 function base64ToUtf8(b64) {
   return decodeURIComponent(atob(b64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
@@ -56,24 +61,37 @@ function withTimeout(promise, ms) {
 }
 
 const githubLoginBtn = document.getElementById('githubLoginBtn');
-const tokenLogin = document.getElementById('tokenLogin');
+const classicLoginBtn = document.getElementById('classicLoginBtn');
 const loginScreen = document.getElementById('loginScreen');
+const loginError = document.getElementById('loginError');
+const pinScreen = document.getElementById('pinScreen');
+const pinInput = document.getElementById('pinInput');
+const pinBtn = document.getElementById('pinBtn');
+const pinError = document.getElementById('pinError');
+const tokenScreen = document.getElementById('tokenScreen');
 const tokenInput = document.getElementById('tokenInput');
 const loginBtn = document.getElementById('loginBtn');
-const loginError = document.getElementById('loginError');
+const tokenError = document.getElementById('tokenError');
 const menuScreen = document.getElementById('menuScreen');
+const screens = [loginScreen, pinScreen, tokenScreen, menuScreen];
 
-function showMenu() {
-  loginScreen.style.display = 'none';
-  menuScreen.style.display = 'flex';
+function showScreen(screen) {
+  screens.forEach(el => { el.style.display = el === screen ? 'flex' : 'none'; });
 }
-function showLogin() {
-  menuScreen.style.display = 'none';
-  loginScreen.style.display = 'flex';
+function showMenu() { showScreen(menuScreen); }
+function showLogin() { showScreen(loginScreen); }
+function showToken() {
+  showScreen(tokenScreen);
+  tokenInput.focus();
+}
+function showPinGate() {
+  showScreen(pinScreen);
+  updatePinLockUI();
+  pinInput.focus();
 }
 
-async function verifyAndEnter(token) {
-  loginError.textContent = '';
+async function verifyAndEnter(token, errorEl = loginError, backTo = showLogin) {
+  errorEl.textContent = '';
   loginBtn.disabled = true;
   loginBtn.textContent = 'Prüfe Zugang …';
   githubLoginBtn.disabled = true;
@@ -84,19 +102,19 @@ async function verifyAndEnter(token) {
   } catch (err) {
     try { sessionStorage.removeItem(TOKEN_KEY); } catch (e) {}
     if (err.status === 401) {
-      loginError.textContent = 'Anmeldung ungültig oder abgelaufen. Bitte erneut anmelden.';
+      errorEl.textContent = 'Anmeldung ungültig oder abgelaufen. Bitte erneut anmelden.';
     } else if (err.status === 404) {
-      loginError.textContent = 'Repository oder content.js nicht gefunden. Wurde der Code schon nach GitHub gepusht?';
+      errorEl.textContent = 'Repository oder content.js nicht gefunden. Wurde der Code schon nach GitHub gepusht?';
     } else if (err.status === 403) {
-      loginError.textContent = 'Dieses GitHub-Konto hat keine Schreibrechte auf pkphysio.';
+      errorEl.textContent = 'Dieses GitHub-Konto hat keine Schreibrechte auf pkphysio.';
     } else {
-      loginError.textContent = err.message || 'Unbekannter Fehler.';
+      errorEl.textContent = err.message || 'Unbekannter Fehler.';
     }
-    showLogin();
+    backTo();
   } finally {
     loginBtn.disabled = false;
-    loginBtn.textContent = 'Mit Token anmelden';
-    githubLoginBtn.disabled = false;
+    loginBtn.textContent = 'Anmelden';
+    githubLoginBtn.disabled = !LOGIN_URL;
   }
 }
 
@@ -104,6 +122,15 @@ function randomId() {
   if (crypto.randomUUID) return crypto.randomUUID();
   return [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join('');
 }
+
+classicLoginBtn.addEventListener('click', () => {
+  loginError.textContent = '';
+  let pinAlreadyOk = false;
+  try { pinAlreadyOk = sessionStorage.getItem(PIN_SESSION_KEY) === '1'; } catch (e) {}
+  if (pinAlreadyOk) showToken(); else showPinGate();
+});
+
+document.querySelectorAll('[data-back]').forEach(btn => btn.addEventListener('click', showLogin));
 
 githubLoginBtn.addEventListener('click', () => {
   const state = randomId();
@@ -130,13 +157,13 @@ function takeLoginResult() {
 }
 
 loginBtn.addEventListener('click', () => {
-  loginError.textContent = '';
+  tokenError.textContent = '';
   const token = tokenInput.value.trim();
   if (!token) {
-    loginError.textContent = 'Bitte ein Token eingeben.';
+    tokenError.textContent = 'Bitte ein Token eingeben.';
     return;
   }
-  verifyAndEnter(token);
+  verifyAndEnter(token, tokenError, showToken);
 });
 tokenInput.addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn.click(); });
 
@@ -150,9 +177,81 @@ document.querySelectorAll('.admin-menu-card').forEach(link => {
 document.getElementById('menuLogoutBtn').addEventListener('click', () => {
   try { sessionStorage.removeItem(TOKEN_KEY); } catch (e) {}
   try { sessionStorage.removeItem(NAV_TOKEN_KEY); } catch (e) {}
+  try { sessionStorage.removeItem(PIN_SESSION_KEY); } catch (e) {}
+  try { sessionStorage.removeItem(PIN_ATTEMPTS_KEY); } catch (e) {}
+  try { sessionStorage.removeItem(PIN_LOCK_KEY); } catch (e) {}
   tokenInput.value = '';
   showLogin();
 });
+
+async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function pinLockRemainingMs() {
+  let until = 0;
+  try { until = Number(sessionStorage.getItem(PIN_LOCK_KEY) || 0); } catch (e) {}
+  return Math.max(0, until - Date.now());
+}
+
+function pinDelayForAttempts(n) {
+  const steps = [0, 0, 0, 5, 15, 30, 60, 120, 300];
+  return (steps[Math.min(n, steps.length - 1)] ?? 300) * 1000;
+}
+
+let pinLockTimer = null;
+function updatePinLockUI() {
+  const remaining = pinLockRemainingMs();
+  clearTimeout(pinLockTimer);
+  if (remaining > 0) {
+    pinBtn.disabled = true;
+    pinInput.disabled = true;
+    pinError.textContent = 'Zu viele Versuche. Bitte warte ' + Math.ceil(remaining / 1000) + ' Sekunden.';
+    pinLockTimer = setTimeout(updatePinLockUI, 1000);
+  } else {
+    pinBtn.disabled = false;
+    pinInput.disabled = false;
+    if (pinError.textContent.startsWith('Zu viele Versuche')) pinError.textContent = '';
+  }
+}
+
+async function submitPin() {
+  if (pinLockRemainingMs() > 0) return;
+  const value = pinInput.value;
+  if (!value) return;
+
+  pinBtn.disabled = true;
+  pinBtn.textContent = 'Prüfe …';
+  const hash = await sha256Hex(value);
+  pinBtn.textContent = 'Weiter';
+
+  if (hash === PIN_HASH) {
+    try {
+      sessionStorage.setItem(PIN_SESSION_KEY, '1');
+      sessionStorage.removeItem(PIN_ATTEMPTS_KEY);
+      sessionStorage.removeItem(PIN_LOCK_KEY);
+    } catch (e) {}
+    pinInput.value = '';
+    pinError.textContent = '';
+    showToken();
+  } else {
+    let attempts = 0;
+    try {
+      attempts = Number(sessionStorage.getItem(PIN_ATTEMPTS_KEY) || 0) + 1;
+      sessionStorage.setItem(PIN_ATTEMPTS_KEY, String(attempts));
+      const delay = pinDelayForAttempts(attempts);
+      if (delay > 0) sessionStorage.setItem(PIN_LOCK_KEY, String(Date.now() + delay));
+    } catch (e) {}
+    pinInput.value = '';
+    pinInput.focus();
+    pinError.textContent = 'Falsches Passwort.';
+    updatePinLockUI();
+  }
+}
+
+pinBtn.addEventListener('click', submitPin);
+pinInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitPin(); });
 
 const themeToggle = document.getElementById('themeToggle');
 themeToggle.setAttribute('aria-pressed', String(document.documentElement.classList.contains('light')));
@@ -164,8 +263,8 @@ themeToggle.addEventListener('click', () => {
 });
 
 if (!LOGIN_URL) {
-  githubLoginBtn.style.display = 'none';
-  tokenLogin.open = true;
+  githubLoginBtn.disabled = true;
+  document.getElementById('githubLoginHint').hidden = false;
 }
 
 (function () {

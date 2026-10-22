@@ -44,7 +44,22 @@ body {
 }
 .admin-help ol { list-style: decimal; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; margin-top: 18px; }
 .admin-help .admin-field { margin-top: 4px; }
+.admin-login-choice { display: flex; flex-direction: column; gap: 10px; }
+.admin-login-choice .btn { margin-top: 0; }
 .admin-github-btn { gap: 10px; }
+.admin-back {
+  display: block;
+  margin: 18px auto 0;
+  background: none;
+  border: 0;
+  padding: 6px 4px;
+  font: inherit;
+  font-size: .88rem;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  transition: color var(--motion);
+}
+.admin-back:hover { color: var(--color-ink); }
 .admin-github-btn svg { flex-shrink: 0; }
 .admin-note {
   margin-top: 14px;
