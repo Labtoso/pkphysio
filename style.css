@@ -21,6 +21,7 @@
   --font-head: "Source Serif 4", Georgia, serif;
   --font-body: "Public Sans", system-ui, sans-serif;
   --motion: .2s ease-out;
+  --motion-slow: .45s ease-in-out;
   color-scheme: dark;
 }
 
@@ -426,7 +427,7 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   padding: 40px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--motion);
+  transition: opacity var(--motion-slow);
 }
 .gallery-lightbox-overlay.is-open { opacity: 1; pointer-events: auto; }
 .gallery-lightbox-overlay img {
@@ -468,7 +469,7 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   padding: 24px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--motion);
+  transition: opacity var(--motion-slow);
 }
 .contact-choice-overlay.is-open { opacity: 1; pointer-events: auto; }
 .contact-choice-modal {
@@ -715,7 +716,7 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .accordion-panel {
   max-height: 0;
   overflow: hidden;
-  transition: max-height var(--motion), padding var(--motion);
+  transition: max-height var(--motion-slow), padding var(--motion-slow);
   padding: 0 24px;
 }
 .accordion-answer { color: var(--color-ink-soft); padding-bottom: 20px; }
@@ -794,7 +795,7 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 
 .reveal {
   opacity: 0;
-  transition: opacity var(--motion), transform var(--motion), filter var(--motion);
+  transition: opacity var(--motion-slow), transform var(--motion-slow), filter var(--motion-slow);
 }
 .reveal.in-view { opacity: 1; transform: translateY(0); }
 @media (prefers-reduced-motion: reduce) {
@@ -825,8 +826,8 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 }
 
 @media (max-width: 860px) {
-  .nav { position: fixed; top: 92px; left: 0; right: 0; background: var(--color-bg); flex-direction: column; align-items: stretch; gap: 0; padding: 8px 24px 24px; box-shadow: var(--shadow-md); transform: translateY(-8px); opacity: 0; visibility: hidden; transition: transform var(--motion), opacity var(--motion), visibility var(--motion); margin: 0; }
-  .nav.open { transform: translateY(0); opacity: 1; visibility: visible; }
+  .nav { position: fixed; top: 92px; left: 0; right: 0; background: var(--color-bg); flex-direction: column; align-items: stretch; gap: 0; padding: 8px 24px 24px; box-shadow: var(--shadow-md); clip-path: inset(0 0 100% 0); visibility: hidden; transition: clip-path var(--motion-slow), visibility var(--motion-slow); margin: 0; }
+  .nav.open { clip-path: inset(0 0 -40px 0); visibility: visible; }
   .nav-link { padding: 14px 0; border-bottom: 1px solid var(--color-border); }
   .header-inner > .theme-toggle { margin-left: auto; }
   .burger { display: flex; }
