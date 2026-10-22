@@ -118,7 +118,7 @@
     <section class="admin-section" id="section-seo">
       <h2>Seiten-Titel &amp; Browser-Tab</h2>
       <label class="admin-field"><span>Titel (im Browser-Tab)</span><input id="meta_title" type="text"></label>
-      <label class="admin-field"><span>Beschreibung (für Suchmaschinen)</span><textarea id="meta_description" rows="2"></textarea></label>
+      <label class="admin-field"><span>Beschreibung (für Suchmaschinen und die Link-Vorschau beim Teilen)</span><textarea id="meta_description" rows="2"></textarea></label>
     </section>
 
     <section class="admin-section" id="section-navigation">
@@ -163,6 +163,14 @@
         <div class="admin-image-row">
           <img id="preview_favicon" class="admin-image-preview admin-image-preview-small">
           <input id="file_favicon" type="file" accept="image/*">
+        </div>
+      </div>
+
+      <div class="admin-image-field">
+        <span>Vorschaubild beim Teilen (WhatsApp, E-Mail …), ideal 1200 × 630 px</span>
+        <div class="admin-image-row">
+          <img id="preview_shareImage" class="admin-image-preview">
+          <input id="file_shareImage" type="file" accept="image/jpeg,image/png">
         </div>
       </div>
     </section>

@@ -82,6 +82,51 @@ async function ghGetSha(token, path) {
   return json.sha;
 }
 
+const SITE_URL = 'https://labtoso.github.io/pkphysio/';
+const INDEX_PATH = 'index.html';
+
+function escapeAttr(value) {
+  return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+function setMetaContent(html, id, value) {
+  const re = new RegExp('(<meta id="' + id + '"[^>]*content=")[^"]*(")');
+  return html.replace(re, (m, start, end) => start + escapeAttr(value) + end);
+}
+
+async function syncIndexHead(token, data) {
+  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${INDEX_PATH}?ref=${REPO_BRANCH}`;
+  const res = await fetch(url, { headers: ghHeaders(token) });
+  if (!res.ok) {
+    const err = new Error('GitHub-Fehler beim Laden von index.html (' + res.status + ')');
+    err.status = res.status;
+    throw err;
+  }
+  const json = await res.json();
+  const html = base64ToUtf8(json.content.replace(/\n/g, ''));
+  let next = html.replace(/(<title id="pageTitle">)[^<]*(<\/title>)/, (m, start, end) => start + escapeAttr(data.meta.title) + end);
+  next = setMetaContent(next, 'pageDescription', data.meta.description);
+  next = setMetaContent(next, 'ogTitle', data.meta.title);
+  next = setMetaContent(next, 'ogDescription', data.meta.description);
+  if (data.images.shareImage) next = setMetaContent(next, 'ogImage', SITE_URL + data.images.shareImage);
+  if (next === html) return;
+  const putRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${INDEX_PATH}`, {
+    method: 'PUT',
+    headers: { ...ghHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message: 'Titel und Link-Vorschau übers Admin-Panel aktualisiert',
+      content: utf8ToBase64(next),
+      sha: json.sha,
+      branch: REPO_BRANCH
+    })
+  });
+  if (!putRes.ok) {
+    const err = new Error('GitHub-Fehler beim Speichern von index.html (' + putRes.status + ')');
+    err.status = putRes.status;
+    throw err;
+  }
+}
+
 async function ghPutBinaryFile(token, path, base64Content, message, sha) {
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
   const body = { message: message, content: base64Content, branch: REPO_BRANCH };
@@ -1797,7 +1842,7 @@ document.querySelectorAll('[data-add]').forEach(btn => {
   });
 });
 
-const IMAGE_KEYS = ['portrait', 'logoDark', 'logoLight', 'favicon'];
+const IMAGE_KEYS = ['portrait', 'logoDark', 'logoLight', 'favicon', 'shareImage'];
 const pendingImages = {};
 
 IMAGE_KEYS.forEach(key => {
@@ -1811,7 +1856,7 @@ IMAGE_KEYS.forEach(key => {
 
 function fillImagePreviews(images) {
   IMAGE_KEYS.forEach(key => {
-    document.getElementById('preview_' + key).src = '../../' + images[key];
+    if (images[key]) document.getElementById('preview_' + key).src = '../../' + images[key];
   });
 }
 
@@ -2022,6 +2067,7 @@ async function save() {
     const commitMessage = (commitMessageInput.value.trim()) || 'Inhalte übers Admin-Panel aktualisiert';
     const newSha = await ghPutFile(state.token, state.sha, newText, commitMessage);
     state.sha = newSha;
+    await syncIndexHead(state.token, state.data);
     commitMessageInput.value = '';
     const actionsUrl = `https://github.com/${REPO_OWNER}/${REPO_NAME}/actions`;
     saveStatus.className = 'admin-status success';

@@ -36,7 +36,8 @@ window.SITE_CONTENT = {
     "portrait": "Assets/Pascal_Krieger.avif",
     "logoDark": "Assets/logo_nobg_white.png",
     "logoLight": "Assets/logo_nobg_black.png",
-    "favicon": "Assets/logo_1x1.png"
+    "favicon": "Assets/logo_1x1.png",
+    "shareImage": "Assets/vorschau.jpg"
   },
   "site": {
     "phone": "+43 680 3106032",
