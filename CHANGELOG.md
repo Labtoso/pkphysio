@@ -2,6 +2,11 @@
 
 Neueste Änderungen stehen oben.
 
+## 22.10.2026 – Überschriften ohne Überlappung
+
+### Gefixt
+- Mehrzeilige Überschriften (z. B. „Ich freue mich auf Ihre Nachricht“): Beim Markieren überlappen sich die Zeilen nicht mehr. Zeilenabstand der Überschriften von 1,15 auf 1,3 erhöht, Schriftgröße und Schriftart unverändert.
+
 ## 22.10.2026 – Handy-Menü ruhiger
 
 ### Geändert
