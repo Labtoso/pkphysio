@@ -154,29 +154,23 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .nav-link:hover::after, .nav-link.active::after { width: 100%; }
 
 .theme-toggle {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
   background: none;
-  border: none;
+  color: var(--color-ink-soft);
   padding: 0;
+  transition: background .15s ease, color .15s ease;
 }
-.theme-toggle-track {
-  position: relative;
-  width: 40px;
-  height: 22px;
-  border-radius: 999px;
-  background: var(--color-border);
-  transition: background .15s ease;
-}
-.theme-toggle-thumb {
-  position: absolute;
-  top: 2px; left: 2px;
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  background: var(--color-primary);
-  transition: transform .15s ease;
-}
-:root.light .theme-toggle-thumb { transform: translateX(18px); }
+.theme-toggle:hover { background: var(--color-bg-alt); color: var(--color-ink); }
+.theme-icon-moon { display: none; }
+:root.light .theme-icon-sun { display: none; }
+:root.light .theme-icon-moon { display: block; }
 
 .burger {
   display: none;
@@ -821,10 +815,10 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 }
 
 @media (max-width: 860px) {
-  .nav { position: fixed; top: 92px; left: 0; right: 0; background: var(--color-bg); flex-direction: column; gap: 0; padding: 8px 24px 60px; box-shadow: var(--shadow-md); transform: translateY(-130%); opacity: 0; transition: transform .15s ease, opacity .15s ease; margin: 0; }
+  .nav { position: fixed; top: 92px; left: 0; right: 0; background: var(--color-bg); flex-direction: column; align-items: stretch; gap: 0; padding: 8px 24px 24px; box-shadow: var(--shadow-md); transform: translateY(-130%); opacity: 0; transition: transform .15s ease, opacity .15s ease; margin: 0; }
   .nav.open { transform: translateY(0); opacity: 1; }
   .nav-link { padding: 14px 0; border-bottom: 1px solid var(--color-border); }
-  .nav .theme-toggle { position: absolute; bottom: 18px; right: 24px; }
+  .header-inner > .theme-toggle { margin-left: auto; }
   .burger { display: flex; }
   .btn-header { display: none; }
   .hero { padding: 150px 0 80px; }
