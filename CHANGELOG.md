@@ -2,6 +2,11 @@
 
 Neueste Änderungen stehen oben.
 
+## 22.10.2026 – Überschriften: Markierung nahtlos
+
+### Gefixt
+- Mehrzeilige Überschriften: Beim Markieren stoßen die Zeilen jetzt genau aneinander, ohne Überlappung und ohne Lücke. Die Zeilenhöhe wird im Browser auf die Höhe der Markierung gemessen, damit es auf jedem Gerät und jeder Bildschirmgröße passt (vorher fest 1,4, was unter Windows eine 1-Pixel-Lücke ließ). Schriftart und Schriftgröße unverändert.
+
 ## 22.10.2026 – Handy-Menü zügiger
 
 ### Geändert

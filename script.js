@@ -739,6 +739,35 @@ if (window.SITE_CONTENT) {
   renderContent(window.SITE_CONTENT);
 }
 
+// Zeilenhöhe der Überschriften genau auf die Höhe der Textmarkierung setzen,
+// damit sich markierte Zeilen weder überlappen noch eine Lücke lassen.
+// Die Markierung ist so hoch wie die Schrift selbst (gerundet je nach Größe und Gerät),
+// deshalb wird sie im Browser gemessen statt fest eingetragen.
+function fitHeadingLineHeights() {
+  const probe = document.createElement('span');
+  probe.textContent = 'Hg';
+  const heights = new Map();
+  document.querySelectorAll('h1, h2, h3').forEach(heading => {
+    heading.style.lineHeight = '';
+    const cs = getComputedStyle(heading);
+    const key = cs.fontFamily + '|' + cs.fontSize + '|' + cs.fontWeight;
+    if (!heights.has(key)) {
+      heading.appendChild(probe);
+      heights.set(key, probe.getBoundingClientRect().height);
+      probe.remove();
+    }
+    const h = heights.get(key);
+    if (h > 0) heading.style.lineHeight = h + 'px';
+  });
+}
+fitHeadingLineHeights();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitHeadingLineHeights);
+let fitHeadingsFrame = null;
+window.addEventListener('resize', () => {
+  cancelAnimationFrame(fitHeadingsFrame);
+  fitHeadingsFrame = requestAnimationFrame(fitHeadingLineHeights);
+});
+
 const header = document.getElementById('siteHeader');
 
 function onScroll() {
