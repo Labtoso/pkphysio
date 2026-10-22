@@ -2,6 +2,11 @@
 
 Neueste Änderungen stehen oben.
 
+## 22.10.2026 – Überschriften: Überlappung ganz weg
+
+### Gefixt
+- Zeilenabstand der Überschriften von 1,3 auf 1,4 erhöht. Die Markierung einer Zeile ist bei der Schrift Source Serif 4 genau 1,38 Zeilen hoch, ab 1,4 überlappt nichts mehr. Schriftgröße und Schriftart unverändert.
+
 ## 22.10.2026 – Überschriften ohne Überlappung
 
 ### Gefixt
