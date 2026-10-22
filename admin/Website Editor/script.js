@@ -36,6 +36,22 @@ async function ghCheckWriteAccess(token) {
   }
 }
 
+// Commits immer mit der GitHub-noreply-Adresse, nie mit der privaten Mail
+let commitIdentity = null;
+async function ghCommitIdentity(token) {
+  if (commitIdentity) return commitIdentity;
+  const res = await fetch('https://api.github.com/user', { headers: ghHeaders(token) });
+  if (!res.ok) {
+    const err = new Error('GitHub-Fehler beim Laden des Kontos (' + res.status + ')');
+    err.status = res.status;
+    throw err;
+  }
+  const user = await res.json();
+  const person = { name: user.login, email: user.id + '+' + user.login + '@users.noreply.github.com' };
+  commitIdentity = { author: person, committer: person };
+  return commitIdentity;
+}
+
 async function ghGetFile(token) {
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${CONTENT_PATH}?ref=${REPO_BRANCH}`;
   const res = await fetch(url, { headers: ghHeaders(token) });
@@ -57,7 +73,8 @@ async function ghPutFile(token, sha, newText, message) {
       message: message || 'Update content via admin panel',
       content: utf8ToBase64(newText),
       sha: sha,
-      branch: REPO_BRANCH
+      branch: REPO_BRANCH,
+      ...(await ghCommitIdentity(token))
     })
   });
   if (!res.ok) {
@@ -117,7 +134,8 @@ async function syncIndexHead(token, data) {
       message: 'Titel und Link-Vorschau übers Admin-Panel aktualisiert',
       content: utf8ToBase64(next),
       sha: json.sha,
-      branch: REPO_BRANCH
+      branch: REPO_BRANCH,
+      ...(await ghCommitIdentity(token))
     })
   });
   if (!putRes.ok) {
@@ -129,7 +147,7 @@ async function syncIndexHead(token, data) {
 
 async function ghPutBinaryFile(token, path, base64Content, message, sha) {
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
-  const body = { message: message, content: base64Content, branch: REPO_BRANCH };
+  const body = { message: message, content: base64Content, branch: REPO_BRANCH, ...(await ghCommitIdentity(token)) };
   if (sha) body.sha = sha;
   const res = await fetch(url, {
     method: 'PUT',
