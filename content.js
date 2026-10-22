@@ -12,8 +12,8 @@ window.SITE_CONTENT = {
   "design": {
     "primaryColor": "#17b6a4",
     "accentColor": "#ff8a5c",
-    "headingFont": "poppins",
-    "bodyFont": "inter",
+    "headingFont": "sourceserif",
+    "bodyFont": "publicsans",
     "borderRadius": 10,
     "textScale": 100,
     "portraitWidth": 430,
@@ -50,14 +50,14 @@ window.SITE_CONTENT = {
     "eyebrow": "Praxis in Rainfeld, Niederösterreich",
     "title": "Pascal Krieger",
     "subtitle": "Physiotherapie & Sportphysiotherapie",
-    "text": "<p>Individuelle Betreuung mit manuellen Techniken sowie gezielten Übungen für Kraft, Ausdauer, Mobilität, Gleichgewicht und Koordination — für mehr Lebensqualität im Alltag und Höchstleistung im Sport.</p>",
+    "text": "<p>Physiotherapie mit manuellen Techniken und gezielten Übungen für Kraft, Ausdauer, Beweglichkeit, Gleichgewicht und Koordination. Für den Alltag genauso wie für den Sport.</p>",
     "ctaPrimary": "Termin vereinbaren",
-    "ctaSecondary": "Mehr erfahren"
+    "ctaSecondary": "Über mich"
   },
   "about": {
-    "eyebrow": "Über mich",
-    "title": "Fundiertes Wissen. Praktische Erfahrung.",
-    "text": "<p>Mein Name ist Pascal Krieger und ich bin Physiotherapeut in Rainfeld (NÖ). Die Faszination für den menschlichen Körper und dessen Funktionen entwickelte sich bereits vor vielen Jahren als ich selbst Patient war. Den ersten Grundstein für meine berufliche Laufbahn legte ich mit meiner Ausbildung zum Heilmasseur (2017 bis 2019). Um mich noch intensiver mit dem Bewegungsapparat zu beschäftigen, absolvierte ich den Bachelor für Physiotherapie in Krems (2019 bis 2022). Da mein Herz auch noch Jahre nach meiner über 20 jährigen Motocrosskarriere weiterhin für den Sport schlägt, beendete ich 2025 das Diplom für Sportphysiotherapie, um meine Patienten bestmöglichst in deren Sportart betreuen zu können.</p>",
+    "eyebrow": "",
+    "title": "Über mich",
+    "text": "<p>Ich bin Pascal Krieger, Physiotherapeut in Rainfeld (NÖ). Für den menschlichen Körper begeistere ich mich, seit ich vor vielen Jahren selbst Patient war. Angefangen habe ich mit der Ausbildung zum Heilmasseur (2017 bis 2019). Um den Bewegungsapparat noch genauer zu verstehen, habe ich danach in Krems Physiotherapie studiert (Bachelor, 2019 bis 2022). Über 20 Jahre bin ich Motocross gefahren, und der Sport lässt mich bis heute nicht los. Deshalb habe ich 2025 das Diplom für Sportphysiotherapie abgeschlossen, damit ich Sportlerinnen und Sportler in ihrer Sportart gezielt betreuen kann.</p>",
     "timeline": [
       {
         "date": "2017 – 2019",
@@ -69,29 +69,29 @@ window.SITE_CONTENT = {
       },
       {
         "date": "Abgeschlossen 2025",
-        "text": "Diplom Sportphysiotherapie, um Patient:innen bestmöglich in ihrer Sportart zu betreuen"
+        "text": "Diplom Sportphysiotherapie"
       },
       {
         "date": "20+ Jahre",
-        "text": "Aktive Motocross-Karriere & Sportpraxis"
+        "text": "Motocross, aktiv gefahren"
       }
     ]
   },
   "leistungen": {
-    "eyebrow": "Leistungen",
-    "title": "Physiotherapie & Sportphysiotherapie",
+    "eyebrow": "",
+    "title": "Leistungen",
     "services": [
       {
         "title": "Physiotherapie",
-        "text": "<p>Physiotherapie zielt darauf ab die Lebensqualität individuell mit Hilfe von manuellen Techniken sowie auch Übungen für Kraft, Ausdauer, Mobilität, Gleichgewicht und Koordination zu verbessern und wieder herstellen zu können.</p>"
+        "text": "<p>Ziel der Physiotherapie ist, Ihre Lebensqualität zu verbessern oder wiederherzustellen. Dafür arbeite ich mit manuellen Techniken und mit Übungen für Kraft, Ausdauer, Beweglichkeit, Gleichgewicht und Koordination, abgestimmt auf Sie persönlich.</p>"
       },
       {
         "title": "Sportphysiotherapie",
-        "text": "<p>In der Sportphysiotherapie ist es die Kunst, die geforderte Sportart zu analysieren und die Bewegungsabläufe in einzelne Übungen aufzuteilen. Ziel ist es, diese separat zu trainieren und optimieren, um die gemeinsam gesetzten Ziele zu erreichen.</p>"
+        "text": "<p>In der Sportphysiotherapie schaue ich mir Ihre Sportart genau an und zerlege die Bewegungsabläufe in einzelne Übungen. Diese trainieren wir getrennt und verbessern sie, bis wir die gemeinsam gesetzten Ziele erreichen.</p>"
       }
     ],
-    "angeboteEyebrow": "Angebot",
-    "angeboteTitle": "Therapie Angebote",
+    "angeboteEyebrow": "",
+    "angeboteTitle": "Therapieangebote",
     "angebote": [
       {
         "title": "Präventive Physiotherapie",
@@ -120,7 +120,7 @@ window.SITE_CONTENT = {
         "items": [
           "Betreuung im Motorsport, speziell Langstrecken Auto-/Motorradrennen"
         ],
-        "subheading": "bisherige Events:",
+        "subheading": "Bisherige Einsätze:",
         "subitems": [
           "ADDC 2022 (Audi Motorsport)",
           "2× 24h Spa 2022/23 (EBM)",
@@ -131,13 +131,13 @@ window.SITE_CONTENT = {
     ]
   },
   "faq": {
-    "eyebrow": "FAQ",
-    "title": "Häufig gestellte Fragen",
-    "text": "Alles Wichtige rund um Termin, Kosten und Ablauf.",
+    "eyebrow": "",
+    "title": "Häufige Fragen",
+    "text": "",
     "items": [
       {
         "q": "Wie bekomme ich einen Termin?",
-        "a": "<p>Bitte kontaktieren Sie mich unter dieser Nummer {{phone}}, um einen passenden Termin zu finden.</p>"
+        "a": "<p>Am einfachsten telefonisch unter {{phone}}. Dann finden wir gemeinsam einen Termin.</p>"
       },
       {
         "q": "Was benötige ich zur Therapie?",
@@ -166,8 +166,8 @@ window.SITE_CONTENT = {
     ]
   },
   "kontakt": {
-    "eyebrow": "Kontakt",
-    "title": "Ich freue mich auf Ihre Nachricht",
-    "text": "<p>Rufen Sie einfach an oder schreiben Sie mir eine E-Mail — ich melde mich rasch zurück.</p>"
+    "eyebrow": "",
+    "title": "Kontakt",
+    "text": "<p>Am schnellsten erreichen Sie mich telefonisch. Gerne auch per E-Mail, ich melde mich so bald wie möglich.</p>"
   }
 };

@@ -1,10 +1,8 @@
 const FONT_OPTIONS = {
-  poppins: '"Poppins", sans-serif',
-  inter: '"Inter", sans-serif',
-  montserrat: '"Montserrat", sans-serif',
-  playfair: '"Playfair Display", serif',
-  lora: '"Lora", serif',
-  roboto: '"Roboto", sans-serif'
+  sourceserif: '"Source Serif 4", Georgia, serif',
+  literata: '"Literata", Georgia, serif',
+  atkinson: '"Atkinson Hyperlegible", system-ui, sans-serif',
+  publicsans: '"Public Sans", system-ui, sans-serif'
 };
 
 function fontFormatFromPath(path) {
@@ -32,7 +30,7 @@ function resolveFont(key, customFonts) {
   if (FONT_OPTIONS[key]) return FONT_OPTIONS[key];
   const custom = (customFonts || []).find(f => f.name === key);
   if (custom) return `"${custom.name}", sans-serif`;
-  return FONT_OPTIONS.poppins;
+  return null;
 }
 
 function hexToRgb(hex) {
@@ -63,8 +61,10 @@ function applyDesign(design, customFonts) {
   document.documentElement.style.fontSize = design.textScale + '%';
 
   injectCustomFonts(customFonts);
-  root.setProperty('--font-head', resolveFont(design.headingFont, customFonts));
-  root.setProperty('--font-body', resolveFont(design.bodyFont, customFonts));
+  const headFont = resolveFont(design.headingFont, customFonts);
+  const bodyFont = resolveFont(design.bodyFont, customFonts);
+  if (headFont) root.setProperty('--font-head', headFont);
+  if (bodyFont) root.setProperty('--font-body', bodyFont);
 }
 
 function applyTemplate(text, site) {
@@ -99,8 +99,8 @@ function ensureContactChoiceModal() {
   el.className = 'contact-choice-overlay';
   el.innerHTML = `
     <div class="contact-choice-modal" role="dialog" aria-modal="true" aria-labelledby="contactChoiceTitle">
-      <button type="button" class="contact-choice-close" aria-label="Schließen">✕</button>
-      <h3 id="contactChoiceTitle">Wie möchtest du Kontakt aufnehmen?</h3>
+      <button type="button" class="contact-choice-close" aria-label="Schließen"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+      <h3 id="contactChoiceTitle">Wie möchten Sie mich erreichen?</h3>
       <div class="contact-choice-actions">
         <a class="btn btn-primary" id="contactChoiceCall" data-goatcounter-click="contact_choice_call">Anrufen</a>
         <a class="btn btn-outline" id="contactChoiceEmail" data-goatcounter-click="contact_choice_email">E-Mail schreiben</a>
@@ -624,10 +624,10 @@ function ensureGalleryLightbox() {
   const el = document.createElement('div');
   el.className = 'gallery-lightbox-overlay';
   el.innerHTML = `
-    <button type="button" class="gallery-lightbox-close" aria-label="Schließen">✕</button>
-    <button type="button" class="gallery-lightbox-prev" aria-label="Vorheriges Bild">‹</button>
+    <button type="button" class="gallery-lightbox-close" aria-label="Schließen"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    <button type="button" class="gallery-lightbox-prev" aria-label="Vorheriges Bild"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
     <img alt="">
-    <button type="button" class="gallery-lightbox-next" aria-label="Nächstes Bild">›</button>
+    <button type="button" class="gallery-lightbox-next" aria-label="Nächstes Bild"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
   `;
   document.body.appendChild(el);
 
@@ -701,14 +701,9 @@ if (window.SITE_CONTENT) {
 }
 
 const header = document.getElementById('siteHeader');
-const progressBar = document.getElementById('progressBar');
 
 function onScroll() {
   header.classList.toggle('scrolled', window.scrollY > 10);
-
-  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-  const progress = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
-  progressBar.style.width = progress + '%';
 }
 document.addEventListener('scroll', onScroll, { passive: true });
 onScroll();

@@ -21,6 +21,21 @@ function ghHeaders(token) {
   };
 }
 
+async function ghCheckWriteAccess(token) {
+  const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, { headers: ghHeaders(token) });
+  if (!res.ok) {
+    const err = new Error('GitHub-Fehler beim Prüfen des Tokens (' + res.status + ')');
+    err.status = res.status;
+    throw err;
+  }
+  const repo = await res.json();
+  if (!repo.permissions || !repo.permissions.push) {
+    const err = new Error('Dieses Token hat keine Schreibrechte auf ' + REPO_NAME + '.');
+    err.status = 403;
+    throw err;
+  }
+}
+
 async function ghGetFile(token) {
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${CONTENT_PATH}?ref=${REPO_BRANCH}`;
   const res = await fetch(url, { headers: ghHeaders(token) });
@@ -1536,8 +1551,12 @@ function fillFixedFields(data) {
   document.getElementById('design_primaryColor').value = data.design.primaryColor;
   document.getElementById('design_accentColor').value = data.design.accentColor;
   populateFontSelects(data.customFonts || []);
-  document.getElementById('design_headingFont').value = data.design.headingFont;
-  document.getElementById('design_bodyFont').value = data.design.bodyFont;
+  const headingSelect = document.getElementById('design_headingFont');
+  const bodySelect = document.getElementById('design_bodyFont');
+  headingSelect.value = data.design.headingFont;
+  if (!headingSelect.value) headingSelect.value = 'sourceserif';
+  bodySelect.value = data.design.bodyFont;
+  if (!bodySelect.value) bodySelect.value = 'publicsans';
   document.getElementById('design_borderRadius').value = data.design.borderRadius;
   document.getElementById('design_borderRadius_val').textContent = data.design.borderRadius;
   document.getElementById('design_textScale').value = data.design.textScale;
@@ -1810,12 +1829,10 @@ async function uploadPendingImages(token, data) {
 }
 
 const FONT_OPTIONS = {
-  poppins: 'Poppins',
-  inter: 'Inter',
-  montserrat: 'Montserrat',
-  playfair: 'Playfair Display',
-  lora: 'Lora',
-  roboto: 'Roboto'
+  sourceserif: 'Source Serif 4',
+  literata: 'Literata',
+  atkinson: 'Atkinson Hyperlegible',
+  publicsans: 'Public Sans'
 };
 const pendingFonts = {};
 
@@ -1929,6 +1946,7 @@ function backToAdminHome() {
 
 async function login(token) {
   try {
+    await withTimeout(ghCheckWriteAccess(token), 10000);
     const { sha, text } = await withTimeout(ghGetFile(token), 10000);
     const data = parseContentJs(text);
 

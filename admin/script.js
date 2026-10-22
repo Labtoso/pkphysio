@@ -21,6 +21,21 @@ function ghHeaders(token) {
   };
 }
 
+async function ghCheckWriteAccess(token) {
+  const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, { headers: ghHeaders(token) });
+  if (!res.ok) {
+    const err = new Error('GitHub-Fehler beim Prüfen des Tokens (' + res.status + ')');
+    err.status = res.status;
+    throw err;
+  }
+  const repo = await res.json();
+  if (!repo.permissions || !repo.permissions.push) {
+    const err = new Error('Dieses Token hat keine Schreibrechte auf ' + REPO_NAME + '.');
+    err.status = 403;
+    throw err;
+  }
+}
+
 async function ghGetFile(token) {
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${CONTENT_PATH}?ref=${REPO_BRANCH}`;
   const res = await fetch(url, { headers: ghHeaders(token) });
@@ -72,7 +87,7 @@ async function verifyAndEnter(token) {
   loginBtn.disabled = true;
   loginBtn.textContent = 'Prüfe Zugang …';
   try {
-    await withTimeout(ghGetFile(token), 10000);
+    await withTimeout(ghCheckWriteAccess(token), 10000);
     try { sessionStorage.setItem(TOKEN_KEY, token); } catch (e) {}
     showMenu();
   } catch (err) {
