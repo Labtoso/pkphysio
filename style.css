@@ -21,7 +21,7 @@
   --font-head: "Source Serif 4", Georgia, serif;
   --font-body: "Public Sans", system-ui, sans-serif;
   --motion: .2s ease-out;
-  --motion-slow: .45s ease-in-out;
+  --motion-slow: .3s cubic-bezier(.25, .8, .25, 1);
   color-scheme: dark;
 }
 

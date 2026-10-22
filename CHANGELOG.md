@@ -2,6 +2,11 @@
 
 Neueste Änderungen stehen oben.
 
+## 22.10.2026 – Handy-Menü zügiger
+
+### Geändert
+- Größere Bewegungen (Handy-Menü, Auswahlfeld, FAQ, Einblenden) laufen jetzt in 0,3 s statt 0,45 s, mit sanftem Auslaufen (`--motion-slow: .3s cubic-bezier(.25, .8, .25, 1)`). Das Menü ist sofort da und kommt ruhig zum Stehen, klappt weiter unter der Kopfleiste auf.
+
 ## 22.10.2026 – Commits nur noch unter eigenem Namen
 
 ### Neu
