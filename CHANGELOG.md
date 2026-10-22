@@ -2,6 +2,14 @@
 
 Neueste Änderungen stehen oben.
 
+## 22.10.2026 – Commits nur noch unter eigenem Namen
+
+### Neu
+- Automatische Commit-Prüfung bei jedem Push (GitHub Actions, „Commit-Prüfung“): schlägt Alarm, wenn ein Commit eine Co-authored-by-Zeile enthält oder nicht die GitHub-noreply-Adresse nutzt. So fällt sofort auf, falls jemand Fremdes als Mitautor eingetragen wird.
+
+### Geändert
+- Website-Editor: Speichern legt Commits jetzt immer mit der GitHub-noreply-Adresse des angemeldeten Kontos an, nie mit der privaten E-Mail.
+
 ## 22.10.2026 – Termin-Auswahl mit Pfeil
 
 ### Geändert

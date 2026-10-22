@@ -1,0 +1,47 @@
+# Prüft jeden Push: keine Co-Autoren-Zeilen und keine privaten Mail-Adressen in Commits
+name: Commit-Prüfung
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pruefen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Commits prüfen
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ -n "$PR_BASE" ]; then
+            RANGE="$PR_BASE..$PR_HEAD"
+          elif [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            RANGE="$AFTER"
+          else
+            RANGE="$BEFORE..$AFTER"
+          fi
+          fehler=0
+          for c in $(git rev-list "$RANGE"); do
+            if git log -1 --format=%B "$c" | grep -qi '^co-authored-by:'; then
+              echo "::error::Commit $c enthält eine Co-authored-by-Zeile"
+              fehler=1
+            fi
+            for mail in $(git log -1 --format='%ae %ce' "$c"); do
+              case "$mail" in
+                *@users.noreply.github.com|noreply@github.com) ;;
+                *) echo "::error::Commit $c nutzt die Adresse $mail statt der GitHub-noreply-Adresse"; fehler=1 ;;
+              esac
+            done
+          done
+          exit $fehler
