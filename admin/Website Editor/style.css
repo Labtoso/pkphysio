@@ -12,7 +12,7 @@ body {
   border: 1px solid var(--color-border);
   color: var(--color-ink-soft);
   flex-shrink: 0;
-  transition: border-color .15s ease, color .15s ease;
+  transition: border-color var(--motion), color var(--motion);
 }
 .admin-home-btn:hover { background: var(--color-bg-alt); color: var(--color-ink); }
 
@@ -82,7 +82,7 @@ body {
   font-weight: 600;
   padding: 6px 14px;
   white-space: nowrap;
-  transition: border-color .15s ease, color .15s ease;
+  transition: border-color var(--motion), color var(--motion);
 }
 .admin-quicknav-btn:hover { background: var(--color-bg-alt); color: var(--color-ink); }
 .admin-quicknav-btn-icon {
@@ -269,7 +269,7 @@ body {
   font-size: .78rem;
   font-weight: 600;
   padding: 6px 14px;
-  transition: border-color .15s ease, color .15s ease;
+  transition: border-color var(--motion), color var(--motion);
 }
 .admin-image-remove-btn:hover { border-color: #ff6b6b; color: #ff6b6b; }
 .admin-image-row input[type="file"] {
@@ -290,7 +290,7 @@ body {
   align-items: center;
   justify-content: center;
   box-shadow: var(--shadow-md, 0 10px 30px rgba(0, 0, 0, .45));
-  transition: transform .15s ease, background .15s ease;
+  transition: transform var(--motion), background var(--motion);
 }
 .admin-add-block-fab:hover { background: #22cdb9; transform: scale(1.06); }
 .admin-block-search {
@@ -324,7 +324,7 @@ body {
   border-radius: var(--radius-sm);
   color: var(--color-ink);
   font-family: var(--font-body);
-  transition: border-color .15s ease, color .15s ease, transform .15s ease;
+  transition: border-color var(--motion), color var(--motion), transform var(--motion);
 }
 .admin-block-picker-btn:hover { background: var(--color-bg-alt); color: var(--color-ink); }
 .admin-block-picker-icon { display: flex; }
@@ -403,7 +403,7 @@ body {
   opacity: .7;
 }
 #draggableSections { display: flex; flex-direction: column; gap: 40px; }
-.admin-section.draggable { cursor: default; transition: opacity .15s ease; }
+.admin-section.draggable { cursor: default; transition: opacity var(--motion); }
 .admin-section-header {
   display: flex;
   align-items: center;
@@ -423,7 +423,7 @@ body {
   border: none;
   color: var(--color-ink-soft);
   border-radius: 6px;
-  transition: color .15s ease, background .15s ease;
+  transition: color var(--motion), background var(--motion);
 }
 .admin-block-rename-btn:hover { color: var(--color-ink); background: var(--color-bg-alt); }
 .admin-block-label-input {
@@ -466,7 +466,7 @@ body.admin-dragging-active .admin-drag-handle { cursor: grabbing; }
   font-size: .78rem;
   font-weight: 600;
   padding: 6px 14px;
-  transition: border-color .15s ease, color .15s ease;
+  transition: border-color var(--motion), color var(--motion);
 }
 .admin-hide-btn:hover { background: var(--color-bg-alt); color: var(--color-ink); }
 .hidden-section .admin-hide-btn { border-color: var(--color-primary); color: var(--color-primary); }
@@ -482,7 +482,7 @@ body.admin-dragging-active .admin-drag-handle { cursor: grabbing; }
   font-size: .78rem;
   font-weight: 600;
   padding: 6px 14px;
-  transition: border-color .15s ease, color .15s ease;
+  transition: border-color var(--motion), color var(--motion);
 }
 .admin-remove-core-btn:hover { border-color: #ff6b6b; color: #ff6b6b; }
 
@@ -572,7 +572,7 @@ body.admin-dragging-active .admin-drag-handle { cursor: grabbing; }
   font-size: .88rem;
   padding: 12px;
   width: 100%;
-  transition: border-color .15s ease, color .15s ease;
+  transition: border-color var(--motion), color var(--motion);
 }
 .admin-add-btn:hover { background: var(--color-bg-alt); color: var(--color-ink); }
 
@@ -624,7 +624,7 @@ body.admin-dragging-active .admin-drag-handle { cursor: grabbing; }
   border: 1px solid var(--color-border);
   border-radius: 999px;
   color: var(--color-ink-soft);
-  transition: border-color .15s ease, color .15s ease;
+  transition: border-color var(--motion), color var(--motion);
 }
 .admin-modal-close:hover { border-color: #ff6b6b; color: #ff6b6b; }
 .admin-modal-close-right { left: auto; right: 16px; }
