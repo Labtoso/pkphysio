@@ -42,7 +42,10 @@ body {
   color: var(--color-ink);
   margin-bottom: 12px;
 }
-.admin-help ol { list-style: decimal; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.admin-help ol { list-style: decimal; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; margin-top: 18px; }
+.admin-help .admin-field { margin-top: 4px; }
+.admin-github-btn { gap: 10px; }
+.admin-github-btn svg { flex-shrink: 0; }
 .admin-note {
   margin-top: 14px;
   font-size: .82rem;

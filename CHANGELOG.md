@@ -2,6 +2,19 @@
 
 Neueste Änderungen stehen oben.
 
+## 22.10.2026 – Admin: Anmeldung mit GitHub
+
+### Neu
+- Admin-Panel: Knopf „Mit GitHub anmelden“. Kein Passwort und kein Token mehr nötig, nur das GitHub-Konto mit Schreibrechten auf pkphysio. Aktiv, sobald der kleine Anmelde-Dienst eingerichtet ist (`anmelde-dienst/ANLEITUNG.md`).
+- Ordner `anmelde-dienst/` mit dem Cloudflare Worker, der die Anmeldung bei GitHub abschließt. Das Client Secret liegt nur dort, nie im Repository.
+
+### Geändert
+- Die Anmeldung mit Token gibt es weiter als Notlösung unter „Stattdessen mit Token anmelden“.
+- Knöpfe übernehmen überall die Schrift der Seite und haben keinen grauen Standardrahmen mehr.
+
+### Entfernt
+- Die Passwort-Abfrage vor der Anmeldung.
+
 ## 22.10.2026 – Überschriften: Markierung nahtlos
 
 ### Gefixt

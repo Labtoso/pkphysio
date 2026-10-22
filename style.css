@@ -94,6 +94,7 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   transition: background var(--motion), border-color var(--motion), color var(--motion);
   white-space: nowrap;
 }
+:where(button.btn) { font-family: inherit; border: 1px solid transparent; }
 .btn-primary {
   background: var(--color-primary);
   color: #0a0c0b;

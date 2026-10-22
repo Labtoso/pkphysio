@@ -5,10 +5,10 @@ const CONTENT_PATH = 'content.js';
 const TOKEN_KEY = 'pk_admin_token';
 const NAV_TOKEN_KEY = 'pk_admin_nav';
 
-const PIN_HASH = 'eec9bb67f607e0a241a430dd814b9407ef7a46084ddbdd7f4fb2f8e44760ad45';
-const PIN_SESSION_KEY = 'pk_admin_pin_ok';
-const PIN_ATTEMPTS_KEY = 'pk_admin_pin_attempts';
-const PIN_LOCK_KEY = 'pk_admin_pin_lock_until';
+// Adresse des kleinen Anmelde-Dienstes (Ordner anmelde-dienst/), z. B. https://pkphysio-login.<name>.workers.dev
+// Leer = nur Anmeldung mit Token.
+const LOGIN_URL = '';
+const LOGIN_STATE_KEY = 'pk_admin_login_state';
 
 function base64ToUtf8(b64) {
   return decodeURIComponent(atob(b64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
@@ -55,10 +55,8 @@ function withTimeout(promise, ms) {
   ]);
 }
 
-const pinScreen = document.getElementById('pinScreen');
-const pinInput = document.getElementById('pinInput');
-const pinBtn = document.getElementById('pinBtn');
-const pinError = document.getElementById('pinError');
+const githubLoginBtn = document.getElementById('githubLoginBtn');
+const tokenLogin = document.getElementById('tokenLogin');
 const loginScreen = document.getElementById('loginScreen');
 const tokenInput = document.getElementById('tokenInput');
 const loginBtn = document.getElementById('loginBtn');
@@ -66,26 +64,19 @@ const loginError = document.getElementById('loginError');
 const menuScreen = document.getElementById('menuScreen');
 
 function showMenu() {
-  pinScreen.style.display = 'none';
   loginScreen.style.display = 'none';
   menuScreen.style.display = 'flex';
 }
 function showLogin() {
-  pinScreen.style.display = 'none';
   menuScreen.style.display = 'none';
   loginScreen.style.display = 'flex';
-}
-function showPinGate() {
-  loginScreen.style.display = 'none';
-  menuScreen.style.display = 'none';
-  pinScreen.style.display = 'flex';
-  updatePinLockUI();
 }
 
 async function verifyAndEnter(token) {
   loginError.textContent = '';
   loginBtn.disabled = true;
   loginBtn.textContent = 'Prüfe Zugang …';
+  githubLoginBtn.disabled = true;
   try {
     await withTimeout(ghCheckWriteAccess(token), 10000);
     try { sessionStorage.setItem(TOKEN_KEY, token); } catch (e) {}
@@ -93,19 +84,49 @@ async function verifyAndEnter(token) {
   } catch (err) {
     try { sessionStorage.removeItem(TOKEN_KEY); } catch (e) {}
     if (err.status === 401) {
-      loginError.textContent = 'Token ungültig oder abgelaufen.';
+      loginError.textContent = 'Anmeldung ungültig oder abgelaufen. Bitte erneut anmelden.';
     } else if (err.status === 404) {
       loginError.textContent = 'Repository oder content.js nicht gefunden. Wurde der Code schon nach GitHub gepusht?';
     } else if (err.status === 403) {
-      loginError.textContent = 'Kein Zugriff. Prüfe, ob das Token Zugriff auf "pkphysio" mit "Contents: Read and write" hat.';
+      loginError.textContent = 'Dieses GitHub-Konto hat keine Schreibrechte auf pkphysio.';
     } else {
       loginError.textContent = err.message || 'Unbekannter Fehler.';
     }
     showLogin();
   } finally {
     loginBtn.disabled = false;
-    loginBtn.textContent = 'Anmelden';
+    loginBtn.textContent = 'Mit Token anmelden';
+    githubLoginBtn.disabled = false;
   }
+}
+
+function randomId() {
+  if (crypto.randomUUID) return crypto.randomUUID();
+  return [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+githubLoginBtn.addEventListener('click', () => {
+  const state = randomId();
+  try { sessionStorage.setItem(LOGIN_STATE_KEY, state); } catch (e) {}
+  window.location.href = LOGIN_URL.replace(/\/$/, '') + '/login?state=' + encodeURIComponent(state);
+});
+
+// Rückkehr von GitHub: Token steht im #-Teil der Adresse und wird sofort daraus entfernt
+function takeLoginResult() {
+  if (!window.location.hash) return null;
+  const params = new URLSearchParams(window.location.hash.slice(1));
+  const token = params.get('token');
+  const error = params.get('error');
+  if (!token && !error) return null;
+  history.replaceState(null, '', window.location.pathname + window.location.search);
+  let expected = null;
+  try {
+    expected = sessionStorage.getItem(LOGIN_STATE_KEY);
+    sessionStorage.removeItem(LOGIN_STATE_KEY);
+  } catch (e) {}
+  if (error) return { error: error === 'access_denied' ? 'Anmeldung bei GitHub abgebrochen.' : 'Anmeldung bei GitHub fehlgeschlagen.' };
+  if (!expected || params.get('state') !== expected) return { error: 'Anmeldung konnte nicht bestätigt werden. Bitte erneut versuchen.' };
+  return { token };
 }
 
 loginBtn.addEventListener('click', () => {
@@ -129,81 +150,9 @@ document.querySelectorAll('.admin-menu-card').forEach(link => {
 document.getElementById('menuLogoutBtn').addEventListener('click', () => {
   try { sessionStorage.removeItem(TOKEN_KEY); } catch (e) {}
   try { sessionStorage.removeItem(NAV_TOKEN_KEY); } catch (e) {}
-  try { sessionStorage.removeItem(PIN_SESSION_KEY); } catch (e) {}
-  try { sessionStorage.removeItem(PIN_ATTEMPTS_KEY); } catch (e) {}
-  try { sessionStorage.removeItem(PIN_LOCK_KEY); } catch (e) {}
   tokenInput.value = '';
-  showPinGate();
+  showLogin();
 });
-
-async function sha256Hex(text) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-function pinLockRemainingMs() {
-  let until = 0;
-  try { until = Number(sessionStorage.getItem(PIN_LOCK_KEY) || 0); } catch (e) {}
-  return Math.max(0, until - Date.now());
-}
-
-function pinDelayForAttempts(n) {
-  const steps = [0, 0, 0, 5, 15, 30, 60, 120, 300];
-  return (steps[Math.min(n, steps.length - 1)] ?? 300) * 1000;
-}
-
-let pinLockTimer = null;
-function updatePinLockUI() {
-  const remaining = pinLockRemainingMs();
-  clearTimeout(pinLockTimer);
-  if (remaining > 0) {
-    pinBtn.disabled = true;
-    pinInput.disabled = true;
-    pinError.textContent = 'Zu viele Versuche. Bitte warte ' + Math.ceil(remaining / 1000) + ' Sekunden.';
-    pinLockTimer = setTimeout(updatePinLockUI, 1000);
-  } else {
-    pinBtn.disabled = false;
-    pinInput.disabled = false;
-    if (pinError.textContent.startsWith('Zu viele Versuche')) pinError.textContent = '';
-  }
-}
-
-async function submitPin() {
-  if (pinLockRemainingMs() > 0) return;
-  const value = pinInput.value;
-  if (!value) return;
-
-  pinBtn.disabled = true;
-  pinBtn.textContent = 'Prüfe …';
-  const hash = await sha256Hex(value);
-  pinBtn.textContent = 'Weiter';
-
-  if (hash === PIN_HASH) {
-    try {
-      sessionStorage.setItem(PIN_SESSION_KEY, '1');
-      sessionStorage.removeItem(PIN_ATTEMPTS_KEY);
-      sessionStorage.removeItem(PIN_LOCK_KEY);
-    } catch (e) {}
-    pinInput.value = '';
-    pinError.textContent = '';
-    showLogin();
-  } else {
-    let attempts = 0;
-    try {
-      attempts = Number(sessionStorage.getItem(PIN_ATTEMPTS_KEY) || 0) + 1;
-      sessionStorage.setItem(PIN_ATTEMPTS_KEY, String(attempts));
-      const delay = pinDelayForAttempts(attempts);
-      if (delay > 0) sessionStorage.setItem(PIN_LOCK_KEY, String(Date.now() + delay));
-    } catch (e) {}
-    pinInput.value = '';
-    pinInput.focus();
-    pinError.textContent = 'Falsches Passwort.';
-    updatePinLockUI();
-  }
-}
-
-pinBtn.addEventListener('click', submitPin);
-pinInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitPin(); });
 
 const themeToggle = document.getElementById('themeToggle');
 themeToggle.setAttribute('aria-pressed', String(document.documentElement.classList.contains('light')));
@@ -214,19 +163,28 @@ themeToggle.addEventListener('click', () => {
   try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch (e) {}
 });
 
+if (!LOGIN_URL) {
+  githubLoginBtn.style.display = 'none';
+  tokenLogin.open = true;
+}
+
 (function () {
+  const result = takeLoginResult();
+  if (result && result.token) {
+    verifyAndEnter(result.token);
+    return;
+  }
+  if (result && result.error) {
+    loginError.textContent = result.error;
+    showLogin();
+    return;
+  }
+
   let token = null;
   try { token = sessionStorage.getItem(TOKEN_KEY); } catch (e) {}
   if (token) {
     verifyAndEnter(token);
     return;
   }
-
-  let pinAlreadyOk = false;
-  try { pinAlreadyOk = sessionStorage.getItem(PIN_SESSION_KEY) === '1'; } catch (e) {}
-  if (pinAlreadyOk) {
-    showLogin();
-  } else {
-    showPinGate();
-  }
+  showLogin();
 })();

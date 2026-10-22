@@ -3,9 +3,6 @@ const REPO_NAME = 'pkphysio';
 const REPO_BRANCH = 'main';
 const CONTENT_PATH = 'content.js';
 const TOKEN_KEY = 'pk_admin_token';
-const PIN_SESSION_KEY = 'pk_admin_pin_ok';
-const PIN_ATTEMPTS_KEY = 'pk_admin_pin_attempts';
-const PIN_LOCK_KEY = 'pk_admin_pin_lock_until';
 
 function utf8ToBase64(str) {
   return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, hex) => String.fromCharCode('0x' + hex)));
@@ -2042,9 +2039,6 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
   state = { token: null, sha: null, data: null };
   try { sessionStorage.removeItem(TOKEN_KEY); } catch (e) {}
   try { sessionStorage.removeItem('pk_admin_nav'); } catch (e) {}
-  try { sessionStorage.removeItem(PIN_SESSION_KEY); } catch (e) {}
-  try { sessionStorage.removeItem(PIN_ATTEMPTS_KEY); } catch (e) {}
-  try { sessionStorage.removeItem(PIN_LOCK_KEY); } catch (e) {}
   backToAdminHome();
 });
 

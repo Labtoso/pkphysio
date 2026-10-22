@@ -1,0 +1,8 @@
+name = "pkphysio-login"
+main = "worker.js"
+compatibility_date = "2024-09-23"
+
+[vars]
+ADMIN_URL = "https://labtoso.github.io/pkphysio/admin/"
+# Client ID der GitHub-App (nicht geheim). Das Client Secret kommt nur als Secret in den Worker.
+GITHUB_CLIENT_ID = ""
