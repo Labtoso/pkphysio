@@ -1636,6 +1636,7 @@ function fillFixedFields(data) {
   document.getElementById('site_email').value = data.site.email;
   document.getElementById('site_instagramHandle').value = data.site.instagramHandle;
   document.getElementById('site_instagramUrl').value = data.site.instagramUrl;
+  document.getElementById('site_copyrightName').value = data.site.copyrightName || 'Pascal Krieger';
 
   document.getElementById('hero_eyebrow').value = data.hero.eyebrow;
   document.getElementById('hero_title').value = data.hero.title;
@@ -1691,6 +1692,7 @@ function readFixedFields(data) {
   data.site.email = document.getElementById('site_email').value.trim();
   data.site.instagramHandle = document.getElementById('site_instagramHandle').value.trim();
   data.site.instagramUrl = document.getElementById('site_instagramUrl').value.trim();
+  data.site.copyrightName = document.getElementById('site_copyrightName').value.trim();
 
   data.hero.eyebrow = document.getElementById('hero_eyebrow').value;
   data.hero.title = document.getElementById('hero_title').value;

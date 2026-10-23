@@ -45,6 +45,7 @@ window.SITE_CONTENT = {
     "email": "physiotherapie.krieger@outlook.com",
     "instagramHandle": "@pascal_krieger",
     "instagramUrl": "https://www.instagram.com/pascal_krieger",
+    "copyrightName": "Pascal Krieger",
     "address": "Kleinzeller Landstraße 28a, 3162 Rainfeld"
   },
   "hero": {

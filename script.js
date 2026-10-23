@@ -277,6 +277,9 @@ function renderContent(data) {
   document.getElementById('kontaktTitle').textContent = data.kontakt.title;
   document.getElementById('kontaktText').innerHTML = data.kontakt.text;
 
+  document.getElementById('footerYear').textContent = new Date().getFullYear();
+  document.getElementById('footerName').textContent = site.copyrightName || 'Pascal Krieger';
+
   const mapsLink = getMapsAppLink(site.address);
   const contactList = document.getElementById('contactList');
   contactList.innerHTML = `
