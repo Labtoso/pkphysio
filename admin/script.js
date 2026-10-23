@@ -7,7 +7,7 @@ const NAV_TOKEN_KEY = 'pk_admin_nav';
 
 // Adresse des kleinen Anmelde-Dienstes (Ordner anmelde-dienst/), z. B. https://pkphysio-login.<name>.workers.dev
 // Leer = „Mit GitHub anmelden“ ist ausgegraut, nur Passwort und Token.
-const LOGIN_URL = '';
+const LOGIN_URL = 'https://pkphysio-login.anmelde-dienst.workers.dev';
 const LOGIN_STATE_KEY = 'pk_admin_login_state';
 
 const PIN_HASH = 'eec9bb67f607e0a241a430dd814b9407ef7a46084ddbdd7f4fb2f8e44760ad45';

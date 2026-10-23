@@ -2,6 +2,11 @@
 
 Neueste Änderungen stehen oben.
 
+## 23.10.2026 – „Mit GitHub anmelden“ freigeschaltet
+
+### Neu
+- Der Anmelde-Dienst läuft unter `https://pkphysio-login.anmelde-dienst.workers.dev`, die GitHub-App „pkphysio Admin“ ist eingerichtet. Der Knopf „Mit GitHub anmelden“ im Admin-Panel funktioniert jetzt.
+
 ## 23.10.2026 – Admin nicht in Suchmaschinen
 
 ### Geändert
