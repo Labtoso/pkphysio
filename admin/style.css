@@ -160,3 +160,8 @@ body {
 }
 .admin-home-btn:hover { background: var(--color-bg-alt); color: var(--color-ink); }
 .admin-home-btn-standalone { position: absolute; top: 24px; left: 24px; }
+
+@media (max-width: 480px) {
+  .admin-login { padding: 16px; }
+  .admin-login-card { padding: 28px 22px; }
+}
