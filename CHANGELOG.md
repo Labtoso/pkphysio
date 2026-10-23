@@ -2,6 +2,20 @@
 
 Neueste Änderungen stehen oben.
 
+## 23.10.2026 – Impressum als Baustein
+
+### Neu
+- Website-Editor: Unter „Baustein hinzufügen“ gibt es in der neuen Gruppe „Rechtliches“ den Baustein „Impressum“. Er erscheint nicht auf der Startseite, sondern auf einer eigenen Seite `/impressum/` mit derselben Kopfleiste und demselben Design.
+- Der Baustein startet mit einer Vorlage nach § 5 E-Commerce-Gesetz und § 25 Mediengesetz. Name, Adresse, Telefon und E-Mail kommen aus den Kontaktdaten, fehlende Angaben stehen in eckigen Klammern zum Ergänzen.
+- Das Textfeld des Impressums kann zusätzlich Überschriften (H2, H3), dazu wie gewohnt Fett, Listen und Links.
+- „Seite ansehen“ im Baustein öffnet das Impressum in einem neuen Tab.
+- Im Footer steht neben „© Jahr Pascal Krieger“ ein Link „Impressum“, sobald der Baustein existiert.
+- Die Impressum-Seite steht in der Sitemap.
+
+### Geändert
+- Das Impressum gibt es nur einmal. Wer es ein zweites Mal hinzufügt, landet beim vorhandenen Baustein.
+- Ohne Impressum-Baustein leitet `/impressum/` auf die Startseite weiter.
+
 ## 23.10.2026 – Copyright mittig, ohne eigene Leiste
 
 ### Geändert
