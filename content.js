@@ -58,7 +58,7 @@ window.SITE_CONTENT = {
   "about": {
     "eyebrow": "",
     "title": "Über mich",
-    "text": "<p>Mein Name ist Pascal Krieger und ich bin Physiotherapeut in Rainfeld (NÖ).</p><p>Die Faszination für den menschlichen Körper und dessen Funktionen entwickelte sich bereits vor vielen Jahren als ich selbst Patient war. Den ersten Grundstein für meine berufliche Laufbahn legte ich mit meiner Ausbildung zum Heilmasseur (2017 bis 2019). Um mich noch intensiver mit dem Bewegungsapparat zu beschäftigen, absolvierte ich den Bachelor für Physiotherapie in Krems (2019 bis 2022).</p><p>Da mein Herz auch noch Jahre nach meiner über 20 jährigen Motocrosskarriere weiterhin für den Sport schlägt, beendete ich 2025 das Diplom für Sportphysiotherapie, um meine Patienten bestmöglichst in deren Sportart betreuen zu können.</p>",
+    "text": "<p>Mein Name ist Pascal Krieger und ich bin Physiotherapeut in Rainfeld (NÖ).</p><p>Die Faszination für den menschlichen Körper und dessen Funktionen entwickelte sich bereits vor vielen Jahren, als ich selbst Patient war. Den ersten Grundstein für meine berufliche Laufbahn legte ich mit meiner Ausbildung zum Heilmasseur (2017 bis 2019). Um mich noch intensiver mit dem Bewegungsapparat zu beschäftigen, absolvierte ich den Bachelor für Physiotherapie in Krems (2019 bis 2022).</p><p>Da mein Herz auch noch Jahre nach meiner über 20-jährigen Motocrosskarriere weiterhin für den Sport schlägt, beendete ich 2025 das Diplom für Sportphysiotherapie, um meine Patienten bestmöglich in deren Sportart betreuen zu können.</p>",
     "timeline": [
       {
         "date": "2017 – 2019",
@@ -84,15 +84,15 @@ window.SITE_CONTENT = {
     "services": [
       {
         "title": "Physiotherapie",
-        "text": "<p>Physiotherapie zielt darauf ab die Lebensqualität individuell mit Hilfe von manuellen Techniken sowie auch Übungen für Kraft, Ausdauer, Mobilität, Gleichgewicht und Koordination zu verbessern und wieder herstellen zu können .</p>"
+        "text": "<p>Physiotherapie zielt darauf ab, die Lebensqualität individuell mit Hilfe von manuellen Techniken sowie auch Übungen für Kraft, Ausdauer, Mobilität, Gleichgewicht und Koordination zu verbessern und wiederherstellen zu können.</p>"
       },
       {
         "title": "Sportphysiotherapie",
-        "text": "<p>In der Sportphysiotherapie ist es die Kunst, die geforderte Sportart zu analysieren und die Bewegungsabläufe in einzelne Übungen aufzuteilen. Ziel ist es, diese separat zu trainieren und optimieren, um die gemeinsam gesetzten Ziele zu erreichen.</p>"
+        "text": "<p>In der Sportphysiotherapie ist es die Kunst, die geforderte Sportart zu analysieren und die Bewegungsabläufe in einzelne Übungen aufzuteilen. Ziel ist es, diese separat zu trainieren und zu optimieren, um die gemeinsam gesetzten Ziele zu erreichen.</p>"
       }
     ],
     "angeboteEyebrow": "",
-    "angeboteTitle": "Therapie Angebote",
+    "angeboteTitle": "Therapieangebote",
     "angebote": [
       {
         "title": "Präventive Physiotherapie",
@@ -105,7 +105,7 @@ window.SITE_CONTENT = {
         "subitems": []
       },
       {
-        "title": "Sport - Physiotherapie",
+        "title": "Sport-Physiotherapie",
         "items": [
           "Sport-/Physiotherapie",
           "Kinesiotaping",
@@ -119,7 +119,7 @@ window.SITE_CONTENT = {
       {
         "title": "Motorsport & Rennbetreuung",
         "items": [
-          "Betreuung im Motorsport speziell Langstrecken Auto -/Motorradrennen"
+          "Betreuung im Motorsport, speziell Langstrecken-Auto-/Motorradrennen"
         ],
         "subheading": "bisherige Events:",
         "subitems": [
@@ -146,23 +146,23 @@ window.SITE_CONTENT = {
       },
       {
         "q": "Muss ich die Verordnung bewilligen lassen?",
-        "a": "<ul><li>SVS Versicherte müssen die Verordnung bewilligen lassen</li><li>ÖGK oder BVAEB Versicherte müssen die Verordnung nicht bewilligen lassen</li><li>bei einer Privatversicherung bitte um Nachfrage direkt bei der Versicherung</li></ul>"
+        "a": "<ul><li>SVS-Versicherte müssen die Verordnung bewilligen lassen</li><li>ÖGK- oder BVAEB-Versicherte müssen die Verordnung nicht bewilligen lassen</li><li>bei einer Privatversicherung bitte um Nachfrage direkt bei der Versicherung</li></ul>"
       },
       {
-        "q": "Wieviel wird vom Versicherungsträger refundiert?",
-        "a": "<p>Refundierungsleistungen der verschiedenen Kassen pro Physio- Einheit á 45 min (Stand 2025)</p><ul><li>ÖGK: 45,62€</li><li>BVAEB: 57,02€</li><li>SVS: 50,47€</li></ul><p>Bei einer privaten Zusatzversicherung bitte bei jener informieren.</p>"
+        "q": "Wie viel wird vom Versicherungsträger refundiert?",
+        "a": "<p>Refundierungsleistungen der verschiedenen Kassen pro Physio-Einheit à 45 min (Stand 2025)</p><ul><li>ÖGK: 45,62 €</li><li>BVAEB: 57,02 €</li><li>SVS: 50,47 €</li></ul><p>Bei einer privaten Zusatzversicherung bitte bei jener informieren.</p>"
       },
       {
         "q": "Wo finde ich einen Parkplatz?",
         "a": "<p>Direkt vor der Praxis auf der Zufahrtstraße gibt es Parkmöglichkeiten. Beim ersten Termin bitte vor der Türe rechts der Garagen warten.</p>"
       },
       {
-        "q": "Was passiert wenn ich einen Termin absagen muss?",
-        "a": "<p>Absagen am selben Tag werden normal verrechnet. Bei einer Absage mindestens 24h vor der Therapie wird diese am Ende der Serie angehängt.</p>"
+        "q": "Was passiert, wenn ich einen Termin absagen muss?",
+        "a": "<p>Absagen am selben Tag werden normal verrechnet. Bei einer Absage mindestens 24 h vor der Therapie wird diese am Ende der Serie angehängt.</p>"
       },
       {
-        "q": "Wieviel kostet eine Therapieeinheit?",
-        "a": "<p>45min Physiotherapie kosten derzeit 80€</p>"
+        "q": "Wie viel kostet eine Therapieeinheit?",
+        "a": "<p>45 min Physiotherapie kosten derzeit 80 €</p>"
       }
     ]
   },
