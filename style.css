@@ -213,11 +213,13 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .section { padding: 110px 0; }
 .section-alt { background: var(--color-bg-alt); }
 
+/* Gleicher Hintergrund wie der Kontakt-Bereich darüber, keine eigene Leiste */
 .site-footer {
-  border-top: 1px solid var(--color-border);
-  padding: 28px 0;
+  background: var(--color-bg-alt);
+  padding: 0 0 32px;
   color: var(--color-ink-soft);
   font-size: .85rem;
+  text-align: center;
 }
 /* Unauffälliger Link auf dem ©, sieht aus wie normaler Text */
 .site-footer .footer-secret,
