@@ -360,7 +360,7 @@ function createFaqBlockCard(cs) {
     const row = document.createElement('div');
     row.className = 'admin-repeater-item';
     row.innerHTML = `
-      <label class="admin-field"><span>Frage</span><input class="cs-faq-q" type="text" value="${escapeAttr(item.q || '')}"></label>
+      <label class="admin-field"><span>Frage</span><textarea class="cs-faq-q admin-oneline" rows="1">${escapeHtml(item.q || '')}</textarea></label>
       <label class="admin-field">
         <span>Antwort</span>
         <div class="admin-richtext cs-faq-a"></div>
@@ -1738,7 +1738,7 @@ function renderTimeline(items) {
     row.className = 'admin-repeater-item';
     row.innerHTML = `
       <label class="admin-field"><span>Zeitraum</span><input class="tl-date" type="text" value="${escapeAttr(item.date)}"></label>
-      <label class="admin-field"><span>Beschreibung</span><input class="tl-text" type="text" value="${escapeAttr(item.text)}"></label>
+      <label class="admin-field"><span>Beschreibung</span><textarea class="tl-text admin-oneline" rows="1">${escapeHtml(item.text)}</textarea></label>
     `;
     row.appendChild(makeRemoveBtn(() => { row.remove(); }));
     list.appendChild(row);
@@ -1783,7 +1783,7 @@ function renderFaq(items) {
     const row = document.createElement('div');
     row.className = 'admin-repeater-item';
     row.innerHTML = `
-      <label class="admin-field"><span>Frage</span><input class="faq-q" type="text" value="${escapeAttr(item.q)}"></label>
+      <label class="admin-field"><span>Frage</span><textarea class="faq-q admin-oneline" rows="1">${escapeHtml(item.q)}</textarea></label>
       <label class="admin-field">
         <span>Antwort</span>
         <div class="admin-richtext faq-a"></div>
@@ -1827,7 +1827,30 @@ function initQuillEditors(container) {
 
 function getQuillHtml(el) {
   if (typeof el === 'string') el = document.getElementById(el);
-  return el && el.__quill ? el.__quill.root.innerHTML : (el ? el.innerHTML : '');
+  return el && el.__quill ? cleanQuillHtml(el.__quill.root.innerHTML) : (el ? el.innerHTML : '');
+}
+
+// Quill 2 speichert jede Liste als <ol> mit data-list und eigenen Hilfs-Spans.
+// Für die Website wieder normale <ul>/<ol> daraus machen.
+function cleanQuillHtml(html) {
+  const box = document.createElement('div');
+  box.innerHTML = html;
+  box.querySelectorAll('.ql-ui').forEach(el => el.remove());
+  box.querySelectorAll('ol').forEach(list => {
+    let current = null;
+    [...list.children].forEach(li => {
+      const tag = li.getAttribute('data-list') === 'ordered' ? 'ol' : 'ul';
+      li.removeAttribute('data-list');
+      if (!current || current.tagName.toLowerCase() !== tag) {
+        current = document.createElement(tag);
+        list.before(current);
+      }
+      current.appendChild(li);
+    });
+    list.remove();
+  });
+  const out = box.innerHTML;
+  return out === '<p><br></p>' ? '' : out;
 }
 
 function setQuillHtml(el, html) {
@@ -1998,8 +2021,52 @@ function withTimeout(promise, ms) {
 
 function showEditor() {
   editorScreen.style.display = 'block';
+  document.querySelectorAll('.admin-content .admin-section').forEach(section => {
+    section.classList.add('is-collapsed');
+    prepareSectionToggle(section);
+  });
   updateStickybarHeight();
 }
+
+// Bereiche sind eingeklappt, ein Klick auf den Kopf öffnet sie
+function sectionToggleHead(section) {
+  return section.querySelector(':scope > .admin-section-header') || section.querySelector(':scope > h2');
+}
+function prepareSectionToggle(section) {
+  const head = sectionToggleHead(section);
+  if (!head || head.hasAttribute('tabindex')) return;
+  head.setAttribute('tabindex', '0');
+  head.setAttribute('role', 'button');
+  head.setAttribute('aria-expanded', String(!section.classList.contains('is-collapsed')));
+}
+function setSectionOpen(section, open) {
+  section.classList.toggle('is-collapsed', !open);
+  const head = sectionToggleHead(section);
+  if (head) head.setAttribute('aria-expanded', String(open));
+}
+function toggleFromHead(event) {
+  const head = event.target.closest('.admin-section > h2, .admin-section > .admin-section-header');
+  if (!head) return;
+  if (event.target.closest('button, input, select, textarea, a, .admin-drag-handle')) return;
+  const section = head.parentElement;
+  prepareSectionToggle(section);
+  setSectionOpen(section, section.classList.contains('is-collapsed'));
+}
+document.querySelector('.admin-content').addEventListener('click', toggleFromHead);
+document.querySelector('.admin-content').addEventListener('keydown', event => {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  if (!event.target.matches('.admin-section > h2, .admin-section > .admin-section-header')) return;
+  event.preventDefault();
+  toggleFromHead(event);
+});
+// Einzeilige Felder wachsen mit, bekommen aber keinen Zeilenumbruch
+document.querySelector('.admin-content').addEventListener('keydown', event => {
+  if (event.key === 'Enter' && event.target.matches('textarea.admin-oneline')) event.preventDefault();
+});
+document.querySelector('.admin-content').addEventListener('input', event => {
+  const el = event.target;
+  if (el.matches('textarea.admin-oneline') && /\n/.test(el.value)) el.value = el.value.replace(/\s*\n\s*/g, ' ');
+});
 function backToAdminHome() {
   window.location.href = '../';
 }
@@ -2231,6 +2298,7 @@ function addPendingBlock() {
   if (name) cs.customLabel = name;
   const card = def.create(cs);
   draggableSections.appendChild(card);
+  prepareSectionToggle(card);
   closeBlockLibrary();
   card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
@@ -2309,7 +2377,9 @@ updateStickybarHeight();
 document.querySelectorAll('.admin-quicknav-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const target = document.getElementById(btn.dataset.target);
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!target) return;
+    if (target.classList.contains('admin-section')) setSectionOpen(target, true);
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 });
 
@@ -2362,6 +2432,7 @@ function filterSection(section, query) {
 
 function filterAdminContent() {
   const query = adminSearchInput.value.trim().toLowerCase();
+  document.body.classList.toggle('admin-searching', !!query);
   const sections = document.querySelectorAll('.admin-content .admin-section');
   let anySectionVisible = !query;
   sections.forEach(section => {
