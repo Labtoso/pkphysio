@@ -2,6 +2,14 @@
 
 Neueste Änderungen stehen oben.
 
+## 23.10.2026 – Copyright mittig, ohne eigene Leiste
+
+### Geändert
+- Der Copyright-Hinweis steht jetzt mittig und hat keine eigene dunkle Leiste mehr. Er sitzt auf demselben Hintergrund wie der Kontakt-Bereich.
+
+### Gefixt
+- Der unsichtbare Link auf „Made by Sebastian“ lag nur auf dem kleinen ©. Jetzt ist der ganze Text „© Jahr Pascal Krieger“ klickbar.
+
 ## 23.10.2026 – Copyright unten auf der Seite
 
 ### Neu
