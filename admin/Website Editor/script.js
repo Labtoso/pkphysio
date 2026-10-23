@@ -1132,12 +1132,66 @@ function collectSocialBlockCard(section) {
   };
 }
 
+// Vorlage nach § 5 ECG und § 25 MedienG. Bekannte Angaben kommen aus den Kontaktdaten,
+// alles andere steht in eckigen Klammern und muss noch ergänzt werden.
+function impressumTemplate() {
+  const site = (state.data && state.data.site) || {};
+  const name = escapeHtml(site.copyrightName || 'Pascal Krieger');
+  const addressLines = String(site.address || '[Adresse ergänzen]').split(',').map(part => escapeHtml(part.trim())).join('<br>');
+  const email = escapeHtml(site.email || '');
+  return [
+    '<h2>Angaben gemäß § 5 E-Commerce-Gesetz und Offenlegung gemäß § 25 Mediengesetz</h2>',
+    `<h3>Medieninhaber und Diensteanbieter</h3><p>${name}<br>Physiotherapeut<br>${addressLines}<br>Österreich</p>`,
+    `<h3>Kontakt</h3><p>Telefon: ${escapeHtml(site.phone || '[Telefon ergänzen]')}<br>E-Mail: ${email ? `<a href="mailto:${email}">${email}</a>` : '[E-Mail ergänzen]'}</p>`,
+    '<h3>Berufsangaben</h3><ul>',
+    '<li>Berufsbezeichnung: Physiotherapeut, verliehen in Österreich</li>',
+    '<li>Eintragung im Gesundheitsberuferegister: [Registrierungsnummer ergänzen]</li>',
+    '<li>Berufsrechtliche Vorschriften: [Gesetz ergänzen], abrufbar unter <a href="https://www.ris.bka.gv.at">www.ris.bka.gv.at</a></li>',
+    '<li>Aufsichtsbehörde: [Behörde ergänzen]</li>',
+    '<li>UID-Nummer: [falls vorhanden ergänzen, sonst Zeile löschen]</li>',
+    '</ul>',
+    '<h3>Unternehmensgegenstand</h3><p>Physiotherapie und Sportphysiotherapie</p>',
+    `<h3>Grundlegende Richtung der Website</h3><p>Information über die Praxis von ${name} und ihr Leistungsangebot.</p>`,
+    '<h3>Haftung für Links</h3><p>Diese Website enthält Links zu Websites Dritter. Für deren Inhalte sind ausschließlich die jeweiligen Betreiber verantwortlich.</p>',
+    `<h3>Urheberrecht</h3><p>Texte und Bilder dieser Website sind urheberrechtlich geschützt. Eine Verwendung ist nur mit Zustimmung von ${name} erlaubt.</p>`
+  ].join('');
+}
+
+function createImpressumBlockCard(cs) {
+  const section = document.createElement('section');
+  section.className = 'admin-section draggable';
+  section.dataset.sectionKey = cs.id;
+  section.dataset.custom = '1';
+  section.dataset.blockType = 'impressum';
+  section.innerHTML = `
+    ${blockHeaderHtml(cs, 'Impressum')}
+    <label class="admin-field"><span>Überschrift</span><input class="cs-title" type="text" value="${escapeAttr(cs.title || '')}"></label>
+    <label class="admin-field">
+      <span>Text</span>
+      <div class="admin-richtext cs-text" data-headings="1"></div>
+    </label>
+    <a class="admin-add-btn admin-impressum-open" href="../../impressum/" target="_blank" rel="noopener">Seite ansehen</a>
+  `;
+  section.querySelector('.cs-text').innerHTML = cs.text || '';
+  initQuillEditors(section);
+  return finishBlockCard(section, cs);
+}
+function collectImpressumBlockCard(section) {
+  return {
+    id: section.dataset.sectionKey,
+    type: 'impressum',
+    title: section.querySelector('.cs-title').value,
+    text: getQuillHtml(section.querySelector('.cs-text'))
+  };
+}
+
 const BLOCK_CATEGORIES = {
   text: 'Text & Inhalt',
   media: 'Medien',
   data: 'Daten & Listen',
   contact: 'Kontakt & Vertrauen',
-  layout: 'Struktur'
+  layout: 'Struktur',
+  legal: 'Rechtliches'
 };
 
 const BLOCK_TYPES = {
@@ -1276,6 +1330,15 @@ const BLOCK_TYPES = {
     defaults: () => ({ id: blockUid(), type: 'divider', style: 'line', label: '' }),
     create: createDividerBlockCard,
     collect: collectDividerBlockCard
+  },
+  impressum: {
+    label: 'Impressum',
+    category: 'legal',
+    single: true,
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><line x1="9" y1="11" x2="16" y2="11"/><line x1="9" y1="14.5" x2="16" y2="14.5"/><line x1="9" y1="18" x2="13" y2="18"/></svg>',
+    defaults: () => ({ id: 'impressum', type: 'impressum', title: 'Impressum', text: impressumTemplate() }),
+    create: createImpressumBlockCard,
+    collect: collectImpressumBlockCard
   }
 };
 
@@ -1804,8 +1867,9 @@ function collectFaq() {
   }));
 }
 
-function quillToolbarOptions() {
+function quillToolbarOptions(withHeadings) {
   return [
+    ...(withHeadings ? [[{ header: 2 }, { header: 3 }]] : []),
     ['bold', 'italic', 'underline'],
     [{ color: [] }, { background: [] }],
     [{ list: 'ordered' }, { list: 'bullet' }],
@@ -1821,7 +1885,7 @@ function initQuillEditors(container) {
     if (el.__quill) return;
     const initialHtml = el.innerHTML;
     el.innerHTML = '';
-    const quill = new Quill(el, { theme: 'bubble', modules: { toolbar: quillToolbarOptions() } });
+    const quill = new Quill(el, { theme: 'bubble', modules: { toolbar: quillToolbarOptions(el.dataset.headings === '1') } });
     if (initialHtml) quill.clipboard.dangerouslyPasteHTML(initialHtml);
     el.__quill = quill;
   });
@@ -2295,6 +2359,13 @@ function closeBlockLibrary() {
 function addPendingBlock() {
   const def = BLOCK_TYPES[pendingBlockLibraryType];
   if (!def) return;
+  // Bausteine wie das Impressum gibt es nur einmal: dann den vorhandenen öffnen
+  const existing = def.single && draggableSections.querySelector(`[data-custom="1"][data-block-type="${pendingBlockLibraryType}"]`);
+  if (existing) {
+    closeBlockLibrary();
+    existing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
   const cs = def.defaults();
   const name = blockLibraryNameInput.value.trim();
   if (name) cs.customLabel = name;

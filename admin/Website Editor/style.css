@@ -191,6 +191,9 @@ body:not(.admin-searching) .admin-section.is-collapsed > :not(h2):not(.admin-sec
 }
 .admin-richtext .ql-editor.ql-blank::before { color: var(--color-ink-soft); font-style: normal; }
 .admin-richtext a { color: var(--color-primary); text-decoration: underline; }
+.admin-richtext .ql-editor h2 { font-size: 1.15rem; margin: 1em 0 .4em; }
+.admin-richtext .ql-editor h3 { font-size: 1rem; margin: .9em 0 .3em; }
+.admin-richtext .ql-editor > :first-child { margin-top: 0; }
 .admin-richtext.ql-container:focus-within { border-color: var(--color-primary); }
 
 .ql-bubble .ql-tooltip {
@@ -598,6 +601,7 @@ body.admin-dragging-active .admin-drag-handle { cursor: grabbing; }
   transition: border-color var(--motion), color var(--motion);
 }
 .admin-add-btn:hover { background: var(--color-bg-alt); color: var(--color-ink); }
+a.admin-add-btn { display: block; text-align: center; text-decoration: none; }
 
 .admin-save-bottom { width: 100%; justify-content: center; padding: 16px; }
 
