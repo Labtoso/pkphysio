@@ -40,19 +40,6 @@
         <button id="logoutBtn" class="btn btn-outline admin-logout-btn" type="button" aria-label="Abmelden" title="Abmelden"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H5v16h4"/><path d="M16 8l4 4-4 4"/><path d="M20 12H10"/></svg><span>Abmelden</span></button>
       </div>
     </header>
-
-    <nav class="admin-quicknav" id="adminQuicknav">
-      <button type="button" class="admin-quicknav-btn" data-target="section-design">Design</button>
-      <button type="button" class="admin-quicknav-btn" data-target="section-seo">SEO &amp; Tab</button>
-      <button type="button" class="admin-quicknav-btn" data-target="section-navigation">Navigation</button>
-      <button type="button" class="admin-quicknav-btn" data-target="section-bilder">Bilder</button>
-      <button type="button" class="admin-quicknav-btn" data-target="section-hero">Startbereich</button>
-      <button type="button" class="admin-quicknav-btn" data-target="section-about">Über mich</button>
-      <button type="button" class="admin-quicknav-btn" data-target="section-leistungen">Leistungen</button>
-      <button type="button" class="admin-quicknav-btn" data-target="section-faq">FAQ</button>
-      <button type="button" class="admin-quicknav-btn" data-target="section-kontakt">Kontakt</button>
-      <button type="button" class="admin-quicknav-btn admin-quicknav-btn-icon" data-target="section-block-library" title="Baustein hinzufügen" aria-label="Baustein hinzufügen"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-    </nav>
   </div>
 
   <p id="saveStatus" class="admin-status"></p>
@@ -92,7 +79,7 @@
         <input id="newFontFile" type="file" accept=".woff2,.woff,.ttf,.otf">
         <button type="button" id="addFontBtn" class="admin-add-btn">+ Hochladen</button>
       </div>
-      <p class="admin-note">Erscheint danach als Option in den beiden Schriftart-Auswahlfeldern oben. Wird beim Klick auf "Speichern" hochgeladen.</p>
+      <p class="admin-note">Erscheint danach als Option in den beiden Schriftart-Auswahlfeldern oben. Wird beim Klick auf „Speichern“ hochgeladen.</p>
 
       <label class="admin-field">
         <span>Eckenrundung: <span id="design_borderRadius_val"></span>px</span>
@@ -133,7 +120,7 @@
 
     <section class="admin-section" id="section-bilder">
       <h2>Bilder</h2>
-      <p class="admin-hint">Neues Bild auswählen, um das aktuelle zu ersetzen. Wird erst beim Klick auf "Speichern" hochgeladen.</p>
+      <p class="admin-hint">Neues Bild auswählen, um das aktuelle zu ersetzen. Wird erst beim Klick auf „Speichern“ hochgeladen.</p>
 
       <div class="admin-image-field">
         <span>Profilfoto (Über mich)</span>
@@ -196,7 +183,7 @@
           <div class="admin-richtext" id="hero_text"></div>
         </label>
         <label class="admin-field"><span>Button-Text (Termin)</span><input id="hero_ctaPrimary" type="text"></label>
-        <label class="admin-field"><span>Button-Text (zu "Über mich" springen)</span><input id="hero_ctaSecondary" type="text"></label>
+        <label class="admin-field"><span>Button-Text (zu „Über mich“ springen)</span><input id="hero_ctaSecondary" type="text"></label>
       </section>
 
       <section class="admin-section draggable" data-section-key="about" id="section-about">
@@ -244,7 +231,7 @@
           <div class="admin-richtext" id="service1_text"></div>
         </label>
 
-        <h3 class="admin-subheading">Therapie Angebote</h3>
+        <h3 class="admin-subheading">Therapieangebote</h3>
         <label class="admin-field"><span>Kleiner Text über der Überschrift</span><input id="angeboteEyebrow" type="text"></label>
         <label class="admin-field"><span>Überschrift</span><input id="angeboteTitle" type="text"></label>
 
@@ -266,7 +253,7 @@
 
         <div id="faqList" class="admin-repeater"></div>
         <button type="button" class="admin-add-btn" data-add="faq">+ Frage hinzufügen</button>
-        <p class="admin-note">Tipp: In einer Antwort kann <code>{{phone}}</code> geschrieben werden – das wird automatisch durch die eingetragene Telefonnummer als klickbaren Link ersetzt.</p>
+        <p class="admin-note">Tipp: In einer Antwort kann <code>{{phone}}</code> geschrieben werden – das wird automatisch durch die eingetragene Telefonnummer als klickbarer Link ersetzt.</p>
       </section>
 
       <section class="admin-section draggable" data-section-key="kontakt" id="section-kontakt">

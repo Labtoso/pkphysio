@@ -34,6 +34,7 @@ body {
   justify-content: space-between;
   padding: 18px 28px;
   background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
 }
 .admin-topbar-brand { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .admin-topbar-title { font-family: var(--font-head); font-weight: 700; flex-shrink: 0; }
@@ -63,37 +64,6 @@ body {
   font-size: .9rem;
 }
 
-.admin-quicknav {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 12px 28px;
-  background: var(--color-bg);
-  border-bottom: 1px solid var(--color-border);
-}
-.admin-quicknav-btn {
-  flex-shrink: 0;
-  background: none;
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  color: var(--color-ink-soft);
-  font-family: var(--font-body);
-  font-size: .8rem;
-  font-weight: 600;
-  padding: 6px 14px;
-  white-space: nowrap;
-  transition: border-color var(--motion), color var(--motion);
-}
-.admin-quicknav-btn:hover { background: var(--color-bg-alt); color: var(--color-ink); }
-.admin-quicknav-btn-icon {
-  flex-shrink: 0;
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
 
 .admin-status {
   text-align: center;
@@ -682,8 +652,7 @@ body.admin-dragging-active .admin-drag-handle { cursor: grabbing; }
 .admin-modal-close:hover { border-color: #ff6b6b; color: #ff6b6b; }
 .admin-modal-close-right { left: auto; right: 16px; }
 .admin-modal-close svg,
-.admin-add-block-fab svg,
-.admin-quicknav-btn-icon svg { display: block; }
+.admin-add-block-fab svg { display: block; }
 .admin-logout-btn svg { display: none; }
 
 @media (max-width: 640px) {
@@ -695,8 +664,6 @@ body.admin-dragging-active .admin-drag-handle { cursor: grabbing; }
   .admin-logout-btn { width: 38px; padding: 0 !important; display: inline-flex; align-items: center; justify-content: center; }
   .admin-logout-btn svg { display: block; }
   .admin-logout-btn span { display: none; }
-  .admin-quicknav { display: none; }
-  .admin-topbar { border-bottom: 1px solid var(--color-border); }
   .admin-content { padding: 16px 16px 80px; gap: 10px; }
   .admin-section { padding: 0 16px 18px; }
   .admin-section.is-collapsed { padding-bottom: 0; }

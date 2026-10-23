@@ -67,7 +67,7 @@ async function ghPutFile(token, sha, newText, message) {
     method: 'PUT',
     headers: { ...ghHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      message: message || 'Update content via admin panel',
+      message: message || 'Inhalte übers Admin-Panel aktualisiert',
       content: utf8ToBase64(newText),
       sha: sha,
       branch: REPO_BRANCH,
@@ -2373,15 +2373,6 @@ function updateStickybarHeight() {
 }
 window.addEventListener('resize', updateStickybarHeight);
 updateStickybarHeight();
-
-document.querySelectorAll('.admin-quicknav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const target = document.getElementById(btn.dataset.target);
-    if (!target) return;
-    if (target.classList.contains('admin-section')) setSectionOpen(target, true);
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-});
 
 const adminSearchInput = document.getElementById('adminSearch');
 const adminSearchEmpty = document.getElementById('adminSearchEmpty');
