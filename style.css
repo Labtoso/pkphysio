@@ -205,7 +205,7 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   padding: 206px 0 110px;
   border-bottom: 1px solid var(--color-border);
 }
-.hero-inner { max-width: 760px; }
+.hero-inner > * { max-width: 760px; }
 .hero-sub { color: var(--color-ink-soft); font-weight: 500; margin: 10px 0 22px; }
 .hero-text { color: var(--color-ink-soft); font-size: 1.1rem; max-width: 56ch; margin-bottom: 34px; }
 .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
@@ -832,6 +832,8 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   .btn-header { display: none; }
   .hero { padding: 150px 0 80px; }
   .section { padding: 72px 0; }
+  /* Überschrift landet beim Sprung über das Menü knapp unter der Kopfleiste */
+  main section[id] { scroll-margin-top: 44px; }
   .offers-head { margin-top: 56px; }
   .about-grid, .kontakt-grid { gap: 40px; }
 }
@@ -840,6 +842,7 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   .header-inner { height: 76px; }
   .logo-img { height: calc(var(--logo-height, 90px) * 0.72); }
   .nav { top: 76px; }
+  main section[id] { scroll-margin-top: 28px; }
   .hero { padding: 132px 0 64px; }
   .service-card, .offer-card { padding: 24px; }
   .accordion-trigger { padding: 18px 20px; }

@@ -785,12 +785,22 @@ burger.addEventListener('click', () => {
   burger.setAttribute('aria-expanded', String(isOpen));
 });
 
+function closeMenu() {
+  nav.classList.remove('open');
+  burger.classList.remove('open');
+  burger.setAttribute('aria-expanded', 'false');
+}
+
 nav.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', () => {
-    nav.classList.remove('open');
-    burger.classList.remove('open');
-    burger.setAttribute('aria-expanded', 'false');
-  });
+  link.addEventListener('click', closeMenu);
+});
+
+// Menü schließt auch mit Escape und bei einem Tipp außerhalb
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && nav.classList.contains('open')) { closeMenu(); burger.focus(); }
+});
+document.addEventListener('click', e => {
+  if (nav.classList.contains('open') && !nav.contains(e.target) && !burger.contains(e.target)) closeMenu();
 });
 
 const sections = document.querySelectorAll('main section[id]');
