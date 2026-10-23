@@ -2,6 +2,15 @@
 
 Neueste Änderungen stehen oben.
 
+## 23.10.2026 – Schnellnavigation entfernt, Rechtschreibung
+
+### Entfernt
+- Website-Editor: Die Leiste mit den Bereichsknöpfen (Design, SEO & Tab, Navigation …) unter der Kopfleiste ist weg, auch am Desktop. Die eingeklappten Bereiche und die Suche reichen als Übersicht.
+
+### Gefixt
+- Rechtschreibung auf der Website: „Wie viel“ statt „Wieviel“ (2× in den FAQ), „wiederherstellen zu können.“ statt „wieder herstellen zu können .“, „bestmöglich“ statt „bestmöglichst“, „20-jährigen“, „Therapieangebote“, „Sport-Physiotherapie“, „Langstrecken-Auto-/Motorradrennen“, „SVS-Versicherte“, „ÖGK- oder BVAEB-Versicherte“, „Physio-Einheit à 45 min“, fehlende Kommas („zielt darauf ab, die …“, „vor vielen Jahren, als …“, „Motorsport, speziell …“, „Was passiert, wenn …“), „zu trainieren und zu optimieren“ sowie Leerzeichen vor € und bei „45 min“ und „24 h“. Der Wortlaut bleibt sonst gleich.
+- Website-Editor: „als klickbarer Link“ statt „als klickbaren Link“, deutsche Anführungszeichen, Zwischenüberschrift „Therapieangebote“, deutsche Standard-Commit-Nachricht.
+
 ## 23.10.2026 – Website-Editor aufgeräumt, Fehlersuche
 
 ### Geändert
