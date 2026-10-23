@@ -33,11 +33,17 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Website-Dateien zusammenstellen
+        # Nur was die Website braucht: keine Anleitungen, kein Anmelde-Dienst, keine Workflows
+        run: |
+          mkdir _site
+          tar --exclude='./.git' --exclude='./.github' --exclude='./_site' \
+            --exclude='*.md' --exclude='./anmelde-dienst' -cf - . | tar -xf - -C _site
+          find _site -type f | sort
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          path: '_site'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

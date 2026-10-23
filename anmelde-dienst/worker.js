@@ -8,6 +8,7 @@
 //   GITHUB_CLIENT_SECRET  Client Secret der GitHub-App (Secret)
 //   ADMIN_URL             Adresse des Admin-Panels (Variable)
 
+const NO_INDEX = { 'X-Robots-Tag': 'noindex, nofollow' };
 const STATE_PATTERN = /^[A-Za-z0-9-]{16,64}$/;
 
 function redirect(location) {
@@ -16,7 +17,8 @@ function redirect(location) {
     headers: {
       Location: location,
       'Cache-Control': 'no-store',
-      'Referrer-Policy': 'no-referrer'
+      'Referrer-Policy': 'no-referrer',
+      'X-Robots-Tag': 'noindex, nofollow'
     }
   });
 }
@@ -33,7 +35,7 @@ export default {
 
     if (url.pathname === '/login') {
       const state = url.searchParams.get('state') || '';
-      if (!STATE_PATTERN.test(state)) return new Response('Ungültige Anfrage', { status: 400 });
+      if (!STATE_PATTERN.test(state)) return new Response('Ungültige Anfrage', { status: 400, headers: NO_INDEX });
       const auth = new URL('https://github.com/login/oauth/authorize');
       auth.searchParams.set('client_id', env.GITHUB_CLIENT_ID);
       auth.searchParams.set('redirect_uri', url.origin + '/callback');
@@ -66,6 +68,6 @@ export default {
       return backToAdmin(env, { token: data.access_token, state });
     }
 
-    return new Response('Nicht gefunden', { status: 404 });
+    return new Response('Nicht gefunden', { status: 404, headers: NO_INDEX });
   }
 };

@@ -2,6 +2,16 @@
 
 Neueste Änderungen stehen oben.
 
+## 23.10.2026 – Admin nicht in Suchmaschinen
+
+### Geändert
+- Die Admin-Seiten (Menü, Website-Editor, Statistik) sagen Suchmaschinen noch deutlicher, dass sie nicht aufgenommen, nicht zwischengespeichert und nicht als Vorschau gezeigt werden sollen (`noindex, nofollow, noarchive, nosnippet`, zusätzlich für Google).
+- Auf der Website landen nur noch die Dateien, die sie braucht. Anleitungen (`*.md`), dieser Changelog, der Anmelde-Dienst und die Workflows werden nicht mehr mit veröffentlicht und können damit auch nicht gefunden werden.
+- Der Anmelde-Dienst schickt bei jeder Antwort „nicht aufnehmen“ an Suchmaschinen.
+
+### Geprüft
+- Keine Seite der Website verlinkt auf das Admin-Panel, die Sitemap enthält nur die Startseite, und die Suche nach dem Admin-Pfad findet nichts.
+
 ## 22.10.2026 – Admin: Anmeldung wählen
 
 ### Neu
