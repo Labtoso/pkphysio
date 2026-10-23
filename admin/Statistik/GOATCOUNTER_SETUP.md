@@ -16,7 +16,7 @@ holt sich die Zahlen über die GoatCounter-API.
    Diesen Code brauchst du gleich zweimal (siehe unten).
 3. Öffne `index.html` im Hauptordner des Repos und such die Zeile:
    ```html
-   <script data-goatcounter="https://REPLACE_ME.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+   <script data-goatcounter="https://REPLACE_ME.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
    ```
    Ersetze `REPLACE_ME` durch deinen Site-Code (z. B. `pkphysio`).
 4. In deinem GoatCounter-Dashboard: **Settings** → **API** → **New key**
