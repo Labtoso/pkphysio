@@ -198,11 +198,22 @@ function renderContent(data) {
   if (data.images) {
     document.getElementById('logoImgDark').src = data.images.logoDark;
     document.getElementById('logoImgLight').src = data.images.logoLight;
-    document.getElementById('portraitImg').src = data.images.portrait;
+    const portraitEl = document.getElementById('portraitImg');
+    if (portraitEl) portraitEl.src = data.images.portrait;
   }
 
   if (data.buttons) {
     document.getElementById('headerCta').textContent = data.buttons.headerCta;
+  }
+
+  document.getElementById('footerYear').textContent = new Date().getFullYear();
+  document.getElementById('footerName').textContent = site.copyrightName || 'Pascal Krieger';
+  const impressum = (data.customSections || []).find(cs => cs.type === 'impressum');
+  document.getElementById('footerImpressum').hidden = !impressum;
+
+  if (document.body.dataset.page === 'impressum') {
+    renderImpressumPage(impressum, site);
+    return;
   }
 
   document.getElementById('heroEyebrow').textContent = data.hero.eyebrow;
@@ -276,9 +287,6 @@ function renderContent(data) {
   document.getElementById('kontaktEyebrow').textContent = data.kontakt.eyebrow;
   document.getElementById('kontaktTitle').textContent = data.kontakt.title;
   document.getElementById('kontaktText').innerHTML = data.kontakt.text;
-
-  document.getElementById('footerYear').textContent = new Date().getFullYear();
-  document.getElementById('footerName').textContent = site.copyrightName || 'Pascal Krieger';
 
   const mapsLink = getMapsAppLink(site.address);
   const contactList = document.getElementById('contactList');
@@ -614,11 +622,20 @@ const CUSTOM_BLOCK_RENDERERS = {
   }
 };
 
+// Das Impressum hat eine eigene Seite (impressum/) und erscheint nicht auf der Startseite
+function renderImpressumPage(impressum, site) {
+  if (!impressum) { location.replace(document.baseURI); return; }
+  const title = (impressum && impressum.title) || 'Impressum';
+  document.title = title + ' | ' + (site.copyrightName || 'Pascal Krieger');
+  document.getElementById('impressumTitle').textContent = title;
+  document.getElementById('impressumText').innerHTML = impressum.text || '';
+}
+
 function renderCustomSections(customSections, site) {
   const main = document.getElementById('top');
   main.querySelectorAll('.custom-section').forEach(el => el.remove());
 
-  customSections.forEach((cs, i) => {
+  customSections.filter(cs => cs.type !== 'impressum').forEach((cs, i) => {
     const type = CUSTOM_BLOCK_RENDERERS[cs.type] ? cs.type : 'textimage';
     const section = document.createElement('section');
     section.id = cs.id;

@@ -228,6 +228,37 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   text-decoration: none;
   cursor: text;
 }
+.site-footer .footer-link {
+  color: inherit;
+  margin-left: 18px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.site-footer .footer-link:hover { color: var(--color-ink); }
+
+/* Eigene Seite für das Impressum */
+.impressum-page { padding: 170px 0 80px; background: var(--color-bg-alt); min-height: 70vh; }
+.impressum-page .container { max-width: 760px; }
+.impressum-page h1 { font-size: clamp(2.2rem, 5vw, 3rem); margin-bottom: 32px; }
+.impressum-text { color: var(--color-ink-soft); font-size: 1rem; overflow-wrap: anywhere; }
+.impressum-text h2 { font-size: 1.35rem; color: var(--color-ink); margin: 40px 0 14px; }
+.impressum-text h3 { font-size: 1.1rem; color: var(--color-ink); margin: 30px 0 8px; }
+.impressum-text > :first-child { margin-top: 0; }
+/* Der Editor legt jede Zeile als eigenen Absatz ab, darum eng wie Zeilen */
+.impressum-text p { margin-bottom: .25em; }
+.impressum-text a { color: var(--color-primary); text-decoration: underline; }
+.impressum-text ul { display: flex; flex-direction: column; gap: 6px; margin: 10px 0 1em; }
+.impressum-text ul li { position: relative; padding-left: 18px; }
+.impressum-text ul li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 10px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--color-ink-soft);
+}
+.impressum-text ol { padding-left: 20px; margin: 10px 0 1em; }
+
 .section-head { max-width: 640px; margin-bottom: 50px; }
 .offers-head { margin-top: 90px; }
 
