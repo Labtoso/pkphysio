@@ -2,6 +2,26 @@
 
 Neueste Änderungen stehen oben.
 
+## 23.10.2026 – Website-Editor aufgeräumt, Fehlersuche
+
+### Geändert
+- Website-Editor: Alle Bereiche starten eingeklappt als ruhige Liste. Ein Klick auf den Titel öffnet den Bereich (mit Tastatur: Enter oder Leertaste). „Ausblenden“ und „Entfernen“ erscheinen erst im geöffneten Bereich.
+- Website-Editor: Weniger Rahmen und Flächen. Einträge in Listen haben keinen eigenen Hintergrund mehr, Zwischenüberschriften sind nicht mehr farbig, „Baustein hinzufügen“ ist ein schlichter gestrichelter Knopf statt eines runden Farbknopfs.
+- Website-Editor am Handy: Die Kopfleiste ist nur noch zweizeilig (Titel und Knöpfe, darunter die Suche). „Abmelden“ ist dort ein Symbol, die Schnellnavigation entfällt, weil die eingeklappten Bereiche selbst die Übersicht sind.
+- Website-Editor: Textfelder wachsen mit dem Inhalt. FAQ-Fragen und Zeitleisten-Beschreibungen werden nicht mehr abgeschnitten.
+- Website-Editor: Dateiauswahl und das Feld „Eigene Schriftart hochladen“ sehen aus wie die übrigen Felder.
+- Startseite am Desktop: Der obere Bereich steht jetzt bündig mit Logo und den übrigen Abschnitten.
+- Admin-Anmeldung und Statistik am Handy: weniger Innenabstand, damit mehr Platz für Text bleibt.
+
+### Gefixt
+- Website-Editor: Aufzählungen aus Textfeldern mit Formatierung wurden beim Speichern als nummerierte Liste mit Hilfscode des Editors abgelegt. Sie werden jetzt wieder als normale Aufzählung gespeichert.
+- Website-Editor: Textfelder mit Formatierung hatten keinen sichtbaren Rahmen.
+- Website-Editor: Ein Speichern ohne Änderung an Titel oder Beschreibung legt keinen unnötigen Commit für `index.html` mehr an.
+- Menü am Handy und Tablet: Nach einem Sprung lag die Überschrift halb unter der Kopfleiste. Sie steht jetzt mit etwas Abstand darunter.
+- Menü am Handy: schließt jetzt auch mit Escape und bei einem Tipp neben das Menü.
+- Statistik am Handy: Der Hinweis auf die Anleitung ragte über den Rand. Er ist jetzt ein Link zur Anleitung auf GitHub, weil die Datei selbst nicht mehr mit veröffentlicht wird.
+- Besucherzählung: Das Zählskript wird ausdrücklich über https geladen.
+
 ## 23.10.2026 – „Mit GitHub anmelden“ freigeschaltet
 
 ### Neu
