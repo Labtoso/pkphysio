@@ -2,6 +2,12 @@
 
 Neueste Änderungen stehen oben.
 
+## 23.10.2026 – Copyright unten auf der Seite
+
+### Neu
+- Ganz unten auf der Website steht jetzt „© <Jahr> Pascal Krieger“. Das Jahr stellt sich jedes Jahr von selbst um. Den Namen kann man im Website-Editor unter Kontakt → Kontaktdaten ändern.
+- Ein Klick auf das © führt auf eine eigene Seite mit „Made by Sebastian“ groß in der Mitte. Der Link sieht aus wie normaler Text. Die Seite ist für Suchmaschinen gesperrt (`noindex`), steht nicht in der Sitemap, und der Link trägt `nofollow`.
+
 ## 23.10.2026 – Schnellnavigation entfernt, Rechtschreibung
 
 ### Entfernt
