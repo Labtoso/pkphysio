@@ -2,6 +2,19 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Töne funktionieren auch als Datei, Thock cremiger, Admin-Kennwort verschlüsselt (Branch V2)
+
+### Gefixt
+- Wurde die Seite direkt als Datei geöffnet (file://), blockierte der Browser das Nachladen der Ton-Dateien. Deshalb fehlte der Blasen-Plopp, und statt Thock kam nur der Ersatzklang. Alle Töne stehen jetzt eingebettet in `Assets/sounds/sounds-data.js` (92 KB) und funktionieren überall.
+
+### Geändert
+- Technisch geprüft in Chrome über file:// (welche Aufnahme bei welcher Aktion startet und wie tief bzw. hell sie ist):
+  - Knöpfe und Links spielen eine normale Taste plus Loslassen (vorher die klappernde Rücktaste).
+  - Die Tastatur-Aufnahmen waren sehr hell und klickig, nur etwa 1 % tiefe Anteile. Sie laufen jetzt durch einen Filter mit mehr Bass, weniger Mitten und ohne scharfe Höhen und etwas tiefer. Der tiefe Anteil ist dadurch rund 12-mal so hoch, der helle halbiert, das ist das cremige Thock. Loslassen ist leicht gedämpft.
+  - Der Blasen-Plopp wurde bei großen Blasen zu tief abgespielt (dumpf wie eine Trommel). Jetzt läuft er immer zwischen 1,35- und 2-fach mit hellem Filter.
+- Keine Töne mehr ohne eigenes Zutun: Darüberfahren, Auftauchen von Inhalten und Scrollen sind jetzt still.
+- XP-Admin-Kennwort viel schwerer: Im Papierkorb steht die Uhrzeit nur noch verschlüsselt. Die Regel (jede Ziffer um 1 bis 3 weiterzählen, eventuell rückwärts lesen) wechselt bei jedem Besuch und steht in einer versteckten Systemdatei in `WINDOWS\system32`. Das Tagebuch verrät die Uhrzeit nicht mehr. Auch der Kennworthinweis ist vager.
+
 ## 24.10.2026 – V2: XP-Explorer, Tagebuch, Rätsel und Admin-Trick (Branch V2)
 
 ### Neu
