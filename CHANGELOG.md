@@ -2,6 +2,34 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: XP-Explorer, Tagebuch, Rätsel und Admin-Trick (Branch V2)
+
+### Neu
+- Windows XP hat einen funktionierenden Explorer (`xp-explorer.js`), zu öffnen über Startmenü > „Eigene Dateien“:
+  - Menüs Datei, Bearbeiten, Ansicht, Extras und ?, Knöpfe Zurück, Vorwärts und Aufwärts, eine Adressleiste zum Eintippen von Pfaden (mit Fehlermeldung, wenn es den Pfad nicht gibt) und eine Statusleiste.
+  - Linke Leiste umschaltbar zwischen Aufgaben und Ordnerbaum. Ansichten Symbole, Liste und Details, in Details nach Spalten sortierbar.
+  - Rechtsklick-Menü, Umbenennen (auch F2), neuer Ordner, Löschen in den Papierkorb (auch Entf), Wiederherstellen und Papierkorb leeren.
+  - Eigenschaften-Fenster mit Typ, Ort, Größe, Datum und Haken „Versteckt“, bei manchen Dateien mit der Registerkarte „Zusammenfassung“. Fenster lassen sich ziehen und maximieren.
+  - Editor zum Lesen und Bearbeiten von Textdateien, Bildanzeige mit Vor und Zurück. Laufwerk C: mit Dokumente und Einstellungen, Programme und WINDOWS\system32.
+- Extras > Ordneroptionen > Ansicht: „Ausgeblendete Dateien und Ordner anzeigen“ und „Geschützte Systemdateien ausblenden“. Erst damit tauchen versteckte und Systemdateien auf.
+- Rätsel, bei jedem Seitenbesuch neu ausgewürfelt:
+  - Ein verstecktes, unheimliches Tagebuch mit Einträgen unter zufälligen Dateinamen, also durcheinander. Die richtige Reihenfolge verraten nur die Daten in den Einträgen. Dazu kommen zwei Täuschungs-Einträge aus Oktober und Dezember.
+  - Eine versteckte Notiz verrät nur die halbe Regel, der Rest steht im Kommentar der Eigenschaften von `fuer_dich.zip`.
+  - Das Kennwort ist ein zufälliges Körperteil (Rücken, Nacken, Schulter, Muskel, Gelenk …), gebildet aus dem ersten Buchstaben des letzten Wortes jedes Novembereintrags. Wer es richtig eingibt, öffnet die Zip-Datei und kann `geheim.txt` lesen.
+- Admin-Trick, ebenfalls jedes Mal neu (nur ein Spiel auf der Seite, ohne Verbindung zum echten Admin-Bereich):
+  - Klick auf das Bild im Startmenü öffnet die Benutzerkonten. Das Administrator-Kennwort ist eine zufällige Uhrzeit, die nur in einer gelöschten Datei im Papierkorb steht. Der Hinweis „?“ ist absichtlich vage.
+  - Nach der Anmeldung gibt es noch keine Rechte („Zugriff verweigert“). Dafür muss man in einer versteckten, englischen Richtlinien-Datei im Ordner „Bilder“ (Name und Schalter wechseln jedes Mal) beim Administrator den Schalter von `false` auf `true` ändern.
+  - Erst dann öffnet sich die Systemsteuerung mit Bluescreen („DER_RUECKEN_IST_VERSPANNT“), Fehler-Regen, Erdbeben, Mauszeiger-Spur, +500 Punkte und Kopfstand.
+- Weitere versteckte Hinweise: `desktop.ini`, `Thumbs.db` in einem versteckten Ordner und eine Systemdatei in `WINDOWS\system32`.
+- 5 neue, geheime Erfolge: Ausgeblendet (100), Tagebuch (150), Entschlüsselt (250), Administrator (200), Bluescreen (100). Auch „Zeitreise“ ist jetzt geheim, also alles, was mit Windows zu tun hat.
+- Shop: Artikel, die noch Erfolge freischalten können, leuchten golden und zeigen „+Punkte“.
+
+### Geändert
+- Preise angehoben, damit es wieder genau aufgeht: Alle 26 Erfolge bringen 3110 Punkte, alles im Shop kostet 3110. Windows XP 500, Windows 98 380, MS-DOS und Game Boy je 330, Röhrenbildschirm 140, Snake 250, Blasen-Jagd 210, Reaktionstest 150, Klick-Rekord 130.
+- In allen Retro-Looks gibt es keine Blasen, kein Fluten, keine Tropfen und keinen Glitzer mehr. Die Blasen-Knöpfe sind dort ausgeblendet.
+- Beim Beenden von XP schließen sich alle XP-Fenster, und Kopfstand wird zurückgesetzt.
+- Datei-Versionen auf `?v=24i`.
+
 ## 24.10.2026 – V2: Shop-Text repariert (Branch V2)
 
 ### Gefixt
