@@ -2,6 +2,13 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Shop-Text repariert (Branch V2)
+
+### Gefixt
+- Im Shop überlappten bei langen Namen („Röhrenbildschirm“, „Pixel-Mauszeiger“) Name und Preis bzw. „Benutzen“. Jetzt nimmt der Name den freien Platz, der Preis bleibt rechts daneben und wird nie überdeckt. Die Kacheln sind etwas breiter.
+- Am Handy steht der Shop in einer Spalte (Name links, Preis rechts), so wird kein Wort mitten drin getrennt.
+- Datei-Versionen auf `?v=24g`, damit der Browser sicher die neuen Preise und den neuen Stil lädt.
+
 ## 24.10.2026 – V2: Shop teurer, Erfolge geben mehr Punkte (Branch V2)
 
 ### Geändert
