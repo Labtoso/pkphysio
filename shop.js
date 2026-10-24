@@ -35,6 +35,8 @@
 
   let spent = 0;
   const balance = () => fx.earnedPoints() - spent;
+  // Admin-Cheat im XP-Spiel: Bonuspunkte
+  window.pkShop = { bonus(n) { spent -= n; updateBadge(); } };
   const owned = new Set();
   const active = new Set();
 
@@ -77,15 +79,15 @@
       { id: 'm-disco', name: 'Disco-Modus', price: 80 },
       { id: 'm-gravity', name: 'Schwerkraft für Blasen', price: 70 },
       { id: 'm-mirror', name: 'Spiegel-Modus', price: 60 },
-      { id: 'm-crt', name: 'Röhrenbildschirm', price: 90 },
+      { id: 'm-crt', name: 'Röhrenbildschirm', price: 140 },
       { id: 'm-pixel', name: 'Pixel-Mauszeiger', price: 50 }
     ] },
     { group: 'Spiele', items: [
-      { id: 'g-hunt', name: 'Blasen-Jagd', price: 150, game: true },
+      { id: 'g-hunt', name: 'Blasen-Jagd', price: 210, game: true },
       { id: 'g-thock', name: 'Thock-Spiel', price: 60, game: true },
-      { id: 'g-snake', name: 'Snake', price: 180, game: true },
-      { id: 'g-react', name: 'Reaktionstest', price: 120, game: true },
-      { id: 'g-cps', name: 'Klick-Rekord', price: 90, game: true }
+      { id: 'g-snake', name: 'Snake', price: 250, game: true },
+      { id: 'g-react', name: 'Reaktionstest', price: 150, game: true },
+      { id: 'g-cps', name: 'Klick-Rekord', price: 130, game: true }
     ] },
     { group: 'Töne', exclusive: 'sound', items: [
       { id: 's-normal', name: 'Cremig (Standard)', price: 0, free: true },
@@ -95,10 +97,10 @@
     ] },
     { group: 'Retro', exclusive: 'skin', items: [
       { id: 'r-modern', name: 'Modern (Standard)', price: 0, free: true },
-      { id: 'xp', name: 'Windows XP', price: 300 },
-      { id: 'r-98', name: 'Windows 98', price: 250 },
-      { id: 'r-dos', name: 'MS-DOS', price: 220 },
-      { id: 'r-gb', name: 'Game Boy', price: 220 }
+      { id: 'xp', name: 'Windows XP', price: 500 },
+      { id: 'r-98', name: 'Windows 98', price: 380 },
+      { id: 'r-dos', name: 'MS-DOS', price: 330 },
+      { id: 'r-gb', name: 'Game Boy', price: 330 }
     ] }
   ];
   const findItem = (id) => { for (const g of SHOP) for (const it of g.items) if (it.id === id) return { g, it }; return null; };
@@ -143,6 +145,8 @@
       } else {
         sound.setVariant(prevVariant);
         closeStartMenu();
+        document.querySelectorAll('.xpw, .xp-bsod').forEach(w => w.remove());
+        root.classList.remove('xp-upside');
         xpShutdown();
       }
     }
@@ -206,6 +210,19 @@
     shopPanel.classList.remove('is-open');
     sound.play('close');
   }
+  // Welche Käufe noch Erfolge freischalten können (damit man weiß, was man als Nächstes braucht)
+  const UNLOCKS = {
+    'g-snake': ['snake20'], 'g-react': ['react'], 'g-cps': ['cps'], 'g-hunt': ['hunt30'],
+    'xp': ['retro', 'hidden', 'diary', 'riddle', 'admin', 'bsod'], 'r-98': ['retro'], 'r-dos': ['retro'], 'r-gb': ['retro'],
+    'c-violet': ['rainbow'], 'c-pink': ['rainbow'], 'c-gold': ['rainbow'], 'c-ocean': ['rainbow'], 'c-red': ['rainbow']
+  };
+  function nextPoints(it) {
+    if (owned.has(it.id)) return 0;
+    const ids = UNLOCKS[it.id] || [];
+    return [...new Set(ids)].filter(id => !fx.isUnlocked(id))
+      .reduce((s, id) => s + ((fx.achievements.find(a => a.id === id) || {}).points || 0), 0);
+  }
+
   function renderShop() {
     shopPanel.querySelector('[data-balance]').textContent = balance() + ' Punkte';
     shopPanel.querySelector('.fx-shop-body').innerHTML = SHOP.map(g =>
@@ -213,7 +230,9 @@
         const has = owned.has(it.id);
         const on = active.has(it.id);
         const label = it.game ? (has ? 'Spielen' : it.price + ' P') : has ? (on ? 'Aktiv' : 'Benutzen') : it.price + ' P';
-        return '<button type="button" class="fx-shop-item' + (on ? ' is-on' : '') + (has ? ' is-owned' : '') + (!has && balance() < it.price ? ' is-locked' : '') + '" data-buy="' + it.id + '">' +
+        const gain = it.free ? 0 : nextPoints(it);
+        return '<button type="button" class="fx-shop-item' + (on ? ' is-on' : '') + (has ? ' is-owned' : '') + (!has && balance() < it.price ? ' is-locked' : '') + (gain ? ' is-next' : '') + '" data-buy="' + it.id + '"' + (gain ? ' title="Schaltet Erfolge frei: bis zu ' + gain + ' Punkte"' : '') + '>' +
+          (gain ? '<span class="fx-shop-gain">+' + gain + '</span>' : '') +
           (it.color ? '<span class="fx-shop-swatch" style="background:' + it.color + '"></span>' : '') +
           '<span class="fx-shop-name">' + it.name + '</span><span class="fx-shop-price">' + label + '</span></button>';
       }).join('') + '</div>').join('');
@@ -285,6 +304,7 @@
       '<div class="xp-menu" hidden>' +
         '<div class="xp-menu-head"><span class="xp-avatar" aria-hidden="true"></span>Besucher</div>' +
         '<div class="xp-menu-body">' +
+          '<button type="button" data-xp="explorer" class="xp-menu-strong">Eigene Dateien</button><hr>' +
           '<a href="#ueber-mich">Über mich</a><a href="#leistungen">Leistungen</a><a href="#faq">FAQ</a><a href="#kontakt">Kontakt</a>' +
           '<hr><button type="button" data-xp="ach">Erfolge</button><button type="button" data-xp="shop">Shop</button><button type="button" data-xp="thock">Thock</button>' +
         '</div>' +
@@ -302,6 +322,7 @@
       if (!a) return;
       menu.hidden = true;
       const act = a.dataset.xp;
+      if (act === 'explorer' && window.pkXpExplorer) window.pkXpExplorer();
       if (act === 'ach') fx.openAchievements();
       if (act === 'shop') openShop();
       if (act === 'thock') startGame('g-thock');
