@@ -2,6 +2,21 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Windows XP richtig alt, mit Maus-Klicks, alter Tastatur und Systemklängen (Branch V2)
+
+### Neu
+- Taskleiste unten mit grünem „start“-Knopf, Fenster-Schaltfläche, Infobereich und Uhr. Das Startmenü hat den Kopf „Besucher“, Links zu den Bereichen sowie Erfolge, Shop, Thock und „Abmelden“ (beendet XP).
+- Die Kopfleiste wird zur Fenster-Titelleiste mit Minimieren, Maximieren und Schließen. Schließen beendet XP, die anderen beiden machen einen Fehlerton.
+- Karten haben Fenster-Knöpfe in der blauen Titelleiste. Erfolge, Shop und Thock-Spiel öffnen sich als XP-Fenster, Erfolge erscheinen als gelbe Sprechblase. Dazu kommen klassische blaue Bildlaufleisten.
+- Thock-Spiel in XP: uralte, beige Bürotastatur mit dicken Tastenkappen und Schreibmaschinen-Schrift. Sie klingt nach einer alten, klackernden Tastatur („MX Blue – Full Travel“ aus Mechvibes, MIT).
+- Klicks klingen in XP nach einer echten alten Maus (Drücken und Loslassen, „Middle Mouse Click“ von 1j01, OpenGameArt, CC0).
+- Eigene, nachempfundene XP-Systemklänge (keine Originaldateien): Hochfahren beim Einschalten, Herunterfahren beim Beenden, Fehlerton bei zu wenig Punkten und bei Minimieren/Maximieren.
+
+### Geändert
+- In XP gibt es keine ASMR-Töne mehr (kein Thock, kein Plopp), nur Maus-Klicks, die alte Tastatur und die Systemklänge.
+- In XP ist alles Moderne aus: kein Glas, kein Glitzer, keine aufsteigenden Blasen, kein Mausschein, keine Wellenlinien, keine Feder-Animationen. Die Blasen oben sehen aus wie alte, blaue Bildschirmschoner-Kugeln.
+- Datei-Versionen auf `?v=24e`.
+
 ## 24.10.2026 – V2: Erfolge-Knopf, Punkte und Shop (Branch V2)
 
 ### Neu
