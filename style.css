@@ -3598,3 +3598,32 @@ textarea.xpw-text { resize: none; border: 0; border-top: 1px solid #7f9db9; outl
 .xpw-cmd-line { display: flex; gap: 0; padding: 0 6px 6px; color: #c0c0c0; font: 13px "Lucida Console", "Courier New", monospace; }
 .xpw-cmd-line input { flex: 1; min-width: 0; border: 0; outline: none; background: none; color: #c0c0c0; font: inherit; caret-color: #c0c0c0; }
 .xpw-run-row { display: flex; align-items: center; gap: 8px; }
+
+/* Erfolge immer sichtbar, auch auf dem XP-Desktop und über Fenstern */
+.xp-site-hidden .fx-achievement { display: flex !important; }
+.fx-achievement, .fx-flash { z-index: 6000; }
+.fx-ach-overlay { z-index: 5500; }
+.kb-overlay { z-index: 5400; }
+
+/* XP-Taskleiste: ein Knopf pro offenem Fenster */
+.xp-tasks { display: flex; gap: 3px; margin-left: 3px; min-width: 0; flex: 1; overflow: hidden; }
+.xp-task-btn, .theme-xp .xp-task {
+  flex: 0 1 160px;
+  min-width: 40px;
+  height: 26px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #3c81f3, #2a6be0);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), inset 0 -1px 0 rgba(0, 0, 0, .25);
+  color: #fff;
+  font: 11px Tahoma, sans-serif;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.xp-task-btn.is-active, .theme-xp .xp-task.is-active { background: linear-gradient(180deg, #1e52c4, #1941a5); box-shadow: inset 1px 1px 3px rgba(0, 0, 0, .5); }
+.xp-task-btn.is-min { opacity: .85; }
+.xpw.is-min { display: none; }

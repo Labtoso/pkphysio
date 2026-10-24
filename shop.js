@@ -314,7 +314,7 @@
     const clock = taskbar.querySelector('[data-clock]');
     const tick = () => { const d = new Date(); clock.textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
     tick();
-    setInterval(tick, 15000);
+    setInterval(tick, 1000);
     const menu = taskbar.querySelector('.xp-menu');
     taskbar.querySelector('.xp-start').addEventListener('click', () => { menu.hidden = !menu.hidden; });
     menu.addEventListener('click', (e) => {

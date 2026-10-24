@@ -131,6 +131,71 @@
     if (!root.classList.contains('theme-xp') && root.classList.contains('xp-site-hidden')) root.classList.remove('xp-site-hidden');
   }).observe(root, { attributes: true, attributeFilter: ['class'] });
 
+  /* ---------- Taskleiste live: jedes offene Fenster bekommt einen Knopf ---------- */
+  const taskMap = new Map();
+  function topWindow() {
+    let top = null, z = -1;
+    document.querySelectorAll('.xpw:not(.is-min)').forEach(w => { const v = Number(w.style.zIndex) || 0; if (v > z) { z = v; top = w; } });
+    return top;
+  }
+  function renderTasks() {
+    const bar = document.querySelector('.xp-taskbar');
+    if (!bar) return;
+    let box = bar.querySelector('.xp-tasks');
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'xp-tasks';
+      bar.querySelector('.xp-task').after(box);
+    }
+    const wins = [...document.querySelectorAll('.xpw')];
+    // Geschlossene Fenster entfernen
+    taskMap.forEach((btn, w) => { if (!wins.includes(w)) { btn.remove(); taskMap.delete(w); } });
+    const top = topWindow();
+    wins.forEach(w => {
+      let btn = taskMap.get(w);
+      if (!btn) {
+        btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'xp-task-btn';
+        btn.addEventListener('click', () => {
+          if (w.classList.contains('is-min')) { w.classList.remove('is-min'); w.style.zIndex = String(nextZ()); }
+          else if (w === topWindow()) w.classList.add('is-min');
+          else w.style.zIndex = String(nextZ());
+          sound.play('click');
+          renderTasks();
+        });
+        box.appendChild(btn);
+        taskMap.set(w, btn);
+      }
+      const title = (w.querySelector('.xpw-title span') || {}).textContent || 'Fenster';
+      if (btn.textContent !== title) { btn.textContent = title; btn.title = title; }
+      btn.classList.toggle('is-active', w === top);
+      btn.classList.toggle('is-min', w.classList.contains('is-min'));
+    });
+    // Website-Knopf: aktiv, solange die Website sichtbar ist
+    bar.querySelector('.xp-task').classList.toggle('is-active', !root.classList.contains('xp-site-hidden') && !top);
+  }
+  function nextZ() {
+    let z = 1700;
+    document.querySelectorAll('.xpw').forEach(w => { z = Math.max(z, Number(w.style.zIndex) || 0); });
+    return z + 1;
+  }
+  // Fenster minimieren über den ersten Knopf in der Titelleiste
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('.xpw-btns i:first-child');
+    if (!b) return;
+    b.closest('.xpw').classList.add('is-min');
+    renderTasks();
+  });
+  // Neu geöffnete, geschlossene, umbenannte oder angeklickte Fenster sofort in die Taskleiste übernehmen
+  new MutationObserver((records) => {
+    if (!root.classList.contains('theme-xp')) return;
+    if (records.some(r => [...r.addedNodes, ...r.removedNodes].some(n => n.nodeType === 1 && n.classList.contains('xpw')))) renderTasks();
+  }).observe(document.body, { childList: true });
+  document.addEventListener('pointerdown', (e) => { if (e.target.closest('.xpw')) requestAnimationFrame(renderTasks); }, true);
+  // Titeländerungen (z. B. beim Navigieren im Explorer) kommen über textContent: kurz nach jedem Klick prüfen
+  ['click', 'keyup'].forEach(type => document.addEventListener(type, () => { if (root.classList.contains('theme-xp')) setTimeout(renderTasks, 0); }, true));
+
   /* ---------- Start > Ausführen ---------- */
   function runDialog() {
     const { win, body } = xp.makeWindow('Ausführen', 'xpw-dialog', 360);
