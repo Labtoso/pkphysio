@@ -2,6 +2,19 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Echte Tastatur-Aufnahmen und echter Blasen-Plopp (Branch V2)
+
+### Neu
+- Echte Aufnahmen einer cremigen, geschmierten Tastatur („Full Creamy Goodness“ aus dem Projekt Mechvibes, Lizenz MIT). Es gibt je eine eigene Aufnahme für Drücken pro Tastenreihe, für Loslassen sowie für Leertaste, Enter und Rücktaste.
+- Echter Blasen-Plopp („bubbles 'pop'“ von farfadet46, OpenGameArt, CC0). Große Blasen ploppen tiefer, kleine höher.
+- `Assets/sounds/QUELLEN.txt` mit Herkunft und Lizenztext der Aufnahmen. Alle Töne zusammen sind 32 KB groß.
+- Die Aufnahmen werden beim ersten Klick oder Tastendruck geladen und auf gleiche Lautstärke gebracht.
+
+### Geändert
+- Das Thock-Spiel, die Knöpfe, Links, FAQ, der Farbschema-Knopf und die Erfolgs-Fanfare nutzen die echten Tastatur-Aufnahmen.
+- Platzen, Antippen, Aufprall und das Aufsteigen der Blasen nutzen den echten Plopp statt Trommel-Klängen.
+- Solange die Aufnahmen noch laden, springt der im Browser erzeugte Klang ein.
+
 ## 24.10.2026 – V2: Blase zerplatzt an Ort und Stelle, Erfolge einmal pro Besuch (Branch V2)
 
 ### Geändert
