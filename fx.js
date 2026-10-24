@@ -120,6 +120,7 @@
 
     // Echte Aufnahmen: cremige Tastatur (Mechvibes, MIT) und Blasen-Plopp (OpenGameArt, CC0), siehe Assets/sounds/QUELLEN.txt
     const samples = {};
+    let variant = null;
     let samplesLoading = false;
     const SAMPLE_FILES = {
       r0: 'cream/press/GENERIC_R0.mp3', r1: 'cream/press/GENERIC_R1.mp3', r2: 'cream/press/GENERIC_R2.mp3',
@@ -157,7 +158,7 @@
       const t = a.currentTime + (opt.delay || 0);
       const src = a.createBufferSource();
       src.buffer = buf;
-      src.playbackRate.value = opt.rate || 1;
+      src.playbackRate.value = (opt.rate || 1) * (opt.noVariant ? 1 : variant === 'deep' ? 0.8 : variant === 'bright' ? 1.3 : 1);
       const g = a.createGain();
       g.gain.value = (opt.vol == null ? 1 : opt.vol) * (buf.norm || 1);
       const pan = opt.pan && a.createStereoPanner ? a.createStereoPanner() : null;
@@ -251,6 +252,11 @@
       thock(k) {
         const kk = k || {};
         const sz = kk.size || 1;
+        if (variant === 'retro') {
+          // Retro: kurzer Piepser wie ein alter Computer
+          body({ freq: 440 + (4 - (kk.row || 0)) * 110 + (sz > 1.5 ? -150 : 0), dur: 0.06, vol: 0.12 * (kk.soft || 1), wave: 'square', attack: 0.001, pan: kk.pan || 0 });
+          return;
+        }
         const rowName = 'r' + Math.max(0, Math.min(4, Math.round(kk.row == null ? 2 : kk.row)));
         const name = sz >= 5 ? 'space' : sz >= 2 ? 'enter' : sz >= 1.5 ? 'backspace' : rowName;
         if (sample(name, { rate: rnd(1, 0.06), vol: 0.9 * (kk.soft || 1), pan: kk.pan || 0 })) return;
@@ -327,6 +333,8 @@
     window.addEventListener('keydown', warmUp, { once: true, capture: true });
 
     return {
+      setVariant(v) { variant = v; },
+      get variant() { return variant; },
       get on() { return on; },
       set on(v) { on = v; try { localStorage.setItem('sound', v ? 'on' : 'off'); } catch (e) {} },
       play(name, arg) { if (!on || !sounds[name] || (!ctx && passive.includes(name))) return; sounds[name](arg); },
@@ -366,28 +374,42 @@
   let achievementTimer = null;
   // Alle Erfolge; geheime zeigen bis zum Freischalten nur ???
   const ACHIEVEMENTS = [
-    { id: 'flash', title: 'Flashbangt', tip: 'Wechsle ins helle Farbschema.', flash: true },
-    { id: 'mute', title: 'Warum höre ich nix', tip: 'Schalte den Ton aus.' },
-    { id: 'pop1', title: 'Plopp', tip: 'Lass oben im Startbereich eine Blase platzen.' },
-    { id: 'pop10', title: 'Blasen-Profi', tip: 'Lass 10 Blasen platzen.' },
-    { id: 'throw', title: 'Weitwurf', tip: 'Wirf eine Blase richtig schnell weg.' },
-    { id: 'flood', title: 'Land unter', tip: 'Flute den Startbereich mit Blasen.' },
-    { id: 'faq', title: 'Wissbegierig', tip: 'Öffne jede Frage in den FAQ.' },
-    { id: 'bottom', title: 'Ganz unten', tip: 'Scroll bis ganz nach unten.' },
-    { id: 'thock', title: 'Thock', secret: true, tip: 'Tippe irgendwo auf der Seite „thock“.' },
-    { id: 'typer', title: 'Tipp-Maschine', secret: true, tip: '5 Wörter in Folge im Thock-Spiel.' },
-    { id: 'disco', title: 'Disco', secret: true, tip: 'Wechsle das Farbschema ganz oft hintereinander.' }
+    { id: 'flash', points: 10, title: 'Flashbangt', tip: 'Wechsle ins helle Farbschema.', flash: true },
+    { id: 'mute', points: 10, title: 'Warum höre ich nix', tip: 'Schalte den Ton aus.' },
+    { id: 'pop1', points: 10, title: 'Plopp', tip: 'Lass oben im Startbereich eine Blase platzen.' },
+    { id: 'pop10', points: 25, title: 'Blasen-Profi', tip: 'Lass 10 Blasen platzen.' },
+    { id: 'throw', points: 20, title: 'Weitwurf', tip: 'Wirf eine Blase richtig schnell weg.' },
+    { id: 'flood', points: 15, title: 'Land unter', tip: 'Flute den Startbereich mit Blasen.' },
+    { id: 'faq', points: 20, title: 'Wissbegierig', tip: 'Öffne jede Frage in den FAQ.' },
+    { id: 'bottom', points: 10, title: 'Ganz unten', tip: 'Scroll bis ganz nach unten.' },
+    { id: 'thock', points: 40, title: 'Thock', secret: true, tip: 'Tippe irgendwo auf der Seite „thock“.' },
+    { id: 'typer', points: 50, title: 'Tipp-Maschine', secret: true, tip: '5 Wörter in Folge im Thock-Spiel.' },
+    { id: 'disco', points: 40, title: 'Disco', secret: true, tip: 'Wechsle das Farbschema ganz oft hintereinander.' }
   ];
   const ICON_TROPHY = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3a2a00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>';
   const ICON_LOCK = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
   const unlocked = new Set();
+  const unlockListeners = [];
   function unlock(id) {
     const a = ACHIEVEMENTS.find(x => x.id === id);
     if (!a || unlocked.has(id)) return;
     unlocked.add(id);
-    achievement(a.title, a.flash);
+    achievement(a.title, a.flash, a.points);
+    unlockListeners.forEach(fn => fn(a));
   }
+  const earnedPoints = () => ACHIEVEMENTS.filter(a => unlocked.has(a.id)).reduce((s, a) => s + a.points, 0);
   window.pkUnlock = unlock;
+  // Schnittstelle für den Shop (shop.js)
+  window.pkFx = {
+    sound,
+    unlock,
+    achievements: ACHIEVEMENTS,
+    isUnlocked: (id) => unlocked.has(id),
+    earnedPoints,
+    onUnlock: (fn) => unlockListeners.push(fn),
+    openAchievements: () => openAchievements(),
+    balls: null
+  };
 
   // Liste aller Erfolge dieses Besuchs, öffnet sich mit Klick auf einen Erfolg
   let achPanel = null;
@@ -400,14 +422,15 @@
       achPanel.addEventListener('click', (e) => { if (e.target === achPanel || e.target.closest('.fx-ach-close')) closeAchievements(); });
       window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && achPanel.classList.contains('is-open')) closeAchievements(); });
     }
-    achPanel.querySelector('.fx-ach-count').textContent = unlocked.size + ' / ' + ACHIEVEMENTS.length;
+    achPanel.querySelector('.fx-ach-count').textContent = unlocked.size + ' / ' + ACHIEVEMENTS.length + ' · ' + earnedPoints() + ' Punkte';
     achPanel.querySelector('.fx-ach-list').innerHTML = ACHIEVEMENTS.map((a, i) => {
       const got = unlocked.has(a.id);
       const hidden = a.secret && !got;
       return '<li class="fx-ach-item' + (got ? ' is-got' : '') + (hidden ? ' is-secret' : '') + '" style="--i:' + i + '">' +
         '<span class="fx-ach-item-icon" aria-hidden="true">' + (got ? ICON_TROPHY : hidden ? '?' : ICON_LOCK) + '</span>' +
         '<span class="fx-ach-item-text"><strong>' + (hidden ? '???' : a.title) + '</strong>' +
-        '<small>' + (hidden ? 'Geheimer Erfolg' : got ? 'Freigeschaltet' : 'Tipp: ' + a.tip) + '</small></span></li>';
+        '<small>' + (hidden ? 'Geheimer Erfolg' : got ? 'Freigeschaltet' : 'Tipp: ' + a.tip) + '</small></span>' +
+        '<span class="fx-ach-points">+' + a.points + '</span></li>';
     }).join('');
     achPanel.classList.add('is-open');
     sound.play('open');
@@ -419,7 +442,7 @@
 
   // Jeder Erfolg kommt nur einmal pro Seitenbesuch (nach Neuladen wieder)
   const shownAchievements = new Set();
-  function achievement(title, flash) {
+  function achievement(title, flash, points) {
     if (shownAchievements.has(title)) return;
     shownAchievements.add(title);
     if (flash) {
@@ -436,7 +459,7 @@
     toast.setAttribute('role', 'status');
     toast.innerHTML =
       '<span class="fx-ach-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span>' +
-      '<span class="fx-ach-text"><small>Erfolg freigeschaltet</small><strong>' + title + '</strong></span>' +
+      '<span class="fx-ach-text"><small>Erfolg freigeschaltet' + (points ? ' · +' + points + ' Punkte' : '') + '</small><strong>' + title + '</strong></span>' +
       '<span class="fx-ach-bar" aria-hidden="true"></span>';
     for (let i = 0; i < 18; i++) {
       const c = document.createElement('i');
@@ -729,6 +752,7 @@
 
       splash(cx, cy, b.r, Math.round(10 + b.r / 5));
       popped++;
+      popListeners.forEach(fn => fn(b));
       unlock('pop1');
       if (popped >= 10) unlock('pop10');
       if (b.child) {
@@ -751,6 +775,15 @@
       '<button type="button" data-act="clear">Alle löschen</button>';
     hero.appendChild(controls);
     const aliveCount = () => items.filter(i => i.alive).length;
+    let gravity = false;
+    const popListeners = [];
+    if (window.pkFx) window.pkFx.balls = {
+      setGravity(on) { gravity = on; },
+      onPop(fn) { popListeners.push(fn); },
+      spawn(r, x) { return spawnExtra(r, x); },
+      clear() { items.filter(i => i.alive).forEach((b, i) => setTimeout(() => pop(b), i * 30)); },
+      hero
+    };
 
     // Fluten: Wasser steigt über den ganzen Bildschirm, voller aufsteigender Blasen, und läuft wieder ab
     let flooding = false;
@@ -808,7 +841,7 @@
       for (const b of items) {
         if (!b.alive || b.drag) continue;
         b.vx += (Math.random() - 0.5) * 0.06;
-        b.vy += (Math.random() - 0.5) * 0.06 - 0.003;
+        b.vy += gravity ? 0.32 : (Math.random() - 0.5) * 0.06 - 0.003;
         b.vx *= 0.992; b.vy *= 0.992;
         b.x += b.vx; b.y += b.vy;
         const d = b.r * 2;
