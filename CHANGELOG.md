@@ -2,6 +2,28 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Mehr Glas, viel mehr Bewegung (Branch V2)
+
+### Neu
+- Zwei schwebende Glaskugeln im Startbereich mit Spiegelung und Lichtkante.
+- Um Kopfleiste, Karten, Portrait, Kontaktdaten, Karte und offene FAQ läuft ein Regenbogen-Rand im Kreis.
+- Kleine Glitzerpunkte funkeln und steigen über die ganze Seite.
+- Am Computer folgt ein weicher Lichtschein der Maus. Karten neigen sich in 3D zur Maus und tragen einen eigenen Lichtpunkt.
+- Ganz oben zeigt ein leuchtender Farbbalken, wie weit man gescrollt hat.
+- Name und Überschriften laufen in einem wandernden Farbverlauf von Teal über Cyan und Violett bis Pink.
+- Die Pille über dem Namen pulsiert, sie und alle Knöpfe haben einen durchlaufenden Glanzstreifen.
+- Die Punkte im Lebenslauf pulsieren nacheinander.
+- Neue Datei `fx.js` für Mausschein, Neigung, Glitzer und Scroll-Balken.
+
+### Geändert
+- Der Hintergrund hat mehr und schnellere Lichtflecken, eine sich drehende Aurora und wechselt langsam durch alle Farben.
+- Inhalte tauchen von unten auf, zuerst unscharf und kleiner, Karten nacheinander.
+- „Termin vereinbaren“ hat einen wandernden Teal-Cyan-Verlauf, Knöpfe wachsen und leuchten beim Darüberfahren.
+- Das Glas ist stärker verwischt und farbsatter.
+- FAQ-Einträge rutschen beim Darüberfahren zur Seite, das Plus dreht sich mit Federung zum Kreuz und wird Teal.
+- Der Farbschema-Knopf dreht sich beim Darüberfahren.
+- Bei „Bewegung reduzieren“ im System bleiben alle Animationen aus.
+
 ## 24.10.2026 – V2: Neues Design im Liquid-Glass-Stil (Branch V2)
 
 ### Neu
