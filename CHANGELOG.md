@@ -2,6 +2,22 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Erfolge-Liste, Blasen-Knöpfe, keine Quadrate (Branch V2)
+
+### Neu
+- Ein Klick auf einen Erfolg öffnet die Liste aller Erfolge dieses Besuchs mit Zähler (z. B. 2 / 11). Freigeschaltete Erfolge leuchten golden mit Pokal, noch gesperrte zeigen ein Schloss und einen Tipp, wie man sie bekommt.
+- 11 Erfolge, davon 3 geheim (in der Liste als „???“ bis zum Freischalten):
+  - Flashbangt (helles Farbschema), Warum höre ich nix (Ton aus), Plopp (eine Blase platzen lassen), Blasen-Profi (10 Blasen), Weitwurf (Blase schnell werfen), Land unter (Startbereich fluten), Wissbegierig (jede FAQ-Frage öffnen), Ganz unten (bis ganz nach unten scrollen).
+  - Geheim: Thock (geheimes Spiel öffnen), Tipp-Maschine (5 Wörter in Folge im Spiel), Disco (Farbschema ganz oft hintereinander wechseln).
+- Knöpfe unten im Startbereich für die Blasen: „Fluten“ füllt den Bereich mit Blasen, die von unten aufsteigen (höchstens 28, am Handy 16). „Große Blase“ lässt eine riesige Blase aufsteigen. „Alle löschen“ lässt alle Blasen nacheinander platzen, neue kommen erst nach einigen Sekunden.
+- Zusätzliche Blasen aus „Fluten“ und „Große Blase“ verschwinden nach dem Platzen ganz.
+
+### Geändert
+- Aus dem Erfolg sprühen runde Glasbläschen statt eckiger Konfetti-Stücke.
+
+### Entfernt
+- Die eckigen Konfetti-Quadrate.
+
 ## 24.10.2026 – V2: Echte Tastatur-Aufnahmen und echter Blasen-Plopp (Branch V2)
 
 ### Neu
