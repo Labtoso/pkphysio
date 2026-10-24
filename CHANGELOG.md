@@ -2,6 +2,15 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Keine Trommel-Klänge mehr bei den Blasen (Branch V2)
+
+### Geändert
+- Blasen klingen nur noch nach dem echten Plopp und immer hell. Platzen wird nie tiefer als die Originalaufnahme, Aufprall an Rand und aneinander ist ein ganz leiser, hoher Plopp, und Anfassen ist ein kleiner Plopp.
+- Datei-Versionen an Stil und Skripten (`?v=24c`), damit der Browser sicher die neuen Dateien lädt und keine alten aus dem Zwischenspeicher.
+
+### Entfernt
+- Alle im Browser erzeugten Klänge bei den Blasen: Squish, Unsquish, Whoosh und die tiefen Aufprall-Töne. Lädt der Plopp noch, bleibt es still, statt einen Ersatzklang zu spielen.
+
 ## 24.10.2026 – V2: Fluten über den ganzen Bildschirm, Riesenblase (Branch V2)
 
 ### Geändert
