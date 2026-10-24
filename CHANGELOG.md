@@ -2,6 +2,17 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Kein Einfrieren mehr, normale Töne zurück (Branch V2)
+
+### Gefixt
+- Die Seite fror ein, wenn man oft auf Licht/Dunkel oder auf den Ton-Knopf klickte, und der Farbwechsel kam erst nach dem Neuladen. Ursache war eine Endlosschleife im XP-Teil: Ein Beobachter für Änderungen an der Seite hat bei jeder Änderung selbst wieder eine ausgelöst. Jetzt gehen 30 schnelle Klicks ohne Hänger durch (gemessen: längste Pause 100 ms).
+- Schnelles Klicken auf den Ton-Knopf öffnete ungewollt das Thock-Spiel. Der geheime Zugang am Handy ist jetzt: Ton-Knopf eine Sekunde lang gedrückt halten. Auf dem Computer geht weiterhin „thock“ tippen.
+
+### Geändert
+- Tastatur-Klänge gibt es nur noch im Thock-Spiel und in Windows XP. Auf der restlichen Website kommen wieder die normalen Töne: Knöpfe ploppen hell, Links tropfen, FAQ mit Tropfen, Farbschema mit Glas, Erfolge mit aufsteigenden Plopps und Glas, „falsch“ mit zwei weichen Tropfen.
+- Automatischer Rundgang durch alle Funktionen am Computer und am Handy (Erfolge, Shop mit allen Käufen, alle Spiele, Thock, Blasen, FAQ, Licht, Ton, XP mit Explorer, Desktop und Escape, Impressum, Made-by): keine Skriptfehler, keine Hänger über 200 ms.
+- Datei-Versionen auf `?v=24m`.
+
 ## 24.10.2026 – V2: Töne in Zen und Firefox (Branch V2)
 
 ### Gefixt
