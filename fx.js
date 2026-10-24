@@ -173,7 +173,7 @@
     window.addEventListener('resize', measure);
 
     function spawn(b, fromBottom) {
-      b.r = (small ? 26 : 34) + Math.random() * (small ? 42 : 70);
+      b.r = (small ? 18 : 34) + Math.random() * (small ? 24 : 70);
       b.x = (small ? 0.35 : 0.5) * W + Math.random() * (W * (small ? 0.6 : 0.48) - b.r * 2);
       b.y = fromBottom ? H + b.r : 90 + Math.random() * (H - 140 - b.r * 2);
       b.vx = (Math.random() - 0.5) * 1.2;
