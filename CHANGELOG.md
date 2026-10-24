@@ -2,6 +2,12 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Admin-Hinweis wieder rätselhafter (Branch V2)
+
+### Geändert
+- Der Kennworthinweis für das Administrator-Konto lautet jetzt „Weggeworfen ist nicht vergessen.“ statt den Papierkorb direkt zu nennen.
+- Datei-Versionen auf `?v=24q`.
+
 ## 24.10.2026 – V2: Rätsel leichter (Branch V2)
 
 ### Geändert
