@@ -10,19 +10,19 @@
 
   // Weitere Erfolge (die Liste in fx.js wird hier ergänzt)
   fx.achievements.push(
-    { id: 'shop1', points: 10, title: 'Shopping-Tour', tip: 'Kauf etwas im Shop.' },
-    { id: 'rich', points: 20, title: 'Großverdiener', tip: 'Sammle insgesamt 150 Punkte.' },
-    { id: 'retro', points: 15, title: 'Zeitreise', tip: 'Schalte einen Retro-Look ein.' },
-    { id: 'snake20', points: 30, title: 'Schlangenbeschwörer', tip: 'Schaff 20 Punkte in Snake.' },
-    { id: 'react', points: 30, title: 'Blitzschnell', tip: 'Reagier im Reaktionstest unter 250 ms.' },
-    { id: 'cps', points: 25, title: 'Klick-Monster', tip: 'Schaff 8 Klicks pro Sekunde im Klick-Rekord.' },
-    { id: 'hunt30', points: 30, title: 'Blasen-Jäger', tip: 'Lass in der Blasen-Jagd 30 Blasen platzen.' },
-    { id: 'konami', points: 40, title: 'Cheat-Code', tip: 'Ein berühmter Cheat-Code aus alten Videospielen.' },
-    { id: 'rainbow', points: 30, title: 'Regenbogen', tip: 'Kauf alle Farben im Shop.' },
-    { id: 'night', points: 20, title: 'Nachteule', tip: 'Besuch die Seite zwischen Mitternacht und 4 Uhr.' }
+    { id: 'shop1', points: 40, title: 'Shopping-Tour', tip: 'Kauf etwas im Shop.' },
+    { id: 'rich', points: 100, title: 'Großverdiener', tip: 'Sammle insgesamt 1000 Punkte.' },
+    { id: 'retro', points: 80, title: 'Zeitreise', tip: 'Schalte einen Retro-Look ein.' },
+    { id: 'snake20', points: 150, title: 'Schlangenbeschwörer', tip: 'Schaff 20 Punkte in Snake.' },
+    { id: 'react', points: 140, title: 'Blitzschnell', tip: 'Reagier im Reaktionstest unter 250 ms.' },
+    { id: 'cps', points: 110, title: 'Klick-Monster', tip: 'Schaff 8 Klicks pro Sekunde im Klick-Rekord.' },
+    { id: 'hunt30', points: 140, title: 'Blasen-Jäger', tip: 'Lass in der Blasen-Jagd 30 Blasen platzen.' },
+    { id: 'konami', points: 200, title: 'Cheat-Code', tip: 'Ein berühmter Cheat-Code aus alten Videospielen.' },
+    { id: 'rainbow', points: 150, title: 'Regenbogen', tip: 'Kauf alle Farben im Shop.' },
+    { id: 'night', points: 100, title: 'Nachteule', tip: 'Besuch die Seite zwischen Mitternacht und 4 Uhr.' }
   );
   if (new Date().getHours() < 4) setTimeout(() => fx.unlock('night'), 2500);
-  fx.onUnlock(() => { if (fx.earnedPoints() >= 150) setTimeout(() => fx.unlock('rich'), 4200); });
+  fx.onUnlock(() => { if (fx.earnedPoints() >= 1000) setTimeout(() => fx.unlock('rich'), 4200); });
 
   // Konami-Code: ↑ ↑ ↓ ↓ ← → ← → B A
   const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
@@ -67,38 +67,38 @@
   const SHOP = [
     { group: 'Farben', exclusive: 'color', items: [
       { id: 'c-teal', name: 'Teal', price: 0, color: '#17b6a4', free: true },
-      { id: 'c-violet', name: 'Lila', price: 15, color: '#8b5cf6' },
-      { id: 'c-pink', name: 'Pink', price: 15, color: '#ec4899' },
-      { id: 'c-gold', name: 'Gold', price: 15, color: '#f5b301' },
-      { id: 'c-ocean', name: 'Ozean', price: 15, color: '#2f80ed' },
-      { id: 'c-red', name: 'Feuerrot', price: 15, color: '#ef4444' }
+      { id: 'c-violet', name: 'Lila', price: 40, color: '#8b5cf6' },
+      { id: 'c-pink', name: 'Pink', price: 40, color: '#ec4899' },
+      { id: 'c-gold', name: 'Gold', price: 40, color: '#f5b301' },
+      { id: 'c-ocean', name: 'Ozean', price: 40, color: '#2f80ed' },
+      { id: 'c-red', name: 'Feuerrot', price: 40, color: '#ef4444' }
     ] },
     { group: 'Modi', items: [
-      { id: 'm-disco', name: 'Disco-Modus', price: 30 },
-      { id: 'm-gravity', name: 'Schwerkraft für Blasen', price: 25 },
-      { id: 'm-mirror', name: 'Spiegel-Modus', price: 20 },
-      { id: 'm-crt', name: 'Röhrenbildschirm', price: 30 },
-      { id: 'm-pixel', name: 'Pixel-Mauszeiger', price: 15 }
+      { id: 'm-disco', name: 'Disco-Modus', price: 80 },
+      { id: 'm-gravity', name: 'Schwerkraft für Blasen', price: 70 },
+      { id: 'm-mirror', name: 'Spiegel-Modus', price: 60 },
+      { id: 'm-crt', name: 'Röhrenbildschirm', price: 90 },
+      { id: 'm-pixel', name: 'Pixel-Mauszeiger', price: 50 }
     ] },
     { group: 'Spiele', items: [
-      { id: 'g-hunt', name: 'Blasen-Jagd', price: 40, game: true },
-      { id: 'g-thock', name: 'Thock-Spiel', price: 10, game: true },
-      { id: 'g-snake', name: 'Snake', price: 50, game: true },
-      { id: 'g-react', name: 'Reaktionstest', price: 30, game: true },
-      { id: 'g-cps', name: 'Klick-Rekord', price: 20, game: true }
+      { id: 'g-hunt', name: 'Blasen-Jagd', price: 150, game: true },
+      { id: 'g-thock', name: 'Thock-Spiel', price: 60, game: true },
+      { id: 'g-snake', name: 'Snake', price: 180, game: true },
+      { id: 'g-react', name: 'Reaktionstest', price: 120, game: true },
+      { id: 'g-cps', name: 'Klick-Rekord', price: 90, game: true }
     ] },
     { group: 'Töne', exclusive: 'sound', items: [
       { id: 's-normal', name: 'Cremig (Standard)', price: 0, free: true },
-      { id: 's-deep', name: 'Tiefes Thock', price: 15 },
-      { id: 's-bright', name: 'Helles Clack', price: 15 },
-      { id: 's-retro', name: 'Retro-Piepser', price: 20 }
+      { id: 's-deep', name: 'Tiefes Thock', price: 50 },
+      { id: 's-bright', name: 'Helles Clack', price: 50 },
+      { id: 's-retro', name: 'Retro-Piepser', price: 70 }
     ] },
     { group: 'Retro', exclusive: 'skin', items: [
       { id: 'r-modern', name: 'Modern (Standard)', price: 0, free: true },
-      { id: 'xp', name: 'Windows XP', price: 60 },
-      { id: 'r-98', name: 'Windows 98', price: 50 },
-      { id: 'r-dos', name: 'MS-DOS', price: 45 },
-      { id: 'r-gb', name: 'Game Boy', price: 45 }
+      { id: 'xp', name: 'Windows XP', price: 300 },
+      { id: 'r-98', name: 'Windows 98', price: 250 },
+      { id: 'r-dos', name: 'MS-DOS', price: 220 },
+      { id: 'r-gb', name: 'Game Boy', price: 220 }
     ] }
   ];
   const findItem = (id) => { for (const g of SHOP) for (const it of g.items) if (it.id === id) return { g, it }; return null; };

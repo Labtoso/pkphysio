@@ -404,17 +404,17 @@
   let achievementTimer = null;
   // Alle Erfolge; geheime zeigen bis zum Freischalten nur ???
   const ACHIEVEMENTS = [
-    { id: 'flash', points: 10, title: 'Flashbangt', tip: 'Wechsle ins helle Farbschema.', flash: true },
-    { id: 'mute', points: 10, title: 'Warum höre ich nix', tip: 'Schalte den Ton aus.' },
-    { id: 'pop1', points: 10, title: 'Plopp', tip: 'Lass oben im Startbereich eine Blase platzen.' },
-    { id: 'pop10', points: 25, title: 'Blasen-Profi', tip: 'Lass 10 Blasen platzen.' },
-    { id: 'throw', points: 20, title: 'Weitwurf', tip: 'Wirf eine Blase richtig schnell weg.' },
-    { id: 'flood', points: 15, title: 'Land unter', tip: 'Flute den Startbereich mit Blasen.' },
-    { id: 'faq', points: 20, title: 'Wissbegierig', tip: 'Öffne jede Frage in den FAQ.' },
-    { id: 'bottom', points: 10, title: 'Ganz unten', tip: 'Scroll bis ganz nach unten.' },
-    { id: 'thock', points: 40, title: 'Thock', secret: true, tip: 'Tippe irgendwo auf der Seite „thock“.' },
-    { id: 'typer', points: 50, title: 'Tipp-Maschine', secret: true, tip: '5 Wörter in Folge im Thock-Spiel.' },
-    { id: 'disco', points: 40, title: 'Disco', secret: true, tip: 'Wechsle das Farbschema ganz oft hintereinander.' }
+    { id: 'flash', points: 50, title: 'Flashbangt', tip: 'Wechsle ins helle Farbschema.', flash: true },
+    { id: 'mute', points: 50, title: 'Warum höre ich nix', tip: 'Schalte den Ton aus.' },
+    { id: 'pop1', points: 40, title: 'Plopp', tip: 'Lass oben im Startbereich eine Blase platzen.' },
+    { id: 'pop10', points: 100, title: 'Blasen-Profi', tip: 'Lass 10 Blasen platzen.' },
+    { id: 'throw', points: 80, title: 'Weitwurf', tip: 'Wirf eine Blase richtig schnell weg.' },
+    { id: 'flood', points: 60, title: 'Land unter', tip: 'Flute den Startbereich mit Blasen.' },
+    { id: 'faq', points: 90, title: 'Wissbegierig', tip: 'Öffne jede Frage in den FAQ.' },
+    { id: 'bottom', points: 50, title: 'Ganz unten', tip: 'Scroll bis ganz nach unten.' },
+    { id: 'thock', points: 180, title: 'Thock', secret: true, tip: 'Tippe irgendwo auf der Seite „thock“.' },
+    { id: 'typer', points: 220, title: 'Tipp-Maschine', secret: true, tip: '5 Wörter in Folge im Thock-Spiel.' },
+    { id: 'disco', points: 180, title: 'Disco', secret: true, tip: 'Wechsle das Farbschema ganz oft hintereinander.' }
   ];
   const ICON_TROPHY = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3a2a00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>';
   const ICON_LOCK = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
