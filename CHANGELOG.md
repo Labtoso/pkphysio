@@ -2,6 +2,16 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Rätsel leichter (Branch V2)
+
+### Geändert
+- Zip-Rätsel: Die Tagebuch-Dateien heißen jetzt „Tag 1 (Datum).txt“, „Tag 2 …“ und stehen schon in der richtigen Reihenfolge. Die Täuschungs-Einträge sind weg. Die versteckte Notiz erklärt die ganze Regel direkt, man muss nicht mehr in den Eigenschaften suchen.
+- Admin-Kennwort: Die Datei im Papierkorb enthält jetzt das verschlüsselte Kennwort und gleich die Regel zum Entschlüsseln. Der Kennworthinweis sagt „Schau in den Papierkorb (wecker.txt)“. Die Systemdatei erklärt auch, wie man volle Rechte bekommt.
+- Geheimschrift: „favoriten.txt“ liegt sichtbar auf dem Desktop und nennt die Verschiebung direkt (1 bis 5 Stellen, mit Beispiel). Sie hängt nicht mehr vom Zip-Kennwort ab. Der Internet Explorer verweist auf die Datei.
+- „LIES MICH.txt“ auf dem Desktop ist jetzt eine kurze Anleitung zu allen Rätseln.
+- Alles wird weiterhin bei jedem Besuch neu ausgewürfelt.
+- Datei-Versionen auf `?v=24p`.
+
 ## 24.10.2026 – V2: Erfolge überall sichtbar, XP-Taskleiste live (Branch V2)
 
 ### Neu
