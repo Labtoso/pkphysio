@@ -2,6 +2,26 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Viel flüssiger, zwei Erfolge, Thock-Spiel mit mehr Glas (Branch V2)
+
+### Neu
+- Erfolg „Flashbangt“: Beim Wechsel ins helle Farbschema blitzt der Bildschirm weiß auf, und unter der Kopfleiste fällt eine Glas-Pille herein. Sie zeigt einen goldenen Pokal, der sich hineindreht, Konfetti, einen Glanzstreifen und einen Balken, der voll läuft. Dazu spielt eine Fanfare aus Tastenanschlägen.
+- Erfolg „Warum höre ich nix“: kommt im gleichen Stil, wenn man den Ton ausschaltet, ohne weißen Blitz.
+- Thock-Spiel: Jeder Tastendruck schickt eine Welle über die Nachbartasten, und kleine Glastropfen steigen aus der Taste auf. Ein geschafftes Wort lässt alle Buchstaben nacheinander springen, über die ganze Tastatur läuft eine Welle, und große Glastropfen sprühen aus dem Wort. Ab 2 Wörtern in Folge steigt eine Anzeige „Serie ×N“ auf. Zahlen springen bei jeder Änderung, ein falscher Buchstabe lässt das Panel kurz zucken. Hinter dem Spiel schweben flüssige Glas-Blobs, über das Panel wandert eine Lichtkante.
+
+### Geändert
+- Mit gedrosselter CPU gemessen: Beim Scrollen läuft V2 jetzt mit 44 statt 14 Bildern pro Sekunde.
+- Der Hintergrund steht still. Was sich hinter Glas bewegt, zwingt den Browser, die Unschärfe in jedem Bild neu zu rechnen.
+- Glitzer, aufsteigende Blasen und Mausschein liegen vor dem Inhalt und unterhalb der Kopfleiste.
+- Karten, FAQ, Kontakt und Karte haben keine echte Unschärfe mehr. Dahinter liegt nur ein weicher Verlauf, darum sieht es fast gleich aus. Echte Unschärfe gibt es nur noch an der Kopfleiste, im Handy-Menü, im Spiel und bei den Erfolgen.
+- Glanzstreifen laufen über transform statt über die Position. Pulsierende Schatten und wandernde Farbverläufe in Schrift und Knöpfen sind still gestellt, die Farben bleiben.
+- Bereiche außerhalb des Bildschirms werden nicht gezeichnet.
+- Weniger Glitzer (10) und aufsteigende Blasen (5), beides ohne große Schatten. Die Blasen im Startbereich haben keinen äußeren Schatten mehr und verformen sich nur noch über transform.
+- Blasen im Startbereich bleiben unter der Kopfleiste, es gibt höchstens 28 gleichzeitig (am Handy 16).
+
+### Entfernt
+- Bewegung der Lichtflecken, der Aurora und das Mitgehen mit der Maus im Hintergrund.
+
 ## 24.10.2026 – V2: Cremiges Thock überall (Branch V2)
 
 ### Geändert
