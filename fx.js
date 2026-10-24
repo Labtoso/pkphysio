@@ -354,13 +354,66 @@
       sound.on = !sound.on;
       sync();
       sound.play('pop');
-      if (!sound.on) achievement('Warum höre ich nix', false);
+      if (!sound.on) unlock('mute');
     });
     themeToggle.parentNode.insertBefore(btn, themeToggle);
   }
 
   // Erfolge oben in der Mitte: „Flashbangt“ (helles Farbschema) und „Warum höre ich nix“ (Ton aus)
   let achievementTimer = null;
+  // Alle Erfolge; geheime zeigen bis zum Freischalten nur ???
+  const ACHIEVEMENTS = [
+    { id: 'flash', title: 'Flashbangt', tip: 'Wechsle ins helle Farbschema.', flash: true },
+    { id: 'mute', title: 'Warum höre ich nix', tip: 'Schalte den Ton aus.' },
+    { id: 'pop1', title: 'Plopp', tip: 'Lass oben im Startbereich eine Blase platzen.' },
+    { id: 'pop10', title: 'Blasen-Profi', tip: 'Lass 10 Blasen platzen.' },
+    { id: 'throw', title: 'Weitwurf', tip: 'Wirf eine Blase richtig schnell weg.' },
+    { id: 'flood', title: 'Land unter', tip: 'Flute den Startbereich mit Blasen.' },
+    { id: 'faq', title: 'Wissbegierig', tip: 'Öffne jede Frage in den FAQ.' },
+    { id: 'bottom', title: 'Ganz unten', tip: 'Scroll bis ganz nach unten.' },
+    { id: 'thock', title: 'Thock', secret: true, tip: 'Tippe irgendwo auf der Seite „thock“.' },
+    { id: 'typer', title: 'Tipp-Maschine', secret: true, tip: '5 Wörter in Folge im Thock-Spiel.' },
+    { id: 'disco', title: 'Disco', secret: true, tip: 'Wechsle das Farbschema ganz oft hintereinander.' }
+  ];
+  const ICON_TROPHY = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3a2a00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>';
+  const ICON_LOCK = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  const unlocked = new Set();
+  function unlock(id) {
+    const a = ACHIEVEMENTS.find(x => x.id === id);
+    if (!a || unlocked.has(id)) return;
+    unlocked.add(id);
+    achievement(a.title, a.flash);
+  }
+  window.pkUnlock = unlock;
+
+  // Liste aller Erfolge dieses Besuchs, öffnet sich mit Klick auf einen Erfolg
+  let achPanel = null;
+  function openAchievements() {
+    if (!achPanel) {
+      achPanel = document.createElement('div');
+      achPanel.className = 'fx-ach-overlay';
+      achPanel.innerHTML = '<div class="fx-ach-panel" role="dialog" aria-modal="true" aria-label="Erfolge"><div class="fx-ach-panel-head"><h2>Erfolge</h2><span class="fx-ach-count"></span><button type="button" class="kb-close fx-ach-close" aria-label="Schließen" title="Schließen (Esc)">×</button></div><ul class="fx-ach-list"></ul></div>';
+      document.body.appendChild(achPanel);
+      achPanel.addEventListener('click', (e) => { if (e.target === achPanel || e.target.closest('.fx-ach-close')) closeAchievements(); });
+      window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && achPanel.classList.contains('is-open')) closeAchievements(); });
+    }
+    achPanel.querySelector('.fx-ach-count').textContent = unlocked.size + ' / ' + ACHIEVEMENTS.length;
+    achPanel.querySelector('.fx-ach-list').innerHTML = ACHIEVEMENTS.map((a, i) => {
+      const got = unlocked.has(a.id);
+      const hidden = a.secret && !got;
+      return '<li class="fx-ach-item' + (got ? ' is-got' : '') + (hidden ? ' is-secret' : '') + '" style="--i:' + i + '">' +
+        '<span class="fx-ach-item-icon" aria-hidden="true">' + (got ? ICON_TROPHY : hidden ? '?' : ICON_LOCK) + '</span>' +
+        '<span class="fx-ach-item-text"><strong>' + (hidden ? '???' : a.title) + '</strong>' +
+        '<small>' + (hidden ? 'Geheimer Erfolg' : got ? 'Freigeschaltet' : 'Tipp: ' + a.tip) + '</small></span></li>';
+    }).join('');
+    achPanel.classList.add('is-open');
+    sound.play('open');
+  }
+  function closeAchievements() {
+    achPanel.classList.remove('is-open');
+    sound.play('close');
+  }
+
   // Jeder Erfolg kommt nur einmal pro Seitenbesuch (nach Neuladen wieder)
   const shownAchievements = new Set();
   function achievement(title, flash) {
@@ -394,6 +447,8 @@
       c.style.animationDelay = (0.35 + Math.random() * 0.15).toFixed(2) + 's';
       toast.appendChild(c);
     }
+    toast.title = 'Alle Erfolge ansehen';
+    toast.addEventListener('click', openAchievements);
     document.body.appendChild(toast);
 
     // Fanfare aus Tastenanschlägen, von tief nach hoch (bei Ton aus bleibt sie natürlich stumm)
@@ -406,9 +461,23 @@
       toast.addEventListener('animationend', (e) => { if (e.animationName === 'fx-ach-out') toast.remove(); });
     }, 3800);
   }
+  let themeClicks = [];
   const themeBtn = document.getElementById('themeToggle');
   if (themeBtn) themeBtn.addEventListener('click', () => {
-    setTimeout(() => { if (root.classList.contains('light')) achievement('Flashbangt', true); }, 0);
+    setTimeout(() => { if (root.classList.contains('light')) unlock('flash'); }, 0);
+    const now = performance.now();
+    themeClicks = themeClicks.filter(x => now - x < 4000);
+    themeClicks.push(now);
+    if (themeClicks.length >= 6) unlock('disco');
+  });
+
+  const faqSeen = new Set();
+  document.addEventListener('click', (e) => {
+    const trig = e.target.closest('#accordion .accordion-trigger');
+    if (!trig) return;
+    const items = [...document.querySelectorAll('#accordion .accordion-item')];
+    faqSeen.add(items.indexOf(trig.closest('.accordion-item')));
+    if (items.length && faqSeen.size >= items.length) unlock('faq');
   });
 
   // Welcher Ton zu welchem Klick gehört
@@ -434,6 +503,9 @@
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+  window.addEventListener('scroll', () => {
+    if (window.innerHeight + window.scrollY >= root.scrollHeight - 4) unlock('bottom');
+  }, { passive: true });
 
   if (reduce) return;
 
@@ -584,7 +656,7 @@
         b.drag = false;
         el.classList.remove('is-grabbed');
         if (moved < 6) pop(b);
-        else if (Math.hypot(b.vx, b.vy) > 8) sound.play('whoosh');
+        else if (Math.hypot(b.vx, b.vy) > 8) { sound.play('whoosh'); if (Math.hypot(b.vx, b.vy) > 22) unlock('throw'); }
         else sound.play('unsquish');
       };
       el.addEventListener('pointerup', release);
@@ -653,8 +725,54 @@
       }
 
       splash(cx, cy, b.r, Math.round(10 + b.r / 5));
-      setTimeout(() => { b.fromBottom = true; respawn(b); sound.play('rise'); }, 1900);
+      popped++;
+      unlock('pop1');
+      if (popped >= 10) unlock('pop10');
+      if (b.child) {
+        // Zusätzliche Blasen (Fluten, Große) verschwinden ganz
+        setTimeout(() => { b.el.remove(); const i = items.indexOf(b); if (i >= 0) items.splice(i, 1); }, 500);
+      } else {
+        setTimeout(() => { b.fromBottom = true; respawn(b); sound.play('rise'); }, respawnDelay);
+      }
     }
+
+    let popped = 0;
+    let respawnDelay = 1900;
+
+    // Knöpfe unten im Startbereich: fluten, große Blase, alle löschen
+    const controls = document.createElement('div');
+    controls.className = 'fx-ball-controls';
+    controls.innerHTML =
+      '<button type="button" data-act="flood">Fluten</button>' +
+      '<button type="button" data-act="big">Große Blase</button>' +
+      '<button type="button" data-act="clear">Alle löschen</button>';
+    hero.appendChild(controls);
+    const aliveCount = () => items.filter(i => i.alive).length;
+    function spawnExtra(r, x) {
+      if (aliveCount() >= MAX_BALLS) return false;
+      makeBall({ child: true, r, x: x == null ? Math.random() * (W - r * 2) : x - r, y: H + r * 0.2, vx: (Math.random() - 0.5) * 3, vy: -6 - Math.random() * 5 });
+      return true;
+    }
+    controls.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const act = btn.dataset.act;
+      if (act === 'flood') {
+        let n = 0;
+        const free = MAX_BALLS - aliveCount();
+        for (let i = 0; i < free; i++) {
+          setTimeout(() => { if (spawnExtra((small ? 12 : 16) + Math.random() * (small ? 22 : 40))) sound.play('plip', 20); }, i * 45);
+          n++;
+        }
+        if (n > 0) unlock('flood');
+      } else if (act === 'big') {
+        if (spawnExtra(small ? 80 : 130, W / 2)) sound.play('rise');
+      } else if (act === 'clear') {
+        respawnDelay = 6000;
+        items.filter(i => i.alive).forEach((b, i) => setTimeout(() => pop(b), i * 45));
+        setTimeout(() => { respawnDelay = 1900; }, 1500);
+      }
+    });
 
     for (let i = 0; i < count; i++) makeBall({});
 

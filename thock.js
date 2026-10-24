@@ -209,6 +209,7 @@
       if (pos >= word.length) {
         score++;
         streak++;
+        if (streak >= 5 && window.pkUnlock) window.pkUnlock('typer');
         if (streak > best) { best = streak; try { localStorage.setItem('thock_best', String(best)); } catch (e) {} }
         sound.play('ding');
         wordEl.classList.remove('is-win');
@@ -263,6 +264,7 @@
     window.addEventListener('keyup', onKeyUp, true);
     newWord();
     sound.play('rise');
+    if (window.pkUnlock) window.pkUnlock('thock');
   }
 
   function close() {
