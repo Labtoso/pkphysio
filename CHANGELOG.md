@@ -2,6 +2,24 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Kein Ruckeln mehr, ruhigere FAQ (Branch V2)
+
+### Geändert
+- FAQ ruhiger: Einträge hüpfen, wackeln und schwabbeln nicht mehr. Beim Darüberfahren wird der Eintrag nur sanft heller. Aufklappen gleitet gleichmäßig ohne Nachfedern, die Antwort blendet weich ein, das Plus dreht sich ruhig zum Kreuz.
+- Glas etwas weniger stark verwischt (16 statt 28 Pixel), sieht fast gleich aus, rechnet aber deutlich weniger.
+- Die Aurora im Hintergrund dreht sich jetzt über die Grafikkarte statt neu gezeichnet zu werden.
+- Regenbogen-Ränder stehen still und drehen sich nur beim Darüberfahren.
+- Weniger Glitzer (16 statt 28) und weniger aufsteigende Blasen (8 statt 14).
+- Mausschein, Hintergrund-Bewegung und Scroll-Balken werden direkt am Element bewegt statt über Werte an der ganzen Seite.
+- Inhalte und Wörter tauchen ohne Unschärfe-Filter auf, nur mit Bewegung und Einblenden.
+
+### Entfernt
+- Das Farbwechseln über den ganzen Hintergrund (Farb-Filter auf dem ganzen Bildschirm).
+- Die flüssige Verzerrung der Lichtflecken (SVG-Filter), sie war der größte Leistungsfresser.
+- Das dauernde Verformen von Karten, Portrait und Kontaktdaten.
+- Die echte Unschärfe hinter beweglichen Blasen, Tropfen und Überschriften-Blasen. Der Glas-Look bleibt über Glanz und Ränder.
+- Der Schatten-Filter am Namen und an den Wellenlinien.
+
 ## 24.10.2026 – V2: Geheimes Tastatur-Spiel, Wasser-Töne, flüssigere Animationen (Branch V2)
 
 ### Neu
