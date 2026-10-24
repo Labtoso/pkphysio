@@ -2,6 +2,11 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Interne Testhilfe (Branch V2)
+
+### Neu
+- Interne Testhilfe.
+
 ## 24.10.2026 – V2: Kein Einfrieren mehr, normale Töne zurück (Branch V2)
 
 ### Gefixt
