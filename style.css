@@ -2639,3 +2639,51 @@ main > section.section:not(.hero) { content-visibility: auto; contain-intrinsic-
   border: 1px solid rgba(255, 255, 255, .6);
 }
 .fx-ach-item { opacity: .88; }
+/* ===== V2: Fluten über den ganzen Bildschirm ===== */
+.fx-flood { position: fixed; inset: 0; z-index: 1350; pointer-events: none; overflow: hidden; }
+.fx-flood-water {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 112%;
+  background: linear-gradient(180deg, rgba(111, 231, 255, .30), rgba(23, 182, 164, .42) 40%, rgba(12, 106, 96, .55));
+  transform: translateY(100%);
+  will-change: transform;
+  animation: fx-flood-water 4.6s cubic-bezier(.45, 0, .25, 1) forwards;
+}
+:root.light .fx-flood-water { background: linear-gradient(180deg, rgba(111, 231, 255, .28), rgba(23, 182, 164, .32) 40%, rgba(23, 182, 164, .45)); }
+.fx-flood-water svg { position: absolute; left: 0; top: -58px; width: 200%; height: 60px; animation: fx-flood-wave 1.6s linear infinite; }
+.fx-flood-water path { fill: rgba(111, 231, 255, .30); }
+@keyframes fx-flood-water {
+  0% { transform: translateY(100%); }
+  28% { transform: translateY(6%); }
+  34% { transform: translateY(9%); }
+  40% { transform: translateY(5%); }
+  68% { transform: translateY(7%); }
+  100% { transform: translateY(105%); }
+}
+@keyframes fx-flood-wave { to { transform: translateX(-50%); } }
+.fx-flood i {
+  position: absolute;
+  bottom: -70px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, .85), rgba(255, 255, 255, 0) 30%),
+    radial-gradient(circle at 70% 75%, rgba(111, 231, 255, .35), transparent 60%),
+    rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .55);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation-name: fx-flood-bubble;
+  animation-timing-function: cubic-bezier(.4, 0, .6, 1);
+  animation-fill-mode: both;
+}
+@keyframes fx-flood-bubble {
+  0% { opacity: 0; transform: translate(0, 0) scale(.6); }
+  10% { opacity: 1; }
+  50% { transform: translate(14px, -55vh) scale(1); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-10px, -112vh) scale(1.1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-flood { display: none; }
+}

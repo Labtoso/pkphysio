@@ -748,6 +748,31 @@
       '<button type="button" data-act="clear">Alle löschen</button>';
     hero.appendChild(controls);
     const aliveCount = () => items.filter(i => i.alive).length;
+
+    // Fluten: Wasser steigt über den ganzen Bildschirm, voller aufsteigender Blasen, und läuft wieder ab
+    let flooding = false;
+    function floodScreen() {
+      if (flooding) return;
+      flooding = true;
+      const layer = document.createElement('div');
+      layer.className = 'fx-flood';
+      layer.setAttribute('aria-hidden', 'true');
+      layer.innerHTML = '<div class="fx-flood-water"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0 30 C 150 0, 300 60, 450 30 S 750 0, 900 30 S 1150 60, 1200 30 V 60 H 0 Z"/></svg></div>';
+      const count = small ? 34 : 70;
+      for (let i = 0; i < count; i++) {
+        const b = document.createElement('i');
+        const s = 8 + Math.random() * (small ? 36 : 60);
+        b.style.left = (Math.random() * 100).toFixed(1) + '%';
+        b.style.width = b.style.height = s.toFixed(0) + 'px';
+        b.style.animationDelay = (0.3 + Math.random() * 2.6).toFixed(2) + 's';
+        b.style.animationDuration = (1.8 + Math.random() * 2.2).toFixed(2) + 's';
+        layer.appendChild(b);
+      }
+      document.body.appendChild(layer);
+      for (let i = 0; i < 18; i++) setTimeout(() => sound.play('plip', 10 + Math.random() * 30), 250 + i * 160 + Math.random() * 120);
+      setTimeout(() => sound.play('whoosh'), 3300);
+      setTimeout(() => { layer.remove(); flooding = false; }, 4700);
+    }
     function spawnExtra(r, x) {
       if (aliveCount() >= MAX_BALLS) return false;
       makeBall({ child: true, r, x: x == null ? Math.random() * (W - r * 2) : x - r, y: H + r * 0.2, vx: (Math.random() - 0.5) * 3, vy: -6 - Math.random() * 5 });
@@ -758,15 +783,13 @@
       if (!btn) return;
       const act = btn.dataset.act;
       if (act === 'flood') {
-        let n = 0;
-        const free = MAX_BALLS - aliveCount();
-        for (let i = 0; i < free; i++) {
-          setTimeout(() => { if (spawnExtra((small ? 12 : 16) + Math.random() * (small ? 22 : 40))) sound.play('plip', 20); }, i * 45);
-          n++;
-        }
-        if (n > 0) unlock('flood');
+        floodScreen();
+        unlock('flood');
       } else if (act === 'big') {
-        if (spawnExtra(small ? 80 : 130, W / 2)) sound.play('rise');
+        // Riesenblase, viel größer als alle normalen; darf auch kommen, wenn schon viele da sind
+        const r = Math.min(W * 0.42, H * 0.4, small ? 170 : 340);
+        makeBall({ child: true, r, x: W / 2 - r, y: H + r * 0.1, vx: (Math.random() - 0.5) * 1.5, vy: -4 });
+        sound.play('rise');
       } else if (act === 'clear') {
         respawnDelay = 6000;
         items.filter(i => i.alive).forEach((b, i) => setTimeout(() => pop(b), i * 45));
