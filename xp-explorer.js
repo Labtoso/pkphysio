@@ -59,6 +59,16 @@
   }
   const adminTime = pad(1 + Math.floor(Math.random() * 4)) + ':' + pad(Math.floor(Math.random() * 60));
   const startDay = 2 + Math.floor(Math.random() * 6);
+  const EXERCISES = ['Schultern kreisen, 10x vor, 10x zurück', 'Katze-Kuh im Vierfüßlerstand, 10x', 'Hüftbeuger-Dehnung im Ausfallschritt, je 30 Sekunden', 'Wadendehnung an der Wand, je 30 Sekunden', 'Brustöffner im Türrahmen, 20 Sekunden', 'Beckenkippen in Rückenlage, 15x', 'Kindhaltung, 40 Sekunden'];
+  const neckSeconds = pick([15, 20, 25, 30, 35, 40, 45]);
+  const exerciseList = ['Nacken: Ohr zur Schulter, ' + neckSeconds + ' Sekunden halten'].concat(shuffle(EXERCISES).slice(0, 2 + Math.floor(Math.random() * 4)));
+  const exercises = shuffle(exerciseList);
+  const DAYS = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+  const OTHER = ['Lymphdrainage', 'Sportbetreuung', 'Kinesiotaping', 'Bürotag', 'Massage'];
+  const backCount = 1 + Math.floor(Math.random() * 4);
+  const schedule = shuffle(DAYS.map((d, i) => i < backCount ? 'Rücken-Gruppe' : pick(OTHER)));
+  const termineText = DAYS.map((d, i) => (d + '            ').slice(0, 12) + pad(8 + Math.floor(Math.random() * 10)) + ':' + pick(['00', '30']) + '  ' + schedule[i]).join('\n') + '\n\nNicht vergessen: PC abends AUSSCHALTEN.';
+  const privatCode = String(exercises.length * neckSeconds + backCount);
   // Verschlüsselung der Uhrzeit: jede Ziffer um shift weiter (nach 9 kommt 0), eventuell rückwärts
   const shift = 1 + Math.floor(Math.random() * 3);
   const reversed = Math.random() < 0.5;
@@ -117,8 +127,8 @@
       policyFile
     ]),
     F('Musik', [T('Playlist.m3u', '#EXTM3U\nWarteraum-Musik 1.mp3\nWarteraum-Musik 2.mp3')]),
-    T('Termine.txt', 'Montag      08:00  Rücken-Gruppe\nDienstag    17:30  Lymphdrainage\nMittwoch    09:00  Sportbetreuung\nDonnerstag  18:00  Rücken-Gruppe\nFreitag     ---    Bürotag\n\nNicht vergessen: PC abends AUSSCHALTEN.'),
-    T('Dehnübungen.txt', '1. Schultern kreisen, 10x vor, 10x zurück\n2. Nacken: Ohr zur Schulter, 20 Sekunden halten\n3. Katze-Kuh im Vierfüßlerstand, 10x\n4. Hüftbeuger-Dehnung im Ausfallschritt, je 30 Sekunden\n\nLangsam. Gleichmäßig. Mitzählen.'),
+    T('Termine.txt', termineText),
+    T('Dehnübungen.txt', exercises.map((e, i) => (i + 1) + '. ' + e).join('\n') + '\n\nLangsam. Gleichmäßig. Mitzählen.'),
     F('Tagebuch', diaryFiles, { hidden: true, date: '14.11.2006 03:33' }),
     T('notiz.txt', 'Die Reihenfolge verrät der Kalender.\nWas genau zählt, steht in den Eigenschaften von fuer_dich.zip.\n\n– M.', { hidden: true, date: NOW }),
     { name: 'fuer_dich.zip', type: 'zip', hidden: true, date: NOW, comment: 'Von jedem Eintrag aus dem November: der erste Buchstabe des letzten Wortes. Alles andere zählt nicht.' },
@@ -244,6 +254,20 @@
     else if (f.type === 'exe') { if (f.app === 'notepad') openText(null); else openExplorer(); }
   }
 
+  function unlockFolder(node, done) {
+    const { win, body } = makeWindow('Kennwort erforderlich', 'xpw-dialog', 340);
+    body.innerHTML = '<div class="xpw-dialog-row"><span class="xpw-icon xpw-icon-lock"></span><div>Der Ordner „' + node.name + '“ ist geschützt.<br>Kennwort:</div></div><input type="password" class="xpw-input" autocomplete="off"><div class="xpw-dialog-btns"><button type="button" data-ok>OK</button><button type="button" data-cancel>Abbrechen</button></div>';
+    const input = body.querySelector('input');
+    setTimeout(() => input.focus(), 50);
+    const tryIt = () => {
+      if (input.value.trim() === node.lockedPassword) { node.unlocked = true; win.remove(); if (node.onUnlock) node.onUnlock(); done(); }
+      else { sound.play('buzz'); input.value = ''; win.classList.remove('xpw-shake'); requestAnimationFrame(() => win.classList.add('xpw-shake')); }
+    };
+    body.querySelector('[data-ok]').addEventListener('click', tryIt);
+    body.querySelector('[data-cancel]').addEventListener('click', () => win.remove());
+    input.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Enter') tryIt(); });
+  }
+
   /* ---------- Eigenschaften ---------- */
   function properties(f, onChange) {
     const { win, body } = makeWindow('Eigenschaften von ' + f.name, 'xpw-dialog xpw-props', 360);
@@ -283,6 +307,8 @@
   /* ---------- Explorer ---------- */
   const explorers = new Set();
   function openExplorer(startAt) {
+    if (startAt === 'root') startAt = ROOT;
+    if (startAt === 'bin') startAt = recycle;
     const ui = makeWindow('', 'xpw-explorer', 680, 460);
     const { win, body } = ui;
     let current = startAt || myFiles, history = [], future = [], selected = null, sortKey = 'name', sortDir = 1;
@@ -302,7 +328,8 @@
     const side = body.querySelector('.xpw-side'), filesEl = body.querySelector('.xpw-files'), addr = body.querySelector('.xpw-address input'), status = body.querySelector('.xpw-status');
 
     function go(node, noHistory) {
-      if (node.locked && !isAdmin) { msgBox(node.name, 'Auf C:\\Dokumente und Einstellungen\\' + node.name + ' kann nicht zugegriffen werden.\n\nZugriff verweigert.'); return; }
+      if (node.lockedPassword && !node.unlocked) { unlockFolder(node, () => go(node, noHistory)); return; }
+    if (node.locked && !isAdmin) { msgBox(node.name, 'Auf C:\\Dokumente und Einstellungen\\' + node.name + ' kann nicht zugegriffen werden.\n\nZugriff verweigert.'); return; }
       if (!noHistory && current !== node) { history.push(current); future = []; }
       current = node;
       selected = null;
@@ -622,4 +649,9 @@
   }
 
   window.pkXpExplorer = () => openExplorer();
+  window.pkXp = {
+    makeWindow, msgBox, openText, openExplorer, properties, F, T,
+    ROOT, myFiles, recycle, puzzle: { word, privatCode },
+    refresh: () => explorers.forEach(ex => ex.render())
+  };
 })();
