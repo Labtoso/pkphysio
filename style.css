@@ -1412,3 +1412,243 @@ main, .site-footer { position: relative; z-index: 1; }
   .hero::before { width: 180px; height: 180px; right: -40px; top: 14%; }
   .hero::after { width: 90px; height: 90px; right: 12%; top: 70%; }
 }
+
+/* ===== V2: Noch mehr Bounce und Glas ===== */
+
+:root { --bounce: cubic-bezier(.34, 1.8, .5, 1); --spring: cubic-bezier(.2, 1.6, .4, 1); }
+
+/* Ton-Knopf */
+.sound-toggle .sound-icon-off { display: none; }
+.sound-toggle.is-off .sound-icon-on { display: none; }
+.sound-toggle.is-off .sound-icon-off { display: block; }
+.sound-toggle.is-off { opacity: .6; }
+.header-inner > .sound-toggle { margin-left: 4px; }
+.header-inner > .theme-toggle:not(.sound-toggle) { margin-left: 8px; }
+@media (max-width: 860px) {
+  .header-inner > .sound-toggle { margin-left: auto; }
+  .header-inner > .theme-toggle:not(.sound-toggle) { margin-left: 8px; }
+}
+
+/* Auftauchen mit Federung */
+.reveal { transform: translateY(70px) scale(.85) rotate(-1.5deg); transition: opacity .7s ease, transform 1.1s var(--bounce), filter .8s ease; }
+.reveal.in-view { transform: none; }
+.services-grid > :nth-child(even), .offers-grid > :nth-child(even) { transform: translateY(70px) scale(.85) rotate(1.5deg); }
+.services-grid > .in-view, .offers-grid > .in-view { transform: none; }
+
+/* Wackelpudding beim Drücken */
+.fx-jelly { animation: fx-jelly .7s var(--spring) both !important; }
+@keyframes fx-jelly {
+  0% { transform: scale(1, 1); }
+  20% { transform: scale(1.18, .82); }
+  40% { transform: scale(.88, 1.12); }
+  60% { transform: scale(1.06, .95); }
+  80% { transform: scale(.98, 1.02); }
+  100% { transform: scale(1, 1); }
+}
+
+/* Knöpfe: magnetisch, springen */
+.btn { --tx: 0px; --ty: 0px; transition: transform .45s var(--bounce), box-shadow .3s ease, background var(--motion); }
+.btn:hover,
+.btn-primary:hover,
+.btn-outline:hover { transform: translate(var(--tx), var(--ty)) translateY(-4px) scale(1.07); }
+.btn-primary { animation: fx-btn 5s ease-in-out infinite alternate, fx-breathe 2.8s ease-in-out infinite; }
+@keyframes fx-breathe {
+  0%, 100% { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 8px 24px var(--color-primary-light); }
+  50% { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 12px 36px rgba(111, 231, 255, .45), 0 0 0 6px rgba(23, 182, 164, .12); }
+}
+.hero-actions .btn { animation-name: fx-btn, fx-breathe, fx-hop; animation-duration: 5s, 2.8s, 4s; animation-timing-function: ease-in-out, ease-in-out, var(--bounce); animation-iteration-count: infinite; animation-direction: alternate, normal, normal; }
+.hero-actions .btn-outline { animation: fx-hop 4s var(--bounce) 2s infinite; }
+@keyframes fx-hop {
+  0%, 80%, 100% { translate: 0 0; }
+  86% { translate: 0 -10px; }
+  92% { translate: 0 0; }
+  96% { translate: 0 -4px; }
+}
+
+/* Kopfleiste: Logo hüpft, Links federn */
+.logo-link { transition: transform .5s var(--bounce); }
+.logo-link:hover { transform: scale(1.08) rotate(-3deg); }
+.logo-img { animation: fx-logo 6s var(--bounce) infinite; }
+@keyframes fx-logo {
+  0%, 88%, 100% { transform: translateY(0) rotate(0); }
+  92% { transform: translateY(-6px) rotate(-4deg); }
+  96% { transform: translateY(0) rotate(2deg); }
+}
+.nav-link { transition: color var(--motion), background var(--motion), transform .4s var(--bounce); }
+.nav-link:hover { transform: translateY(-3px) scale(1.08); }
+.theme-toggle { transition: transform .6s var(--bounce), background var(--motion), opacity var(--motion); }
+.theme-toggle:hover { transform: rotate(180deg) scale(1.15); }
+.sound-toggle:hover { transform: rotate(-12deg) scale(1.18); }
+
+/* Karten federn weicher und tiefer */
+.service-card.in-view, .offer-card.in-view, .contact-list, .about-portrait {
+  transition: transform .6s var(--bounce), box-shadow .4s ease, opacity .7s ease;
+}
+.fx-tilting.in-view, .contact-list.fx-tilting, .about-portrait.fx-tilting,
+.custom-testimonial-card.fx-tilting, .custom-pricing-card.fx-tilting {
+  transform: perspective(800px) rotateX(var(--rx, 0)) rotateY(var(--ry, 0)) translateY(-10px) scale(1.04);
+}
+
+/* Flüssiges Glas: Formen, die sich verbiegen */
+.about-portrait { animation: fx-morph 10s ease-in-out infinite; }
+.contact-list { animation: fx-morph 12s ease-in-out infinite reverse; }
+@keyframes fx-morph {
+  0%, 100% { border-radius: calc(var(--glass-radius) + 6px); }
+  25% { border-radius: 42px 18px 46px 22px / 26px 44px 20px 40px; }
+  50% { border-radius: 20px 46px 24px 44px / 44px 22px 42px 24px; }
+  75% { border-radius: 38px 26px 18px 48px / 22px 40px 46px 20px; }
+}
+.hero::before, .hero::after { animation-timing-function: var(--bounce); }
+.hero::before { animation: fx-float 9s ease-in-out infinite, fx-blob 7s ease-in-out infinite; }
+.hero::after { animation: fx-bounce-ball 3.2s var(--bounce) infinite, fx-blob 5s ease-in-out infinite reverse; }
+@keyframes fx-blob {
+  0%, 100% { border-radius: 50%; }
+  33% { border-radius: 58% 42% 46% 54% / 52% 58% 42% 48%; }
+  66% { border-radius: 44% 56% 58% 42% / 46% 42% 58% 54%; }
+}
+@keyframes fx-bounce-ball {
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  45% { transform: translateY(-80px) scale(.96, 1.04); }
+  88% { transform: translateY(0) scale(1.14, .86); }
+}
+
+/* Aufsteigende Glasblasen */
+.fx-bubbles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.fx-bubbles i {
+  position: absolute;
+  bottom: -80px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, .75), rgba(255, 255, 255, 0) 30%),
+    radial-gradient(circle at 70% 75%, rgba(111, 231, 255, .3), transparent 60%),
+    rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 255, 255, .4);
+  box-shadow: inset 0 -6px 14px rgba(23, 182, 164, .3), inset 0 4px 10px rgba(255, 255, 255, .3);
+  -webkit-backdrop-filter: blur(4px) saturate(180%);
+  backdrop-filter: blur(4px) saturate(180%);
+  animation-name: fx-rise, fx-wobble;
+  animation-timing-function: linear, ease-in-out;
+  animation-iteration-count: infinite, infinite;
+  animation-direction: normal, alternate;
+}
+:root.light .fx-bubbles i { border-color: rgba(23, 182, 164, .35); }
+@keyframes fx-rise {
+  0% { transform: translateY(0); opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { transform: translateY(-115vh); opacity: 0; }
+}
+@keyframes fx-wobble {
+  0% { margin-left: -18px; scale: 1 .94; }
+  100% { margin-left: 18px; scale: .94 1; }
+}
+
+/* Wassertropfen beim Klicken */
+.fx-drop {
+  position: fixed;
+  z-index: 1100;
+  width: 16px; height: 16px;
+  margin: -8px 0 0 -8px;
+  border-radius: 50%;
+  pointer-events: none;
+  border: 2px solid rgba(255, 255, 255, .8);
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .7), rgba(111, 231, 255, .25) 50%, transparent 70%);
+  -webkit-backdrop-filter: blur(3px) saturate(200%);
+  backdrop-filter: blur(3px) saturate(200%);
+  box-shadow: 0 0 20px rgba(111, 231, 255, .6);
+  animation: fx-drop .75s cubic-bezier(.2, .8, .3, 1) forwards;
+}
+:root.light .fx-drop { border-color: rgba(23, 182, 164, .8); }
+@keyframes fx-drop {
+  0% { transform: scale(.2); opacity: 1; }
+  100% { transform: scale(7); opacity: 0; border-width: .5px; }
+}
+
+/* FAQ: Einträge federn, Antwort gleitet mit Schwung */
+.accordion-item { transition: transform .5s var(--bounce), box-shadow .3s ease, border-color var(--motion); }
+.accordion-item:hover { transform: translateX(8px) scale(1.015); }
+.accordion-panel { transition: max-height .55s var(--spring), padding var(--motion-slow); }
+.accordion-item.open .accordion-answer { animation: fx-pop-in .6s var(--bounce) both; }
+@keyframes fx-pop-in { from { opacity: 0; transform: translateY(-12px) scale(.96); } to { opacity: 1; transform: none; } }
+
+/* Liste und Lebenslauf: Punkte springen beim Darüberfahren */
+.timeline li { transition: transform .45s var(--bounce); }
+.timeline li:hover { transform: translateX(10px); }
+.offer-list > li, .contact-list li { transition: transform .45s var(--bounce); }
+.offer-list > li:hover, .contact-list li:hover { transform: translateX(6px); }
+
+/* Überschriften wippen leicht */
+.section h2.in-view { animation: fx-text 8s ease-in-out infinite alternate, fx-sway 6s ease-in-out infinite; }
+@keyframes fx-sway { 0%, 100% { translate: 0 0; } 50% { translate: 0 -4px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .services-grid > *, .offers-grid > * { transform: none; }
+  .btn-primary, .hero-actions .btn, .hero-actions .btn-outline, .logo-img, .about-portrait, .contact-list,
+  .hero::before, .hero::after, .accordion-item.open .accordion-answer, .section h2.in-view, .fx-jelly { animation: none !important; }
+}
+
+/* ===== V2: Blasen zum Anfassen ===== */
+
+/* Die festen Kugeln weichen den beweglichen Blasen */
+.hero:has(.fx-play)::before, .hero:has(.fx-play)::after { display: none; }
+
+.fx-play { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+/* Knöpfe bleiben immer klickbar, die Blasen schweben dahinter */
+.hero:has(.fx-play) .hero-actions { position: relative; z-index: 3; }
+.hero:has(.fx-play) .hero-inner { z-index: auto; }
+.fx-ball {
+  position: absolute;
+  left: 0; top: 0;
+  border-radius: 50%;
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+  will-change: transform;
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255, 255, 255, .85), rgba(255, 255, 255, 0) 26%),
+    radial-gradient(circle at 72% 78%, rgba(111, 231, 255, .35), transparent 55%),
+    conic-gradient(from 200deg, rgba(23, 182, 164, .18), rgba(167, 139, 250, .18), rgba(255, 122, 198, .16), rgba(111, 231, 255, .18), rgba(23, 182, 164, .18));
+  -webkit-backdrop-filter: blur(6px) saturate(200%);
+  backdrop-filter: blur(6px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, .55);
+  box-shadow:
+    inset 0 -14px 30px rgba(23, 182, 164, .35),
+    inset 0 10px 24px rgba(255, 255, 255, .35),
+    inset 6px 0 18px rgba(255, 122, 198, .18),
+    0 20px 45px rgba(0, 0, 0, .22);
+  transition: filter .2s ease, box-shadow .2s ease;
+  animation: fx-blob 6s ease-in-out infinite;
+}
+:root.light .fx-ball { border-color: rgba(23, 182, 164, .4); }
+.fx-ball:hover { filter: brightness(1.15) saturate(1.2); }
+.fx-ball.is-grabbed {
+  cursor: grabbing;
+  filter: brightness(1.25) saturate(1.3);
+  box-shadow: inset 0 -14px 30px rgba(23, 182, 164, .45), inset 0 10px 24px rgba(255, 255, 255, .45), 0 0 50px rgba(111, 231, 255, .55), 0 30px 60px rgba(0, 0, 0, .3);
+}
+.fx-ball.is-new { animation: fx-ball-in .8s var(--bounce) both, fx-blob 6s ease-in-out infinite; }
+.fx-ball.is-popping { pointer-events: none; animation: fx-ball-pop .28s ease-out forwards; }
+@keyframes fx-ball-in { from { scale: 0; opacity: 0; } to { scale: 1; opacity: 1; } }
+@keyframes fx-ball-pop {
+  0% { scale: 1; opacity: 1; }
+  40% { scale: 1.35; opacity: .9; }
+  100% { scale: 1.7; opacity: 0; filter: blur(4px); }
+}
+
+.fx-splash {
+  position: absolute;
+  width: var(--s); height: var(--s);
+  margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle at 35% 30%, #fff, rgba(111, 231, 255, .8) 60%);
+  box-shadow: 0 0 10px rgba(111, 231, 255, .9);
+  animation: fx-splash .7s cubic-bezier(.15, .8, .3, 1) forwards;
+}
+:root.light .fx-splash { background: radial-gradient(circle at 35% 30%, #fff, var(--color-primary) 60%); }
+@keyframes fx-splash {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx), calc(var(--dy) + 30px)) scale(.2); opacity: 0; }
+}
+
+.btn:disabled { opacity: .5; cursor: not-allowed; animation: none; }
