@@ -2,6 +2,23 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Heimlicher Virus in Windows XP (Branch V2)
+
+### Neu
+- Nach dem Admin-Login schleicht sich in XP ein unechter Virus ein (`xp-virus.js`, Name jedes Mal anders, z. B. `rundl1.exe`). Nichts davon passiert am echten Computer, alles ist nur ein Spiel auf der Seite.
+  - Anfangs merkt man nichts: Die Datei liegt versteckt zwischen den Systemdateien in `WINDOWS\system32`, und der Bildschirm verliert ganz langsam Farbe.
+  - Nach 45 Sekunden flackern Desktop-Symbole, und auf dem Desktop taucht „hallo.txt“ auf.
+  - Nach 2 Minuten erscheint ein rotes Warnsymbol im Infobereich, und Fenster zeigen kurz „(Keine Rückmeldung)“.
+  - Nach 3½ Minuten kommen Fehlermeldungen des Virus.
+  - Nach 5 Minuten übernimmt er den Computer mit schwarzem Bluescreen „SYSTEM_UEBERNOMMEN“ (geheimer Erfolg „Übernommen“, 100). Danach startet Windows neu, und der Virus ist weg.
+- Task-Manager (Startmenü, Ausführen „taskmgr“ oder Eingabeaufforderung) mit den Registern Anwendungen, Prozesse und Systemleistung. Der Virus-Prozess braucht immer mehr CPU und Speicher.
+- So hält man ihn auf: Seine Datei in system32 finden, löschen und den Papierkorb leeren, dann im Task-Manager den Prozess beenden. Solange die Datei noch existiert, startet er sofort neu. Geschafft gibt es den geheimen Erfolg „Virenfrei“ (250).
+- Eingabeaufforderung kennt jetzt auch TASKMGR und TASKLIST.
+
+### Geändert
+- Preise angehoben, damit es weiter genau aufgeht: 32 Erfolge bringen 4160 Punkte, alles im Shop kostet 4160. Windows XP 800, Windows 98 530, MS-DOS und Game Boy je 480, Snake 350, Blasen-Jagd 310.
+- Datei-Versionen auf `?v=24s`.
+
 ## 24.10.2026 – V2: Sauberer Retro-Mauszeiger (Branch V2)
 
 ### Geändert
