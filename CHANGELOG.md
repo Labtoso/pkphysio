@@ -2,6 +2,18 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Shop teurer, Erfolge geben mehr Punkte (Branch V2)
+
+### Geändert
+- Alles im Shop ist teurer, besonders die Spezial-Sachen:
+  - Farben je 40.
+  - Modi: Disco 80, Schwerkraft 70, Spiegel 60, Röhrenbildschirm 90, Pixel-Mauszeiger 50.
+  - Töne: Tiefes Thock 50, Helles Clack 50, Retro-Piepser 70.
+  - Spiele: Blasen-Jagd 150, Thock-Spiel 60, Snake 180, Reaktionstest 120, Klick-Rekord 90.
+  - Retro: Windows XP 300, Windows 98 250, MS-DOS 220, Game Boy 220.
+- Erfolge geben dafür mehr Punkte (40 bis 220). Alle 21 Erfolge zusammen ergeben genau 2310 Punkte, und alles im Shop kostet zusammen genau 2310. Mit allen Erfolgen kann man also alles kaufen.
+- „Großverdiener“ verlangt jetzt 1000 statt 150 gesammelte Punkte.
+
 ## 24.10.2026 – V2: Größerer Shop, drei neue Spiele, mehr Retro, mehr Erfolge (Branch V2)
 
 ### Neu
