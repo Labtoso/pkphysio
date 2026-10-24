@@ -2,6 +2,25 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Größerer Shop, drei neue Spiele, mehr Retro, mehr Erfolge (Branch V2)
+
+### Neu
+- Retro-Looks im Shop (immer nur einer aktiv, „Modern“ ist der Standard):
+  - Windows 98 (50): Petrol-Desktop, graue 3D-Knöpfe, Fenster mit dunkelblauer Titelleiste, graue Kugeln.
+  - MS-DOS (45): schwarzer Bildschirm, grüne leuchtende Schreibmaschinen-Schrift, Logo als `C:\PK> _` mit blinkendem Cursor, Kugeln als grüne Kreise.
+  - Game Boy (45): vier Grüntöne, Pixel-Schrift „Press Start 2P“ (lädt erst beim Kauf), eckige Kugeln und Bilder in Game-Boy-Grün.
+  - Windows XP (60) gehört jetzt in diese Gruppe.
+- Neue Modi: Röhrenbildschirm (30, Bildzeilen, Flimmern und dunkle Ecken über allem), Pixel-Mauszeiger (15).
+- Neue Spiele:
+  - Snake (50): Pfeiltasten oder WASD, am Handy ein Steuerkreuz. Futter sind Glasblasen.
+  - Reaktionstest (30): Man wartet, bis es grün wird, und drückt dann. Es zählt die Bestzeit und zeigt die letzten 5 Zeiten. Wer zu früh drückt, sieht „Zu früh!“.
+  - Klick-Rekord (20): 5 Sekunden lang so oft wie möglich drücken, mit Zeitbalken und Klicks pro Sekunde.
+- 10 neue Erfolge mit Tipps (jetzt 21, davon weiterhin 3 geheim): Shopping-Tour (10), Großverdiener (20, 150 Punkte), Zeitreise (15, Retro-Look), Schlangenbeschwörer (30, 20 in Snake), Blitzschnell (30, unter 250 ms), Klick-Monster (25, 8 Klicks pro Sekunde), Blasen-Jäger (30, 30 Blasen in der Blasen-Jagd), Cheat-Code (40, Konami-Code ↑↑↓↓←→←→BA), Regenbogen (30, alle Farben), Nachteule (20, Besuch zwischen 0 und 4 Uhr).
+
+### Geändert
+- Wechselt man in einer Gruppe (Farbe, Töne, Retro), wird das vorher Aktive sauber ausgeschaltet. Beim Wechsel weg von XP erklingt zum Beispiel das Herunterfahren und die Taskleiste verschwindet.
+- Datei-Versionen auf `?v=24f`.
+
 ## 24.10.2026 – V2: Windows XP richtig alt, mit Maus-Klicks, alter Tastatur und Systemklängen (Branch V2)
 
 ### Neu
