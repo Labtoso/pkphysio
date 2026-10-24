@@ -36,6 +36,22 @@
   if (oldDesk) besucher.children.splice(besucher.children.indexOf(oldDesk), 1, desktopNode);
   desktopNode.parent = besucher;
 
+  // Für den Virus: Dateien auf dem Desktop hinzufügen und entfernen
+  window.pkXpDesk = {
+    addFile(file) {
+      file.parent = desktopNode;
+      desktopNode.children.push(file);
+      if (desktop) addIcon({ id: 'file:' + file.name, name: file.name, icon: 'txt', file });
+      xp.refresh();
+    },
+    removeFile(file) {
+      const i = desktopNode.children.indexOf(file);
+      if (i >= 0) desktopNode.children.splice(i, 1);
+      if (desktop) desktop.querySelectorAll('.xp-dicon').forEach(b => { if (b.dataset.file === file.name) b.remove(); });
+      xp.refresh();
+    }
+  };
+
   /* ---------- Desktop ---------- */
   const ICONS = [
     { id: 'pc', name: 'Arbeitsplatz', icon: 'computer' },
@@ -56,8 +72,13 @@
     if (desktop) return;
     desktop = document.createElement('div');
     desktop.className = 'xp-desktop';
-    ICONS.forEach(ic => {
+    ICONS.forEach(addIcon);
+    desktopNode.children.filter(f => f.type === 'txt' && !ICONS.some(i => i.name === f.name) && !f.hidden).forEach(f => addIcon({ id: 'file:' + f.name, name: f.name, icon: 'txt', file: f }));
+    document.body.appendChild(desktop);
+  }
+  function addIcon(ic) {
       const b = document.createElement('button');
+      if (ic.file) b.dataset.file = ic.file.name;
       b.type = 'button';
       b.className = 'xp-dicon';
       b.innerHTML = '<span class="xpw-icon xpw-icon-' + ic.icon + '"></span><span></span>';
@@ -66,12 +87,10 @@
         desktop.querySelectorAll('.is-selected').forEach(x => x.classList.remove('is-selected'));
         b.classList.add('is-selected');
         sound.play('click');
-        if (window.matchMedia('(hover: none)').matches) launch(ic.id);
+        if (window.matchMedia('(hover: none)').matches) { if (ic.file) xp.openText(ic.file); else launch(ic.id); }
       });
-      b.addEventListener('dblclick', () => launch(ic.id));
+      b.addEventListener('dblclick', () => (ic.file ? xp.openText(ic.file) : launch(ic.id)));
       desktop.appendChild(b);
-    });
-    document.body.appendChild(desktop);
   }
   function launch(id) {
     if (id === 'pc') xp.openExplorer('root');
@@ -218,6 +237,7 @@
     else if (c === 'winmine') minesweeper();
     else if (c === 'cmd') commandPrompt();
     else if (c === 'iexplore') internetExplorer();
+    else if (c === 'taskmgr' && window.pkXpTaskmgr) window.pkXpTaskmgr();
     else if (c === SECRET.toLowerCase()) {
       fx.unlock('cipher');
       xp.openText({ name: 'danke.txt', text: 'Richtig: ' + SECRET + '.\n\nGenau das hat er die ganze Zeit gemeint.\nNicht nur lesen. Machen.\n\nThock.' });
@@ -233,7 +253,11 @@
       b.dataset.run = '';
       b.textContent = 'Ausführen...';
       b.addEventListener('click', () => { document.querySelector('.xp-menu').hidden = true; runDialog(); });
-      body.append(hr, b);
+      const tm = document.createElement('button');
+      tm.type = 'button';
+      tm.textContent = 'Task-Manager';
+      tm.addEventListener('click', () => { document.querySelector('.xp-menu').hidden = true; if (window.pkXpTaskmgr) window.pkXpTaskmgr(); });
+      body.append(hr, b, tm);
     }
   }).observe(document.body, { childList: true });
 
@@ -362,6 +386,8 @@
         case 'time': print('Aktuelle Zeit: 03:33:00,00'); break;
         case 'echo': print(arg); break;
         case 'whoami': print('praxis-pc\\besucher'); break;
+        case 'taskmgr': if (window.pkXpTaskmgr) window.pkXpTaskmgr(); break;
+        case 'tasklist': print('Abbildname                     PID\n========================= ======\nSystem                         4\nexplorer.exe                1532\n…\n(Mehr im Task-Manager: taskmgr)'); break;
         case 'dir': print(' Verzeichnis von C:\\Dokumente und Einstellungen\\Besucher\n\n14.11.2006  03:33    <DIR>          Desktop\n14.11.2006  03:33    <DIR>          Eigene Dateien\n               0 Datei(en)\n               2 Verzeichnis(se)'); break;
         case 'start': if (arg) run(arg); break;
         case 'exit': win.remove(); break;

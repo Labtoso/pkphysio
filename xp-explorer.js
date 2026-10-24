@@ -240,7 +240,11 @@
     if (f.type === 'txt') openText(f);
     else if (f.type === 'jpg') openImage(f);
     else if (f.type === 'zip') openZip(f);
-    else if (f.type === 'exe') { if (f.app === 'notepad') openText(null); else openExplorer(); }
+    else if (f.type === 'exe') {
+      if (f.app === 'notepad') openText(null);
+      else if (f.app === 'virus') msgBox(f.name, 'Zugriff verweigert.\n\nDie Datei wird gerade von einem anderen Prozess verwendet.');
+      else openExplorer();
+    }
   }
 
   function unlockFolder(node, done) {
@@ -551,6 +555,7 @@
 
   function becomeAdmin() {
     isAdmin = true;
+    window.dispatchEvent(new Event('pk-admin'));
     document.querySelectorAll('.xp-menu-head').forEach(h => { h.lastChild.textContent = 'Administrator'; });
     const menuBody = document.querySelector('.xp-menu-body');
     if (menuBody && !menuBody.querySelector('[data-admin-tools]')) {
