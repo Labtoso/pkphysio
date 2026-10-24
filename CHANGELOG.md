@@ -2,6 +2,27 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: XP-Desktop, „Escaped“ und neue Rätsel (Branch V2)
+
+### Neu
+- Rechtsklick auf die Website in der Taskleiste (oder auf die Kopfleiste) zeigt das Menü Wiederherstellen, Minimieren und Schließen. „Schließen“ schließt das Website-Fenster und gibt den geheimen Erfolg „Escaped“ (150). Ein Klick auf die Taskleiste oder auf das Desktop-Symbol „Pascal Krieger“ holt die Website zurück.
+- XP-Desktop (`xp-desktop.js`) mit Symbolen: Arbeitsplatz, Eigene Dateien, Papierkorb, Internet Explorer, Editor, Rechner, Minesweeper, Eingabeaufforderung, Ordner „Privat“, „LIES MICH.txt“ und „Pascal Krieger“.
+- Programme:
+  - Minesweeper: 9 × 9 mit 10 Minen, Fahnen per Rechtsklick, Zeit und Smiley. Ein Sieg gibt „Minenräumer“ (150).
+  - Rechner mit Grundrechenarten.
+  - Eingabeaufforderung mit HELP, DIR, CLS, VER, DATE, TIME, ECHO, WHOAMI, START und EXIT.
+  - Internet Explorer mit Fehlerseite und Favoriten.
+  - Start > Ausführen (notepad, explorer, calc, winmine, cmd, iexplore …).
+- Neue Rätsel, bei jedem Besuch neu ausgewürfelt und logisch lösbar:
+  - Privat (200): Der Ordner auf dem Desktop ist mit einer Zahl geschützt. Die Formel steht in seinen Eigenschaften (Zusammenfassung): Anzahl der Dehnübungen × Sekunden beim Nacken + Termine der Rücken-Gruppe. Übungen, Sekunden und Termine in „Dehnübungen.txt“ und „Termine.txt“ ändern sich jedes Mal.
+  - Geheimschrift (200): Ein Favorit im Internet Explorer ist verschlüsselt. Eine versteckte Datei auf dem Desktop erklärt die Regel: Jeder Buchstabe ist so weit verschoben, wie das Zip-Kennwort lang ist. Das entschlüsselte Wort (z. B. DEHNEN, ATMEN, STRECKEN) muss man bei Start > Ausführen oder in der Eingabeaufforderung eingeben. Das Rätsel baut also auf dem Zip-Rätsel auf.
+- Alle 4 neuen Erfolge sind geheim.
+
+### Geändert
+- In XP gibt es oben rechts an der Website keine Fenster-Knöpfe mehr. Schließen geht nur noch per Rechtsklick.
+- Preise angehoben, damit es weiter genau aufgeht: 30 Erfolge bringen 3810 Punkte, alles im Shop kostet 3810. Windows XP 700, Windows 98 480, MS-DOS und Game Boy je 430, Snake 300, Blasen-Jagd 260, Reaktionstest 200, Klick-Rekord 180.
+- Datei-Versionen auf `?v=24k`.
+
 ## 24.10.2026 – V2: Töne funktionieren auch als Datei, Thock cremiger, Admin-Kennwort verschlüsselt (Branch V2)
 
 ### Gefixt
