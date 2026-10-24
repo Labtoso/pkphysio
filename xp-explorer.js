@@ -525,7 +525,7 @@
         '<button type="button" class="xpw-account' + (isAdmin ? '' : ' is-current') + '"><span class="xp-avatar"></span><span><b>Besucher</b><small>Eingeschränktes Konto</small></span></button>' +
         '<button type="button" class="xpw-account' + (isAdmin ? ' is-current' : '') + '" data-admin><span class="xp-avatar xp-avatar-admin"></span><span><b>Administrator</b><small>Computeradministrator · Kennwortgeschützt</small></span></button>' +
       '</div>' +
-      '<div class="xpw-login" hidden><div>Kennwort für Administrator:</div><input type="password" class="xpw-input" autocomplete="off" spellcheck="false"><div class="xpw-hint" hidden>Kennworthinweis: Schau in den Papierkorb (wecker.txt).</div><div class="xpw-dialog-btns"><button type="button" data-hint>?</button><button type="button" data-ok>Anmelden</button></div></div>';
+      '<div class="xpw-login" hidden><div>Kennwort für Administrator:</div><input type="password" class="xpw-input" autocomplete="off" spellcheck="false"><div class="xpw-hint" hidden>Kennworthinweis: Weggeworfen ist nicht vergessen.</div><div class="xpw-dialog-btns"><button type="button" data-hint>?</button><button type="button" data-ok>Anmelden</button></div></div>';
     const login = body.querySelector('.xpw-login');
     const input = body.querySelector('input');
     body.querySelector('[data-admin]').addEventListener('click', () => {
