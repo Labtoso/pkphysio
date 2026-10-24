@@ -2,6 +2,22 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Erfolge-Knopf, Punkte und Shop (Branch V2)
+
+### Neu
+- Neben dem Logo gibt es zwei runde Knöpfe: Pokal (Erfolge-Liste) und Tasche (Shop). Am Pokal zeigt ein Abzeichen die Punkte, die man gerade ausgeben kann.
+- Erfolge geben Punkte: 10 bis 25 für normale, 40 bis 50 für geheime, zusammen 250. Die Punkte stehen beim Erfolg-Hinweis („+25 Punkte“) und in der Liste neben jedem Erfolg.
+- Shop (`shop.js`), alles gilt nur für diesen Seitenbesuch:
+  - Farben: Lila, Pink, Gold, Ozean, Feuerrot (je 15) oder zurück zu Teal. Ändert die Akzentfarbe der ganzen Seite.
+  - Modi: Disco-Modus (30, Hintergrund wechselt durch alle Farben), Schwerkraft für Blasen (25, Blasen fallen und springen am Boden), Spiegel-Modus (20, Seite gespiegelt). Lassen sich ein- und ausschalten.
+  - Spiele: Blasen-Jagd (40, 20 Sekunden lang so viele Blasen wie möglich platzen lassen, mit Zeit und Zähler oben) und das Thock-Spiel (10, öffnet es direkt).
+  - Töne: Tiefes Thock, Helles Clack (je 15), Retro-Piepser (20) oder zurück zu Cremig.
+  - Windows XP (60): blaue XP-Kopfleiste, grüner Start-Knopf, Bliss-Hintergrund mit Himmel und grünem Hügel, Karten als XP-Fenster mit blauer Titelleiste, Tahoma-Schrift und eine kleine Start-Melodie.
+- Zu wenig Punkte: Der Artikel wackelt und brummt. Gekaufte Artikel zeigen „Aktiv“ oder „Benutzen“.
+
+### Gefixt
+- Die Glasblase hinter den Bereichs-Überschriften war seit dem Leistungs-Umbau eckig (das waren die Quadrate). Sie ist wieder rund.
+
 ## 24.10.2026 – V2: Keine Trommel-Klänge mehr bei den Blasen (Branch V2)
 
 ### Geändert
