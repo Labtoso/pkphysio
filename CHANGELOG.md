@@ -2,6 +2,15 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Blase zerplatzt an Ort und Stelle, Erfolge einmal pro Besuch (Branch V2)
+
+### Geändert
+- Blasen im Startbereich zerplatzen jetzt selbst: Die Haut wabert kurz, dehnt sich und reißt auf. Ein heller Ring breitet sich als Druckwelle aus, Fetzen der Blasenhaut fliegen als Lichtbögen weg, und Spritzer sprühen nach außen und fallen leicht nach unten. Größere Blasen machen mehr Spritzer.
+- Erfolge kommen nur einmal pro Seitenbesuch. Nach dem Neuladen kann man sie wieder freischalten.
+
+### Entfernt
+- Das Zerfallen in kleinere Blasen, die herausfliegen.
+
 ## 24.10.2026 – V2: Viel flüssiger, zwei Erfolge, Thock-Spiel mit mehr Glas (Branch V2)
 
 ### Neu
