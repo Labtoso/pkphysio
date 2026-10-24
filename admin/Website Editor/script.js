@@ -11,7 +11,11 @@ function base64ToUtf8(b64) {
   return decodeURIComponent(atob(b64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
 }
 
+// Ohne Passwort angemeldet: nur ansehen, öffentlich laden, nichts speichern
+const GUEST_TOKEN = 'gast';
+
 function ghHeaders(token) {
+  if (token === GUEST_TOKEN) return { Accept: 'application/vnd.github+json' };
   return {
     Authorization: 'token ' + token,
     Accept: 'application/vnd.github+json'
@@ -2139,7 +2143,7 @@ function backToAdminHome() {
 
 async function login(token) {
   try {
-    await withTimeout(ghCheckWriteAccess(token), 10000);
+    if (token !== GUEST_TOKEN) await withTimeout(ghCheckWriteAccess(token), 10000);
     const { sha, text } = await withTimeout(ghGetFile(token), 10000);
     const data = parseContentJs(text);
 
@@ -2162,6 +2166,13 @@ async function login(token) {
     applyRemovedSections(order);
 
     showEditor();
+    if (token === GUEST_TOKEN) {
+      ['saveBtn', 'saveBtnBottom'].forEach(id => {
+        const btn = document.getElementById(id);
+        btn.disabled = true;
+        btn.title = 'Speichern braucht eine Anmeldung';
+      });
+    }
   } catch (err) {
     try { sessionStorage.removeItem(TOKEN_KEY); } catch (e) {}
     backToAdminHome();
@@ -2234,6 +2245,7 @@ const saveModalOverlay = document.getElementById('saveModalOverlay');
 const saveModalCommitInput = document.getElementById('commitMessageInput');
 
 function openSaveModal() {
+  if (state.token === GUEST_TOKEN) return;
   saveModalOverlay.hidden = false;
   saveModalCommitInput.focus();
 }

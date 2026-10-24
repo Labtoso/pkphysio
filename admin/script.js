@@ -4,6 +4,7 @@ const REPO_BRANCH = 'main';
 const CONTENT_PATH = 'content.js';
 const TOKEN_KEY = 'pk_admin_token';
 const NAV_TOKEN_KEY = 'pk_admin_nav';
+const GUEST_TOKEN = 'gast';
 
 // Adresse des kleinen Anmelde-Dienstes (Ordner anmelde-dienst/), z. B. https://pkphysio-login.<name>.workers.dev
 // Leer = „Mit GitHub anmelden“ ist ausgegraut, nur Passwort und Token.
@@ -131,6 +132,12 @@ classicLoginBtn.addEventListener('click', () => {
 });
 
 document.querySelectorAll('[data-back]').forEach(btn => btn.addEventListener('click', showLogin));
+
+// Ohne Passwort: nur ansehen, der Editor lädt öffentlich und speichert nicht
+document.getElementById('guestLoginBtn').addEventListener('click', () => {
+  try { sessionStorage.setItem(TOKEN_KEY, GUEST_TOKEN); } catch (e) {}
+  showMenu();
+});
 
 githubLoginBtn.addEventListener('click', () => {
   const state = randomId();
@@ -281,6 +288,10 @@ if (!LOGIN_URL) {
 
   let token = null;
   try { token = sessionStorage.getItem(TOKEN_KEY); } catch (e) {}
+  if (token === GUEST_TOKEN) {
+    showMenu();
+    return;
+  }
   if (token) {
     verifyAndEnter(token);
     return;
