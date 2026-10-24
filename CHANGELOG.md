@@ -2,6 +2,27 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Geheimes Tastatur-Spiel, Wasser-Töne, flüssigere Animationen (Branch V2)
+
+### Neu
+- Geheimes Spiel „Thock“ (`thock.js`): Eine Glas-Tastatur mit deutschem Layout erscheint. Jeder Tastendruck drückt die passende Kappe sichtbar nach unten und macht ein tiefes, gedämpftes Thock, beim Loslassen ein leichtes Clack. Große Tasten wie Leertaste, Enter und Shift klingen tiefer und klappern leise nach. Der Klang kommt je nach Position der Taste von links oder rechts.
+- Im Spiel erscheinen Wörter aus der Physiotherapie, die man abtippt. Die nächste Taste leuchtet vor. Richtig wird Teal mit Ding, falsch wird rot mit Wackeln. Es zählt Wörter, Serie, Tippgeschwindigkeit (WPM) und den Rekord, der gespeichert bleibt. Am Handy tippt man direkt auf die Tasten.
+- So öffnet man das Spiel: auf der Startseite irgendwo „thock“ tippen, oder den Ton-Knopf oben 5-mal schnell hintereinander drücken. Schließen mit Esc, mit dem × oder mit einem Klick daneben.
+- Wörter im Startbereich gleiten einzeln aus der Unschärfe herein.
+- Zwischen den Bereichen zeichnet sich eine leuchtende Wellenlinie selbst, sobald man hinscrollt.
+- Hinter jeder Bereichs-Überschrift schwebt eine flüssige Glasblase.
+- Das Portrait öffnet sich als Kreis aus der Mitte.
+- „Mehr erfahren“ füllt sich beim Darüberfahren mit einer Welle.
+- Die Titel der Kontaktdaten unterstreichen sich beim Darüberfahren.
+- Navigation und Knöpfe in der Kopfleiste springen beim Laden nacheinander herein.
+
+### Geändert
+- Töne: Statt Trommel-Klängen jetzt Wassertropfen und Glas. FAQ öffnen: drei aufsteigende Tropfen mit einem Hauch und leisem Glas. FAQ schließen: zwei sinkende Tropfen mit einem weichen Fwump. Links: ein Tropfen. Farbschema: ein Weinglas. Knöpfe: Tastatur-Thock. Platzen: zusätzlich feine Tropfen.
+- Alle Töne laufen weicher (tieferer Filter) und mit etwas mehr Raum.
+- Die Lichtflecken im Hintergrund wabern wie Flüssigkeit und folgen der Maus ein Stück.
+- Der Lichtschein unter der Maus gleitet weich hinterher.
+- Glaskarten wabern ganz leicht an den Ecken, FAQ-Einträge schwabbeln beim Darüberfahren.
+
 ## 24.10.2026 – V2: ASMR-Töne, Blasen zerfallen, alles bounciger (Branch V2)
 
 ### Neu
