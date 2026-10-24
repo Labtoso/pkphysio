@@ -2687,3 +2687,171 @@ main > section.section:not(.hero) { content-visibility: auto; contain-intrinsic-
 @media (prefers-reduced-motion: reduce) {
   .fx-flood { display: none; }
 }
+
+/* ===== V2: Erfolge-Knopf, Punkte und Shop ===== */
+
+.fx-hud { display: flex; gap: 6px; margin-left: 10px; }
+.fx-hud-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-edge);
+  background: var(--color-bg-alt);
+  color: var(--color-ink);
+  box-shadow: var(--glass-shine);
+  transition: transform .8s var(--boing), background .3s ease;
+}
+.fx-hud-btn:hover { transform: translateY(-2px) scale(1.12); background: var(--color-surface); }
+.fx-hud-btn:active { transform: scale(.88); transition-duration: .08s; }
+.fx-hud-badge {
+  position: absolute;
+  top: -6px; right: -10px;
+  min-width: 22px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font: 700 .7rem var(--font-body);
+  color: #0a0c0b;
+  background: linear-gradient(110deg, var(--color-primary), var(--fx-cyan));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+}
+.fx-hud-badge.is-bump { animation: kb-bump .5s cubic-bezier(.3, 1.8, .5, 1); }
+
+.fx-ach-points {
+  margin-left: auto;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: .8rem;
+  color: var(--color-ink-soft);
+  background: var(--color-surface);
+  border: 1px solid var(--glass-edge);
+}
+.fx-ach-item.is-got .fx-ach-points { color: #3a2a00; background: linear-gradient(110deg, #ffe58a, #ffc93c); border-color: transparent; }
+
+/* Shop */
+.fx-shop-group { font-size: 1rem; margin: 18px 0 10px; color: var(--color-ink-soft); }
+.fx-shop-group:first-child { margin-top: 0; }
+.fx-shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.fx-shop-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--glass-edge);
+  background: var(--color-bg-alt);
+  color: var(--color-ink);
+  font: inherit;
+  text-align: left;
+  transition: transform .7s var(--boing), border-color .3s ease, box-shadow .3s ease;
+}
+.fx-shop-item:hover { transform: translateY(-2px) scale(1.03); }
+.fx-shop-item.is-on { border-color: var(--color-primary); box-shadow: 0 0 0 1px var(--color-primary), 0 0 18px var(--color-primary-light); }
+.fx-shop-item.is-locked { opacity: .55; }
+.fx-shop-item.is-nope { animation: kb-shake .4s ease; }
+.fx-shop-swatch { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), 0 0 10px rgba(0, 0, 0, .25); }
+.fx-shop-name { font-weight: 700; font-size: .9rem; line-height: 1.2; }
+.fx-shop-price { margin-left: auto; font-size: .78rem; font-weight: 700; color: var(--color-ink-soft); white-space: nowrap; }
+.fx-shop-item.is-on .fx-shop-price { color: var(--color-primary); }
+
+/* Blasen-Jagd: Anzeige oben */
+.fx-hunt {
+  position: fixed;
+  top: 104px; left: 50%;
+  z-index: 1450;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  background: var(--glass-solid);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--glass-shine), 0 14px 40px rgba(0, 0, 0, .3);
+  animation: fx-ach-in .9s var(--boing) both;
+  pointer-events: none;
+}
+.fx-hunt [data-time] { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--color-ink-soft); }
+.fx-hunt b { font-family: var(--font-head); font-size: 1.6rem; color: var(--color-primary); display: inline-block; }
+.fx-hunt small { color: var(--color-ink-soft); }
+
+/* Modi */
+.mode-disco .glass-bg { animation: fx-hue 4s linear infinite !important; }
+.mode-disco .fx-cursor { opacity: 1; }
+.mode-mirror body { transform: scaleX(-1); }
+
+/* ===== Windows XP ===== */
+:root.theme-xp {
+  --font-head: Tahoma, "Trebuchet MS", Verdana, sans-serif;
+  --font-body: Tahoma, Verdana, sans-serif;
+  --color-primary: #3a8e26;
+  --color-ink: #000;
+  --color-ink-soft: #222;
+  --glass-radius: 8px;
+  color-scheme: light;
+}
+.theme-xp .glass-bg {
+  background:
+    radial-gradient(ellipse 130% 60% at 30% 108%, #4f9a2c 0 48%, transparent 49%),
+    radial-gradient(ellipse 90% 45% at 85% 112%, #5aa634 0 47%, transparent 48%),
+    linear-gradient(180deg, #1c5fcf 0%, #4a8ce8 45%, #9ec6f5 70%, #c9e2fb 78%);
+}
+.theme-xp .glass-bg span, .theme-xp .glass-bg::before, .theme-xp .glass-bg::after, .theme-xp .fx-sparkles { display: none; }
+.theme-xp .header-inner::before {
+  background: linear-gradient(180deg, #3d95ff 0%, #0a5ce8 10%, #0053e0 50%, #0a4fd0 90%, #0838a8 100%);
+  border: 1px solid #0831a0;
+  border-radius: 10px 10px 4px 4px;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.theme-xp .header-inner::after { display: none; }
+.theme-xp .nav-link, .theme-xp .site-header .theme-toggle, .theme-xp .fx-hud-btn { color: #fff; text-shadow: 1px 1px 0 rgba(0, 0, 0, .4); }
+.theme-xp .nav-link:hover, .theme-xp .nav-link.active { background: rgba(255, 255, 255, .18); }
+.theme-xp .logo-img-dark { display: block; }
+.theme-xp .logo-img-light { display: none; }
+.theme-xp .btn-primary, .theme-xp .btn-header {
+  color: #fff;
+  font-style: italic;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, .5);
+  background: linear-gradient(180deg, #5bbd4a 0%, #3a9c2a 50%, #2d8a20 100%);
+  border: 1px solid #1f6b14;
+  border-radius: 8px 16px 16px 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45);
+}
+.theme-xp .btn-outline { background: linear-gradient(180deg, #fff, #ece9d8); color: #000; border: 1px solid #003c74; border-radius: 3px; }
+.theme-xp .hero h1, .theme-xp .section h2 { background: none; -webkit-text-fill-color: #fff; color: #fff; text-shadow: 2px 2px 3px rgba(0, 0, 0, .5); }
+.theme-xp .hero .eyebrow, .theme-xp .hero-sub, .theme-xp .hero-text, .theme-xp .lead { color: #fff; text-shadow: 1px 1px 2px rgba(0, 0, 0, .55); }
+.theme-xp .hero .eyebrow { background: #0a5ce8; border-color: #0831a0; }
+/* Karten werden zu XP-Fenstern mit blauer Titelleiste */
+.theme-xp .service-card, .theme-xp .offer-card, .theme-xp .accordion-item, .theme-xp .contact-list, .theme-xp .kontakt-map, .theme-xp .about-portrait {
+  background: #ece9d8;
+  border: 3px solid #0054e3;
+  border-top-width: 26px;
+  border-radius: 8px 8px 3px 3px;
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, .35);
+  color: #000;
+}
+.theme-xp .service-card::before, .theme-xp .offer-card::before, .theme-xp .contact-list::before, .theme-xp .about-portrait::before, .theme-xp .kontakt-map::before { display: none; }
+.theme-xp .service-card h3, .theme-xp .offer-card h3, .theme-xp .accordion-trigger { color: #000; }
+.theme-xp .service-card p, .theme-xp .offer-list > li, .theme-xp .offer-sublist li, .theme-xp .accordion-answer, .theme-xp .contact-list p, .theme-xp .contact-list a, .theme-xp .timeline p { color: #222; }
+.theme-xp .timeline strong, .theme-xp .about-content .lead, .theme-xp .kontakt-info .lead { color: #fff; }
+.theme-xp .fx-ball-controls { background: #ece9d8; border: 1px solid #003c74; border-radius: 3px; }
+.theme-xp .fx-ball-controls button { color: #000; border-radius: 3px; }
+.theme-xp .fx-wave path { stroke: #fff; }
+.theme-xp .site-footer { color: #fff; }
+@media (max-width: 640px) {
+  .site-header .header-inner { gap: 6px; }
+  .fx-hud { margin-left: 4px; gap: 4px; }
+  .fx-hud-btn, .header-inner > .theme-toggle { width: 34px; height: 34px; }
+  .fx-hud-badge { right: -8px; }
+}
+
+/* Die Glasblase hinter den Überschriften war nach dem Leistungs-Umbau eckig: wieder rund */
+.section-head::before { border-radius: 50%; }
+
+/* Windows XP: Schrift überall Tahoma (auch wenn im Editor eine andere Schrift gewählt ist) */
+.theme-xp body, .theme-xp h1, .theme-xp h2, .theme-xp h3, .theme-xp .btn, .theme-xp .nav-link { font-family: Tahoma, Verdana, sans-serif; }
+.theme-xp .section-head::before { display: none; }
