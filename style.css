@@ -3518,3 +3518,83 @@ textarea.xpw-text { resize: none; border: 0; border-top: 1px solid #7f9db9; outl
   .xpw-files.is-details .xpw-file, .xpw-dhead { grid-template-columns: 22px 1fr 60px; }
   .xpw-files.is-details .xpw-file > span:nth-child(n+4), .xpw-dhead span:nth-child(n+3) { display: none; }
 }
+
+/* ===== V2: XP-Desktop, Programme, Website-Fenster schließen ===== */
+
+/* Keine Fenster-Knöpfe mehr oben rechts an der Website: Schließen geht nur per Rechtsklick */
+.theme-xp .xp-winbtns { display: none !important; }
+.theme-xp .site-header .header-inner { padding-right: 12px; }
+
+/* Website geschlossen: nur noch Desktop und Taskleiste */
+.xp-site-hidden .site-header, .xp-site-hidden main, .xp-site-hidden .site-footer,
+.xp-site-hidden .fx-achievement { display: none !important; }
+.xp-desktop { display: none; }
+.theme-xp.xp-site-hidden .xp-desktop {
+  position: fixed;
+  inset: 0 0 34px 0;
+  z-index: 1500;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(auto-fill, 86px);
+  grid-auto-columns: 84px;
+  gap: 6px;
+  padding: 12px;
+  align-content: start;
+}
+.xp-dicon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 2px;
+  border: 1px dotted transparent;
+  background: none;
+  color: #fff;
+  font: 11px Tahoma, sans-serif;
+  text-align: center;
+  text-shadow: 1px 1px 2px #000;
+}
+.xp-dicon.is-selected span:last-child { background: #316ac5; outline: 1px dotted #fff; }
+.xp-dicon .xpw-icon { pointer-events: none; }
+
+/* Weitere Symbole */
+.xpw-icon-ie { width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, #9fe0ff, #1a73d9 70%); }
+.xpw-icon-ie::after { content: "e"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font: italic 700 22px Georgia, serif; }
+.xpw-icon-ie::before { content: ""; position: absolute; left: -4px; top: 11px; width: 38px; height: 9px; border: 2px solid #f5b301; border-radius: 50%; transform: rotate(-20deg); }
+.xpw-icon-calc { width: 26px; height: 32px; background: linear-gradient(180deg, #9db8d9 0 30%, #e6e6e6 30%); border: 1px solid #555; border-radius: 3px; }
+.xpw-icon-calc::after { content: ""; position: absolute; left: 4px; right: 4px; bottom: 4px; height: 14px; background: repeating-linear-gradient(90deg, #555 0 3px, transparent 3px 6px), repeating-linear-gradient(180deg, #555 0 3px, transparent 3px 6px); background-blend-mode: multiply; opacity: .6; }
+.xpw-icon-mines { width: 30px; height: 30px; background: radial-gradient(circle, #000 0 9px, transparent 10px), repeating-conic-gradient(#000 0 8deg, transparent 8deg 45deg); border-radius: 50%; }
+.xpw-icon-cmd { width: 32px; height: 26px; background: #000; border: 2px solid #c0c0c0; border-top-width: 6px; }
+.xpw-icon-cmd::after { content: "C:\\>"; position: absolute; left: 2px; top: 2px; color: #c0c0c0; font: 9px "Lucida Console", monospace; }
+.xpw-icon-site { width: 32px; height: 28px; background: linear-gradient(180deg, #17b6a4, #0c6a60); border: 2px solid #fff; border-radius: 3px; }
+.xpw-icon-site::after { content: "PK"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font: 700 11px Tahoma, sans-serif; }
+.xpw-icon-run { width: 32px; height: 32px; background: linear-gradient(135deg, #fff 0 45%, #2f6fe0 45%); border: 1px solid #555; }
+
+/* Internet Explorer */
+.xpw-iepage { flex: 1; overflow: auto; padding: 16px 20px; background: #fff; color: #000; font: 12px Tahoma, sans-serif; }
+.xpw-iepage h3 { font: 700 15px Tahoma, sans-serif; margin-bottom: 10px; }
+.xpw-iepage ul { list-style: disc; padding-left: 20px; }
+.xpw-iepage hr { border: 0; border-top: 1px solid #ccc; margin: 10px 0; }
+
+/* Rechner */
+.xpw-calc .xpw-body { padding: 8px; gap: 6px; }
+.xpw-calc-display { width: 100%; padding: 4px 6px; border: 1px solid #7f9db9; font: 16px Tahoma, sans-serif; text-align: right; background: #fff; }
+.xpw-calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.xpw-calc-keys button { padding: 8px 0; border: 1px solid #003c74; border-radius: 3px; background: linear-gradient(180deg, #fff, #d6d0c5); font: 700 13px Tahoma, sans-serif; color: #00f; }
+
+/* Minesweeper */
+.xpw-mines .xpw-body { padding: 6px; background: #c0c0c0; }
+.xpw-mines-head { display: flex; justify-content: space-between; align-items: center; padding: 4px; margin-bottom: 6px; border: 2px solid; border-color: #808080 #fff #fff #808080; }
+.xpw-mines-head span { background: #000; color: #f00; font: 700 18px "Courier New", monospace; padding: 0 4px; }
+.xpw-mines-head button { width: 28px; height: 28px; border: 2px solid; border-color: #fff #808080 #808080 #fff; background: #c0c0c0; font-size: 15px; }
+.xpw-mines-grid { display: grid; grid-template-columns: repeat(9, 22px); border: 3px solid; border-color: #808080 #fff #fff #808080; width: max-content; margin: 0 auto; }
+.xpw-mines-grid button { width: 22px; height: 22px; padding: 0; border: 2px solid; border-color: #fff #808080 #808080 #fff; background: #c0c0c0; font: 700 13px Tahoma, sans-serif; color: #00f; }
+.xpw-mines-grid button.is-open { border: 1px solid #808080; background: #c0c0c0; }
+.xpw-mines-grid button.is-boom { background: #f00; color: #000; }
+
+/* Eingabeaufforderung */
+.xpw-cmd .xpw-body { background: #000; }
+.xpw-cmd-out { flex: 1; margin: 0; padding: 6px; overflow: auto; color: #c0c0c0; font: 13px "Lucida Console", "Courier New", monospace; white-space: pre-wrap; }
+.xpw-cmd-line { display: flex; gap: 0; padding: 0 6px 6px; color: #c0c0c0; font: 13px "Lucida Console", "Courier New", monospace; }
+.xpw-cmd-line input { flex: 1; min-width: 0; border: 0; outline: none; background: none; color: #c0c0c0; font: inherit; caret-color: #c0c0c0; }
+.xpw-run-row { display: flex; align-items: center; gap: 8px; }
