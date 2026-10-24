@@ -3276,3 +3276,20 @@ main > section.section:not(.hero) { content-visibility: auto; contain-intrinsic-
 /* Retro-Schriften sind breiter: Menüpunkte nicht umbrechen */
 .theme-dos .nav-link, .theme-gb .nav-link, .theme-98 .nav-link { white-space: nowrap; }
 .theme-gb .nav { gap: 0; }
+
+/* Shop: Name und Preis überlappen nie, lange Namen brechen sauber um */
+.fx-shop-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+.fx-shop-item { min-width: 0; }
+.fx-shop-name { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; hyphens: auto; }
+.fx-shop-price { flex: 0 0 auto; margin-left: 8px; }
+@media (max-width: 640px) {
+  .fx-shop-grid { grid-template-columns: 1fr 1fr; }
+  .fx-shop-item { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .fx-shop-price { margin-left: 0; }
+}/* Handy: eine Spalte, Name links, Preis rechts, keine Silbentrennung mitten im Wort */
+.fx-shop-name { overflow-wrap: break-word; }
+@media (max-width: 640px) {
+  .fx-shop-grid { grid-template-columns: 1fr; }
+  .fx-shop-item { flex-direction: row; align-items: center; gap: 10px; }
+  .fx-shop-price { margin-left: auto; }
+}
