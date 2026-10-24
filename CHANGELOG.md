@@ -2,6 +2,23 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: ASMR-Töne, Blasen zerfallen, alles bounciger (Branch V2)
+
+### Neu
+- Große Blasen im Startbereich zerfallen beim Platzen in 2 bis 4 kleinere Blasen, die nach außen schießen. Die kleinsten zerplatzen in Spritzer. Kleine Blasen bleiben, bis man sie platzen lässt, die großen kommen von unten neu.
+- Neue Töne: Zerfallen mit tiefem Plopp, jede neue kleine Blase mit eigenem Plip, Anfassen mit Squish, Loslassen mit Unsquish, Werfen mit Whoosh, Antippen mit Glas-Ting, Aufprall an Rand und aneinander mit Gummi-Boop und Klopfen, neue Blasen steigen mit Plip-Plip-Plip auf. Kleinere Blasen klingen höher.
+- Beim Scrollen rastet es ganz leise wie ein Drehrad, beim Auftauchen von Inhalten macht es leise Plip.
+- Kopfleiste fällt beim Laden von oben herein und federt nach. Name und Überschriften landen gestaucht und federn aus.
+- Lebenslauf und Angebots-Listen springen Punkt für Punkt herein.
+
+### Geändert
+- Alle Töne neu im ASMR-Stil: nah, weich und knackig statt Pieptöne. Klick klingt wie eine Tastatur (Thock), Links wie ein Lippen-Plopp, FAQ wie Holz, Farbschema wie ein Glas. Alles läuft durch einen weichen Filter mit kleinem Raumhall.
+- Bounce überall stärker: Federn schwingen mehrmals nach (Auftauchen, Knöpfe, Navigation, Karten, FAQ, Plus-Zeichen).
+- Knöpfe quetschen sich beim Drücken zusammen und springen zurück. Die Pille über dem Namen hüpft regelmäßig mit Stauchen.
+- Karten und geöffnete FAQ wippen einmal durch.
+- Blasen prallen fast ohne Verlust ab, quetschen sich stärker und schwabbeln nach.
+- Aufsteigende Glasblasen wackeln stärker.
+
 ## 24.10.2026 – V2: Töne, Bounce, spielbare Blasen, Anmelden ohne Passwort (Branch V2)
 
 ### Neu
