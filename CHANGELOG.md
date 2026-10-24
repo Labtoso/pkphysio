@@ -2,6 +2,14 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Töne in Zen und Firefox (Branch V2)
+
+### Gefixt
+- Hatte man den Ton einmal ausgeschaltet, zum Beispiel für den Erfolg „Warum höre ich nix“, blieb er dauerhaft aus. Jetzt ist der Ton bei jedem Besuch wieder an.
+- Firefox und Zen geben Ton im Browser erst bei einer echten Aktion frei. Die Seite versucht das jetzt bei jedem Klick, Tippen und Tastendruck erneut, nicht nur beim allerersten.
+- In Firefox (die Grundlage von Zen) über file:// geprüft: Die eingebetteten Aufnahmen laden, ein Knopf-Klick spielt Thock und Loslassen, eine Blase spielt den Plopp.
+- Datei-Versionen auf `?v=24l`.
+
 ## 24.10.2026 – V2: XP-Desktop, „Escaped“ und neue Rätsel (Branch V2)
 
 ### Neu
