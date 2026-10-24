@@ -289,7 +289,11 @@
 
   // Erfolge oben in der Mitte: „Flashbangt“ (helles Farbschema) und „Warum höre ich nix“ (Ton aus)
   let achievementTimer = null;
+  // Jeder Erfolg kommt nur einmal pro Seitenbesuch (nach Neuladen wieder)
+  const shownAchievements = new Set();
   function achievement(title, flash) {
+    if (shownAchievements.has(title)) return;
+    shownAchievements.add(title);
     if (flash) {
       const f = document.createElement('div');
       f.className = 'fx-flash';
@@ -448,7 +452,6 @@
 
     const small = window.innerWidth < 700;
     const count = small ? 4 : 7;
-    const MIN_SPLIT = small ? 14 : 18;
     const MAX_BALLS = small ? 16 : 28;
     const TOP = small ? 90 : 110;
     const items = [];
@@ -526,56 +529,59 @@
       return b;
     }
 
+    // Spritzer fliegen nach außen und fallen leicht nach unten, Größe passt sich der Blase an
     function splash(cx, cy, r, n) {
       for (let k = 0; k < n; k++) {
         const d = document.createElement('span');
         d.className = 'fx-splash';
-        const a = (k / n) * Math.PI * 2 + Math.random() * 0.4;
-        const dist = r * (1.1 + Math.random() * 0.9);
+        const a = (k / n) * Math.PI * 2 + Math.random() * 0.5;
+        const dist = r * (1.2 + Math.random() * 1.1);
         d.style.left = cx + 'px';
         d.style.top = cy + 'px';
         d.style.setProperty('--dx', (Math.cos(a) * dist).toFixed(0) + 'px');
         d.style.setProperty('--dy', (Math.sin(a) * dist).toFixed(0) + 'px');
-        d.style.setProperty('--s', (3 + Math.random() * 6).toFixed(1) + 'px');
+        d.style.setProperty('--s', (2 + Math.random() * Math.max(4, r / 7)).toFixed(1) + 'px');
+        d.style.animationDelay = (0.06 + Math.random() * 0.05).toFixed(2) + 's';
         play.appendChild(d);
         d.addEventListener('animationend', () => d.remove());
       }
     }
 
+    // Die Blase zerplatzt an Ort und Stelle: Haut wabert, reißt auf, Ring und Fetzen fliegen weg
     function pop(b) {
       if (!b.alive) return;
       b.alive = false;
-      b.el.classList.add('is-popping');
+      const d = b.r * 2;
       const cx = b.x + b.r, cy = b.y + b.r;
-      const alive = items.filter(i => i.alive).length;
-      const canSplit = b.r >= MIN_SPLIT && alive < MAX_BALLS;
+      b.vx = b.vy = 0;
+      b.el.classList.add('is-popping');
+      sound.play('burst', b.r);
 
-      if (canSplit) {
-        // In 2 bis 4 kleinere Blasen zerfallen, die nach außen schießen
-        const n = b.r > 60 ? 4 : b.r > 34 ? 3 : 2;
-        const childR = b.r * (n === 4 ? 0.5 : n === 3 ? 0.56 : 0.64);
-        sound.play('split', b.r);
-        for (let k = 0; k < n; k++) {
-          const a = (k / n) * Math.PI * 2 + Math.random() * 0.8;
-          const speed = 3 + Math.random() * 3;
-          setTimeout(() => {
-            makeBall({ child: true, r: childR * (0.85 + Math.random() * 0.3), x: cx + Math.cos(a) * b.r * 0.4 - childR, y: cy + Math.sin(a) * b.r * 0.4 - childR, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed });
-            sound.play('plip', childR - k * 3);
-          }, 40 + k * 55);
-        }
-        splash(cx, cy, b.r, 8);
-      } else {
-        sound.play('burst');
-        splash(cx, cy, b.r, 12);
+      const ring = document.createElement('span');
+      ring.className = 'fx-pop-ring';
+      ring.style.left = cx + 'px';
+      ring.style.top = cy + 'px';
+      ring.style.width = ring.style.height = d + 'px';
+      play.appendChild(ring);
+      ring.addEventListener('animationend', () => ring.remove());
+
+      const shards = 7;
+      for (let k = 0; k < shards; k++) {
+        const s = document.createElement('span');
+        s.className = 'fx-shard';
+        const a = (k / shards) * 360 + Math.random() * 30;
+        s.style.left = cx + 'px';
+        s.style.top = cy + 'px';
+        s.style.width = s.style.height = d + 'px';
+        s.style.setProperty('--a', a.toFixed(0) + 'deg');
+        s.style.setProperty('--out', (b.r * (0.6 + Math.random() * 0.6)).toFixed(0) + 'px');
+        s.style.setProperty('--spin', ((Math.random() - 0.5) * 90).toFixed(0) + 'deg');
+        play.appendChild(s);
+        s.addEventListener('animationend', () => s.remove());
       }
 
-      b.el.addEventListener('animationend', () => {
-        if (b.child) {
-          b.el.remove();
-          items.splice(items.indexOf(b), 1);
-        }
-      }, { once: true });
-      if (!b.child) setTimeout(() => { b.fromBottom = true; respawn(b); sound.play('rise'); }, 2200);
+      splash(cx, cy, b.r, Math.round(10 + b.r / 5));
+      setTimeout(() => { b.fromBottom = true; respawn(b); sound.play('rise'); }, 1900);
     }
 
     for (let i = 0; i < count; i++) makeBall({});
