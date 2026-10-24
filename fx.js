@@ -278,18 +278,25 @@
     btn.innerHTML = '<svg class="sound-icon-on" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg><svg class="sound-icon-off" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
     const sync = () => { btn.setAttribute('aria-pressed', String(sound.on)); btn.classList.toggle('is-off', !sound.on); };
     sync();
-    btn.addEventListener('click', () => { sound.on = !sound.on; sync(); sound.play('pop'); });
+    btn.addEventListener('click', () => {
+      sound.on = !sound.on;
+      sync();
+      sound.play('pop');
+      if (!sound.on) achievement('Warum höre ich nix', false);
+    });
     themeToggle.parentNode.insertBefore(btn, themeToggle);
   }
 
-  // Erfolg „Flashbangt“, wenn man ins helle Farbschema wechselt
+  // Erfolge oben in der Mitte: „Flashbangt“ (helles Farbschema) und „Warum höre ich nix“ (Ton aus)
   let achievementTimer = null;
-  function flashbang() {
-    const flash = document.createElement('div');
-    flash.className = 'fx-flash';
-    flash.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(flash);
-    flash.addEventListener('animationend', () => flash.remove());
+  function achievement(title, flash) {
+    if (flash) {
+      const f = document.createElement('div');
+      f.className = 'fx-flash';
+      f.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(f);
+      f.addEventListener('animationend', () => f.remove());
+    }
 
     document.querySelectorAll('.fx-achievement').forEach(el => el.remove());
     const toast = document.createElement('div');
@@ -297,7 +304,7 @@
     toast.setAttribute('role', 'status');
     toast.innerHTML =
       '<span class="fx-ach-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span>' +
-      '<span class="fx-ach-text"><small>Erfolg freigeschaltet</small><strong>Flashbangt</strong></span>' +
+      '<span class="fx-ach-text"><small>Erfolg freigeschaltet</small><strong>' + title + '</strong></span>' +
       '<span class="fx-ach-bar" aria-hidden="true"></span>';
     for (let i = 0; i < 18; i++) {
       const c = document.createElement('i');
@@ -313,7 +320,7 @@
     }
     document.body.appendChild(toast);
 
-    // Fanfare aus Tastenanschlägen, von tief nach hoch
+    // Fanfare aus Tastenanschlägen, von tief nach hoch (bei Ton aus bleibt sie natürlich stumm)
     [4, 3, 2, 1, 0].forEach((row, i) => setTimeout(() => sound.play('thock', { size: i === 4 ? 2.25 : 1, row, soft: 0.8, pan: -0.6 + i * 0.3 }), 380 + i * 75));
     setTimeout(() => sound.play('thock', { size: 6.25, row: 4 }), 380 + 5 * 75 + 60);
 
@@ -325,7 +332,7 @@
   }
   const themeBtn = document.getElementById('themeToggle');
   if (themeBtn) themeBtn.addEventListener('click', () => {
-    setTimeout(() => { if (root.classList.contains('light')) flashbang(); }, 0);
+    setTimeout(() => { if (root.classList.contains('light')) achievement('Flashbangt', true); }, 0);
   });
 
   // Welcher Ton zu welchem Klick gehört
@@ -442,7 +449,8 @@
     const small = window.innerWidth < 700;
     const count = small ? 4 : 7;
     const MIN_SPLIT = small ? 14 : 18;
-    const MAX_BALLS = small ? 22 : 40;
+    const MAX_BALLS = small ? 16 : 28;
+    const TOP = small ? 90 : 110;
     const items = [];
     let W = 0, H = 0;
     const measure = () => { W = hero.clientWidth; H = hero.clientHeight; };
@@ -457,7 +465,7 @@
     function respawn(b) {
       b.r = (small ? 18 : 34) + Math.random() * (small ? 24 : 70);
       b.x = (small ? 0.35 : 0.5) * W + Math.random() * Math.max(10, W * (small ? 0.6 : 0.48) - b.r * 2);
-      b.y = b.fromBottom ? H + b.r : 90 + Math.random() * Math.max(10, H - 140 - b.r * 2);
+      b.y = b.fromBottom ? H + b.r : 120 + Math.random() * Math.max(10, H - 170 - b.r * 2);
       b.vx = (Math.random() - 0.5) * 1.2;
       b.vy = b.fromBottom ? -4 - Math.random() * 3 : (Math.random() - 0.5) * 1.2;
       b.el.classList.remove('is-popping');
@@ -585,7 +593,7 @@
         let hit = 0;
         if (b.x < 0) { b.x = 0; b.vx = Math.abs(b.vx) * 0.95; hit = Math.abs(b.vx); }
         if (b.x > W - d) { b.x = W - d; b.vx = -Math.abs(b.vx) * 0.95; hit = Math.abs(b.vx); }
-        if (b.y < 80) { b.y = 80; b.vy = Math.abs(b.vy) * 0.95; hit = Math.abs(b.vy); }
+        if (b.y < TOP) { b.y = TOP; b.vy = Math.abs(b.vy) * 0.95; hit = Math.abs(b.vy); }
         if (b.y > H - d) {
           if (b.vy < -2 && !b.child) { /* steigt gerade frisch auf */ } else { b.y = H - d; b.vy = -Math.abs(b.vy) * 0.95; hit = Math.abs(b.vy); }
         }
@@ -682,7 +690,6 @@
   glow.setAttribute('aria-hidden', 'true');
   document.body.appendChild(glow);
   // Der Schein gleitet weich hinterher statt hart zu springen
-  const bgLayer = document.querySelector('.glass-bg');
   let tx = -999, ty = -999, gx = -999, gy = -999, gliding = false;
   function glide() {
     gx += (tx - gx) * 0.12;
@@ -694,10 +701,6 @@
   window.addEventListener('pointermove', (e) => {
     if (gx < -900) { gx = e.clientX; gy = e.clientY; }
     tx = e.clientX; ty = e.clientY;
-    if (bgLayer) {
-      bgLayer.style.setProperty('--mxn', (e.clientX / window.innerWidth - 0.5).toFixed(3));
-      bgLayer.style.setProperty('--myn', (e.clientY / window.innerHeight - 0.5).toFixed(3));
-    }
     if (!gliding) { gliding = true; requestAnimationFrame(glide); }
   }, { passive: true });
 
