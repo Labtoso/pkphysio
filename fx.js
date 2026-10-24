@@ -5,7 +5,8 @@
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const root = document.documentElement;
 
-  /* ---------- Töne (werden im Browser erzeugt, keine Dateien) ---------- */
+  /* ---------- Töne: echte Aufnahmen (Tastatur, Blasen), sonst im Browser erzeugt ---------- */
+  const SOUND_BASE = new URL('Assets/sounds/', document.currentScript ? document.currentScript.src : location.href).href;
   const sound = (() => {
     let ctx = null;
     let on = true;
@@ -13,6 +14,7 @@
     let lastHover = 0;
 
     let master = null;
+    let dry = null;
 
     // Alles läuft durch eine weiche Kette: Tiefpass, Kompressor und ein kleiner, naher Raumhall
     function audio() {
@@ -40,6 +42,12 @@
         wet.gain.value = 0.22;
         master = ctx.createGain();
         master.gain.value = 0.9;
+        dry = ctx.createGain();
+        dry.gain.value = 1;
+        const dryRoom = ctx.createGain();
+        dryRoom.gain.value = 0.25;
+        dry.connect(comp);
+        dry.connect(dryRoom).connect(room);
         master.connect(lowpass);
         master.connect(room).connect(wet).connect(lowpass);
         lowpass.connect(comp).connect(ctx.destination);
@@ -108,6 +116,56 @@
       [[1, 1], [2.76, 0.42], [5.4, 0.2], [8.9, 0.08]].forEach(([m, v], i) => {
         body({ freq: freq * m, dur: 1.2 - i * 0.22, vol: vol * v, attack: 0.002, delay, pan: (i % 2 ? 0.25 : -0.25) });
       });
+    }
+
+    // Echte Aufnahmen: cremige Tastatur (Mechvibes, MIT) und Blasen-Plopp (OpenGameArt, CC0), siehe Assets/sounds/QUELLEN.txt
+    const samples = {};
+    let samplesLoading = false;
+    const SAMPLE_FILES = {
+      r0: 'cream/press/GENERIC_R0.mp3', r1: 'cream/press/GENERIC_R1.mp3', r2: 'cream/press/GENERIC_R2.mp3',
+      r3: 'cream/press/GENERIC_R3.mp3', r4: 'cream/press/GENERIC_R4.mp3',
+      space: 'cream/press/SPACE.mp3', enter: 'cream/press/ENTER.mp3', backspace: 'cream/press/BACKSPACE.mp3',
+      up: 'cream/release/GENERIC.mp3', upSpace: 'cream/release/SPACE.mp3', upEnter: 'cream/release/ENTER.mp3', upBackspace: 'cream/release/BACKSPACE.mp3',
+      pop: 'pop.mp3'
+    };
+    function loadSamples() {
+      if (samplesLoading || !ctx) return;
+      samplesLoading = true;
+      Object.entries(SAMPLE_FILES).forEach(([name, file]) => {
+        fetch(SOUND_BASE + file)
+          .then(r => r.arrayBuffer())
+          .then(buf => new Promise((res, rej) => ctx.decodeAudioData(buf, res, rej)))
+          .then(audioBuf => {
+            // Aufnahmen sind unterschiedlich laut aufgenommen, darum auf gleiche Lautstärke bringen
+            let peak = 0;
+            const d = audioBuf.getChannelData(0);
+            for (let i = 0; i < d.length; i++) peak = Math.max(peak, Math.abs(d[i]));
+            audioBuf.norm = peak > 0 ? Math.min(8, 0.7 / peak) : 1;
+            samples[name] = audioBuf;
+          })
+          .catch(() => {});
+      });
+    }
+    // Spielt eine Aufnahme; gibt false zurück, solange sie noch nicht geladen ist
+    function sample(name, opt) {
+      const a = audio();
+      if (!a) return false;
+      loadSamples();
+      const buf = samples[name];
+      if (!buf) return false;
+      opt = opt || {};
+      const t = a.currentTime + (opt.delay || 0);
+      const src = a.createBufferSource();
+      src.buffer = buf;
+      src.playbackRate.value = opt.rate || 1;
+      const g = a.createGain();
+      g.gain.value = (opt.vol == null ? 1 : opt.vol) * (buf.norm || 1);
+      const pan = opt.pan && a.createStereoPanner ? a.createStereoPanner() : null;
+      if (pan) pan.pan.value = opt.pan;
+      src.connect(g);
+      (pan ? g.connect(pan) : g).connect(dry);
+      src.start(t);
+      return true;
     }
 
     const sounds = {
@@ -191,6 +249,11 @@
       // Cremiges Thock wie bei einer geschmierten (prelubed) Linear-Tastatur:
       // tiefer, runder Kern, hohles Gehäuse, keine Feder-Pings, keine kratzigen Höhen (k = { size, row, pan, soft })
       thock(k) {
+        const kk = k || {};
+        const sz = kk.size || 1;
+        const rowName = 'r' + Math.max(0, Math.min(4, Math.round(kk.row == null ? 2 : kk.row)));
+        const name = sz >= 5 ? 'space' : sz >= 2 ? 'enter' : sz >= 1.5 ? 'backspace' : rowName;
+        if (sample(name, { rate: rnd(1, 0.06), vol: 0.9 * (kk.soft || 1), pan: kk.pan || 0 })) return;
         const size = (k && k.size) || 1;
         const row = (k && k.row) || 0;
         const pan = k && typeof k.pan === 'number' ? k.pan : 0;
@@ -209,6 +272,10 @@
       },
       // Loslassen: leiser, runder „Tock“ nach oben
       clack(k) {
+        const kk = k || {};
+        const sz = kk.size || 1;
+        const upName = sz >= 5 ? 'upSpace' : sz >= 2 ? 'upEnter' : sz >= 1.5 ? 'upBackspace' : 'up';
+        if (sample(upName, { rate: rnd(1, 0.05), vol: 0.8 * (kk.soft || 1), pan: kk.pan || 0 })) return;
         const pan = k && typeof k.pan === 'number' ? k.pan : 0;
         const soft = (k && k.soft) || 1;
         noise({ freq: rnd(620, 0.1), q: 5, dur: 0.035, vol: 0.75 * soft, curve: 4, pan });
@@ -237,19 +304,24 @@
       open() { sounds.thock({ size: 2.25, row: 2 }); later(() => sounds.clack({ soft: 0.8 }), 110); },
       close() { sounds.thock({ size: 2, row: 3, soft: 0.85 }); later(() => sounds.clack({ soft: 0.7 }), 95); },
       chime() { sounds.thock({ size: 6.25, row: 4 }); later(() => sounds.clack({ soft: 0.9 }), 130); },
-      burst() { sounds.thock({ size: 1.25, row: 1, pan: (Math.random() - 0.5) * 0.6 }); later(() => sounds.clack({ soft: 0.7 }), 60); },
+      burst(r) { if (!sample('pop', { rate: Math.max(0.55, Math.min(1.6, 40 / Math.max(14, r || 40))) * rnd(1, 0.08), vol: 1, pan: (Math.random() - 0.5) * 0.6 })) sounds.thock({ size: 1.25, row: 1 }); },
       split() { sounds.thock({ size: 6.25, row: 4, soft: 0.95 }); later(() => sounds.clack({ soft: 0.8 }), 90); },
-      plip(r) { sounds.thock({ size: 1, row: Math.max(0, Math.min(4, 4 - (r || 20) / 12)), soft: 0.55, pan: (Math.random() - 0.5) * 1.2 }); },
-      boing(r) { sounds.thock({ size: Math.min(2.5, (r || 30) / 30), row: 3, soft: 0.5 }); },
-      knock(r) { sounds.thock({ size: Math.min(2, (r || 30) / 35), row: 2, soft: 0.4, pan: (Math.random() - 0.5) * 0.8 }); },
-      glassTap() { sounds.clack({ soft: 0.35 }); },
-      rise() { [0, 1, 2].forEach(i => later(() => sounds.thock({ size: 1, row: 4 - i, soft: 0.35 }), i * 70)); },
+      glassTap(r) { sample('pop', { rate: 2.2 * rnd(1, 0.1), vol: 0.18, pan: (Math.random() - 0.5) * 0.8 }); },
+      plip(r) { sample('pop', { rate: Math.min(2.4, 40 / Math.max(8, r || 20)) * rnd(1, 0.1), vol: 0.35, pan: (Math.random() - 0.5) * 1.2 }); },
+      knock(r) { sample('pop', { rate: Math.min(2, 60 / Math.max(10, r || 30)) * rnd(1, 0.1), vol: 0.22, pan: (Math.random() - 0.5) * 0.8 }); },
+      boing(r) { sample('pop', { rate: Math.min(1.8, 50 / Math.max(10, r || 30)) * rnd(1, 0.1), vol: 0.25 }); },
+      rise() { [0, 1, 2].forEach(i => sample('pop', { rate: 1.6 + i * 0.3, vol: 0.2, delay: i * 0.08 })); },
       ratchet() { sounds.thock({ size: 1, row: 0, soft: 0.14 }); },
       ding() { sounds.thock({ size: 2.25, row: 2, soft: 0.7 }); later(() => sounds.thock({ size: 1, row: 0, soft: 0.5 }), 90); },
       buzz() { sounds.thock({ size: 2.75, row: 3, soft: 0.6 }); later(() => sounds.thock({ size: 2.75, row: 3, soft: 0.45 }), 80); }
     });
     // Diese Töne kommen erst, wenn schon einmal geklickt wurde (Browser erlauben vorher keinen Ton)
     const passive = ['bubble', 'glassTap', 'ratchet', 'boing', 'knock', 'rise'];
+
+    // Aufnahmen schon beim ersten Klick oder Tastendruck laden, damit sie sofort bereit sind
+    const warmUp = () => { if (on && audio()) loadSamples(); };
+    window.addEventListener('pointerdown', warmUp, { once: true, capture: true });
+    window.addEventListener('keydown', warmUp, { once: true, capture: true });
 
     return {
       get on() { return on; },
