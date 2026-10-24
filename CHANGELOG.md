@@ -2,6 +2,17 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Erfolge überall sichtbar, XP-Taskleiste live (Branch V2)
+
+### Neu
+- XP-Taskleiste zeigt jedes offene Fenster als eigenen Knopf (Explorer, Editor, Minesweeper, Rechner, Eingabeaufforderung …). Neu geöffnete und geschlossene Fenster erscheinen und verschwinden sofort. Titel, zum Beispiel beim Navigieren im Explorer, ändern sich mit. Das vorderste Fenster ist hervorgehoben.
+- Klick auf einen Taskleisten-Knopf holt das Fenster nach vorn, minimiert es, wenn es schon vorne ist, und holt minimierte Fenster zurück. Der Minimieren-Knopf in den Fenstern funktioniert.
+
+### Geändert
+- Erfolge werden immer und überall angezeigt: auch auf dem XP-Desktop nach „Escaped“ und über allen Fenstern, Spielen und dem Shop.
+- Die Uhr in der Taskleiste aktualisiert sich jede Sekunde.
+- Datei-Versionen auf `?v=24o`.
+
 ## 24.10.2026 – V2: Interne Testhilfe (Branch V2)
 
 ### Neu
