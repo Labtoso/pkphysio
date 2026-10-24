@@ -10,7 +10,6 @@
   const sound = (() => {
     let ctx = null;
     let on = true;
-    try { on = localStorage.getItem('sound') !== 'off'; } catch (e) {}
     let lastHover = 0;
 
     let master = null;
@@ -373,15 +372,20 @@
     const passive = ['bubble', 'glassTap', 'ratchet', 'boing', 'knock', 'rise'];
 
     // Aufnahmen schon beim ersten Klick oder Tastendruck laden, damit sie sofort bereit sind
-    const warmUp = () => { if (on && audio()) loadSamples(); };
-    window.addEventListener('pointerdown', warmUp, { once: true, capture: true });
-    window.addEventListener('keydown', warmUp, { once: true, capture: true });
+    const warmUp = () => {
+      if (!on) return;
+      const a = audio();
+      if (!a) return;
+      if (a.state !== 'running') a.resume().catch(() => {});
+      loadSamples();
+    };
+    ['pointerdown', 'pointerup', 'click', 'keydown', 'touchend'].forEach(type => window.addEventListener(type, warmUp, { capture: true, passive: true }));
 
     return {
       setVariant(v) { variant = v; },
       get variant() { return variant; },
       get on() { return on; },
-      set on(v) { on = v; try { localStorage.setItem('sound', v ? 'on' : 'off'); } catch (e) {} },
+      set on(v) { on = v; },
       play(name, arg) {
         if (!on || !sounds[name] || (!ctx && passive.includes(name))) return;
         if (variant === 'xp') { playXp(name, arg); return; }
