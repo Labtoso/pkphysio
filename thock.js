@@ -1,5 +1,5 @@
 // Geheimes Tastatur-Spiel „Thock“: öffnet sich, wenn man auf der Seite „thock“ tippt
-// oder den Ton-Knopf 5-mal schnell hintereinander drückt
+// oder den Ton-Knopf eine Sekunde lang gedrückt hält
 (function () {
   const sound = window.pkSound;
   if (!sound) return;
@@ -286,18 +286,21 @@
     if (buffer === 'thock') { buffer = ''; open(); }
   });
 
-  // Geheimer Zugang 2 (auch am Handy): Ton-Knopf 5-mal schnell drücken
-  let taps = [];
-  document.addEventListener('click', (e) => {
+  // Geheimer Zugang 2 (auch am Handy): Ton-Knopf eine Sekunde lang gedrückt halten.
+  // (Früher 5-mal schnell drücken, das hat beim schnellen Klicken auf den Ton-Knopf ungewollt das Spiel geöffnet.)
+  let holdTimer = null, held = false;
+  document.addEventListener('pointerdown', (e) => {
     if (!e.target.closest('.sound-toggle')) return;
-    const now = performance.now();
-    taps = taps.filter(t => now - t < 2000);
-    taps.push(now);
-    if (taps.length >= 5) {
-      taps = [];
-      // Nach 5-mal Drücken wäre der Ton aus, für das Spiel wieder einschalten
-      if (!sound.on) e.target.closest('.sound-toggle').click();
-      open();
-    }
+    held = false;
+    clearTimeout(holdTimer);
+    holdTimer = setTimeout(() => { held = true; open(); }, 1000);
   });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(type => document.addEventListener(type, (e) => {
+    if (e.target.closest && e.target.closest('.sound-toggle')) clearTimeout(holdTimer);
+  }, true));
+  // Nach dem Gedrückthalten den Klick nicht als Ton an/aus werten
+  document.addEventListener('click', (e) => {
+    if (held && e.target.closest('.sound-toggle')) { e.stopImmediatePropagation(); e.preventDefault(); held = false; }
+  }, true);
+  document.addEventListener('contextmenu', (e) => { if (e.target.closest('.sound-toggle')) e.preventDefault(); });
 })();
