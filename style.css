@@ -3639,3 +3639,19 @@ textarea.xpw-text { resize: none; border: 0; border-top: 1px solid #7f9db9; outl
 }
 .theme-xp input[type="text"], .theme-xp input[type="password"], .theme-xp textarea,
 .mode-pixel input[type="text"], .mode-pixel input[type="password"], .mode-pixel textarea { cursor: text !important; }
+
+/* ===== V2: XP-Virus und Task-Manager ===== */
+.theme-xp .glass-bg, .theme-xp .xp-desktop .xpw-icon { filter: grayscale(var(--infect, 0)) contrast(calc(1 + var(--infect, 0) * .3)); }
+.xp-glitch { animation: xp-glitch .7s steps(4) both; }
+@keyframes xp-glitch { 25% { transform: translate(3px, -2px) skewX(12deg); filter: hue-rotate(90deg); } 50% { transform: translate(-4px, 1px) skewX(-8deg); opacity: .6; } 75% { transform: translate(2px, 2px); } }
+.xpw-frozen .xpw-body { opacity: .82; filter: grayscale(.4); pointer-events: none; }
+.xp-tray-virus { width: 14px; height: 16px; background: linear-gradient(180deg, #ff5a3c, #b01000); clip-path: polygon(50% 0, 100% 20%, 100% 55%, 50% 100%, 0 55%, 0 20%); animation: dos-blink 1s steps(2) infinite; }
+.xp-bsod-virus { background: #000 !important; color: #d00 !important; }
+.xpw-taskmgr .xpw-body { gap: 6px; }
+.xpw-tm-page { margin-top: -6px; max-height: 260px; overflow: auto; padding: 0 !important; gap: 0 !important; }
+.xpw-tm-head, .xpw-tm-row { display: grid; grid-template-columns: 1.6fr 1fr .5fr 1fr; gap: 4px; padding: 2px 6px; font: 11px Tahoma, sans-serif; text-align: left; }
+.xpw-tm-head { background: #ebeadb; border-bottom: 1px solid #c0bcae; position: sticky; top: 0; }
+.xpw-tm-row { width: 100%; border: 0; background: #fff; color: #000; }
+.xpw-tm-row.is-selected { background: #316ac5; color: #fff; }
+.xpw-tm-cpu { width: 60px; height: 110px; margin: 8px 0; background: #000; border: 1px solid #555; display: flex; align-items: flex-end; }
+.xpw-tm-cpu i { display: block; width: 100%; background: repeating-linear-gradient(180deg, #0f0 0 2px, #060 2px 3px); }

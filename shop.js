@@ -83,9 +83,9 @@
       { id: 'm-pixel', name: 'Pixel-Mauszeiger', price: 50 }
     ] },
     { group: 'Spiele', items: [
-      { id: 'g-hunt', name: 'Blasen-Jagd', price: 260, game: true },
+      { id: 'g-hunt', name: 'Blasen-Jagd', price: 310, game: true },
       { id: 'g-thock', name: 'Thock-Spiel', price: 60, game: true },
-      { id: 'g-snake', name: 'Snake', price: 300, game: true },
+      { id: 'g-snake', name: 'Snake', price: 350, game: true },
       { id: 'g-react', name: 'Reaktionstest', price: 200, game: true },
       { id: 'g-cps', name: 'Klick-Rekord', price: 180, game: true }
     ] },
@@ -97,10 +97,10 @@
     ] },
     { group: 'Retro', exclusive: 'skin', items: [
       { id: 'r-modern', name: 'Modern (Standard)', price: 0, free: true },
-      { id: 'xp', name: 'Windows XP', price: 700 },
-      { id: 'r-98', name: 'Windows 98', price: 480 },
-      { id: 'r-dos', name: 'MS-DOS', price: 430 },
-      { id: 'r-gb', name: 'Game Boy', price: 430 }
+      { id: 'xp', name: 'Windows XP', price: 800 },
+      { id: 'r-98', name: 'Windows 98', price: 530 },
+      { id: 'r-dos', name: 'MS-DOS', price: 480 },
+      { id: 'r-gb', name: 'Game Boy', price: 480 }
     ] }
   ];
   const findItem = (id) => { for (const g of SHOP) for (const it of g.items) if (it.id === id) return { g, it }; return null; };
