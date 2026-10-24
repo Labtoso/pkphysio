@@ -279,7 +279,7 @@
   document.body.appendChild(bar);
   const onScroll = () => {
     const max = root.scrollHeight - root.clientHeight;
-    root.style.setProperty('--scroll', max > 0 ? (window.scrollY / max).toFixed(4) : 0);
+    bar.style.transform = 'scaleX(' + (max > 0 ? (window.scrollY / max).toFixed(4) : 0) + ')';
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
@@ -332,27 +332,11 @@
   }, { threshold: 0.6 });
   document.querySelectorAll('.fx-wave').forEach(w => waveObserver.observe(w));
 
-  /* ---------- Flüssig-Filter für die Lichtflecken (wabert langsam) ---------- */
-  const svgNS = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('width', '0');
-  svg.setAttribute('height', '0');
-  svg.setAttribute('aria-hidden', 'true');
-  svg.style.position = 'absolute';
-  svg.innerHTML =
-    '<filter id="fx-liquid" x="-20%" y="-20%" width="140%" height="140%">' +
-      '<feTurbulence type="fractalNoise" baseFrequency="0.006 0.009" numOctaves="2" seed="7" result="n">' +
-        '<animate attributeName="baseFrequency" dur="18s" values="0.006 0.009;0.011 0.006;0.006 0.009" repeatCount="indefinite"/>' +
-      '</feTurbulence>' +
-      '<feDisplacementMap in="SourceGraphic" in2="n" scale="90" xChannelSelector="R" yChannelSelector="G"/>' +
-    '</filter>';
-  document.body.appendChild(svg);
-
   /* ---------- Glitzer ---------- */
   const sparkles = document.createElement('div');
   sparkles.className = 'fx-sparkles';
   sparkles.setAttribute('aria-hidden', 'true');
-  for (let i = 0; i < 28; i++) {
+  for (let i = 0; i < 16; i++) {
     const s = document.createElement('i');
     s.style.left = Math.random() * 100 + '%';
     s.style.top = Math.random() * 100 + '%';
@@ -367,7 +351,7 @@
   const bubbles = document.createElement('div');
   bubbles.className = 'fx-bubbles';
   bubbles.setAttribute('aria-hidden', 'true');
-  for (let i = 0; i < 14; i++) {
+  for (let i = 0; i < 8; i++) {
     const b = document.createElement('i');
     const size = 14 + Math.random() * 46;
     b.style.left = Math.random() * 100 + '%';
@@ -611,7 +595,7 @@
     document.body.appendChild(drop);
     drop.addEventListener('animationend', () => drop.remove());
 
-    const btn = e.target.closest('.btn, .theme-toggle, .nav-link, .accordion-trigger');
+    const btn = e.target.closest('.btn, .theme-toggle, .nav-link');
     if (btn) {
       btn.classList.remove('fx-jelly');
       void btn.offsetWidth;
@@ -630,20 +614,22 @@
   glow.setAttribute('aria-hidden', 'true');
   document.body.appendChild(glow);
   // Der Schein gleitet weich hinterher statt hart zu springen
+  const bgLayer = document.querySelector('.glass-bg');
   let tx = -999, ty = -999, gx = -999, gy = -999, gliding = false;
   function glide() {
     gx += (tx - gx) * 0.12;
     gy += (ty - gy) * 0.12;
-    root.style.setProperty('--mx', gx.toFixed(1) + 'px');
-    root.style.setProperty('--my', gy.toFixed(1) + 'px');
+    glow.style.transform = 'translate3d(' + gx.toFixed(1) + 'px, ' + gy.toFixed(1) + 'px, 0)';
     gliding = Math.abs(tx - gx) + Math.abs(ty - gy) > 0.5;
     if (gliding) requestAnimationFrame(glide);
   }
   window.addEventListener('pointermove', (e) => {
     if (gx < -900) { gx = e.clientX; gy = e.clientY; }
     tx = e.clientX; ty = e.clientY;
-    root.style.setProperty('--mxn', (e.clientX / window.innerWidth - 0.5).toFixed(3));
-    root.style.setProperty('--myn', (e.clientY / window.innerHeight - 0.5).toFixed(3));
+    if (bgLayer) {
+      bgLayer.style.setProperty('--mxn', (e.clientX / window.innerWidth - 0.5).toFixed(3));
+      bgLayer.style.setProperty('--myn', (e.clientY / window.innerHeight - 0.5).toFixed(3));
+    }
     if (!gliding) { gliding = true; requestAnimationFrame(glide); }
   }, { passive: true });
 
