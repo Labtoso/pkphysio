@@ -2,6 +2,27 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Neues Design im Liquid-Glass-Stil (Branch V2)
+
+### Neu
+- Hinter der ganzen Seite liegen weiche, langsam treibende Lichtflecken in Teal, Blau und Orange. Bei „Bewegung reduzieren“ im System stehen sie still.
+- Kopfleiste, Karten, FAQ, Portrait, Kontaktdaten, Karte und das Kontakt-Menü sind durchscheinende Glasflächen mit Unschärfe, hellem Rand und Lichtkante oben.
+- Die Kopfleiste schwebt als abgerundete Glas-Pille mit Abstand zum Rand. Das Handy-Menü klappt als eigene Glaskarte darunter auf.
+- Die Zeile über dem Namen im Startbereich steht in einer kleinen Glas-Pille.
+- Die gleichen Lichtflecken liegen auch hinter dem Impressum und der Seite „Made by Sebastian“.
+
+### Geändert
+- Alle Knöpfe sind Pillen. „Termin vereinbaren“ hat einen Glanz von oben und einen leichten Schein in der Praxisfarbe, „Mehr erfahren“ ist aus Glas.
+- Die Bereiche wechseln nicht mehr zwischen zwei Hintergründen, alles liegt auf demselben Glas-Hintergrund.
+- Ecken sind runder. Der Rundungs-Regler im Website-Editor wirkt weiter, die Glasflächen rechnen von ihm aus.
+- Navigationspunkte bekommen beim Darüberfahren und im aktiven Bereich eine Glas-Pille statt einer Unterstreichung.
+- Karten heben sich beim Darüberfahren leicht an.
+- Texte, Farben (Teal #17b6a4), Bausteine und Website-Editor bleiben gleich.
+
+### Entfernt
+- Die Unterstreichungs-Animation der Navigation.
+- Der kleine Pfeil am Kontakt-Menü.
+
 ## 23.10.2026 – Impressum als Baustein
 
 ### Neu
