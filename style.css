@@ -2263,3 +2263,199 @@ main, .site-footer { position: relative; z-index: 1; }
   .fx-ach-icon { width: 40px; height: 40px; }
   .fx-ach-text strong { font-size: 1.15rem; }
 }
+
+/* ===== V2: Thock-Spiel mit mehr Glas und Bewegung ===== */
+
+/* Flüssige Glas-Blobs hinter dem Spiel (ohne Unschärfe, nur Verlauf und Glanz) */
+.kb-blobs { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.kb-blobs i {
+  position: absolute;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 26%, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 28%),
+    radial-gradient(circle at 70% 75%, rgba(111, 231, 255, .35), transparent 60%),
+    conic-gradient(from 200deg, rgba(23, 182, 164, .25), rgba(167, 139, 250, .25), rgba(255, 122, 198, .2), rgba(23, 182, 164, .25));
+  border: 1px solid rgba(255, 255, 255, .35);
+  box-shadow: inset 0 -20px 50px rgba(23, 182, 164, .3), inset 0 14px 34px rgba(255, 255, 255, .25);
+  will-change: transform;
+  animation: fx-blob 8s ease-in-out infinite, kb-drift 14s ease-in-out infinite alternate;
+}
+.kb-blobs i:nth-child(1) { width: 340px; height: 340px; left: -80px; top: -60px; }
+.kb-blobs i:nth-child(2) { width: 260px; height: 260px; right: -60px; bottom: -40px; animation-delay: -3s, -5s; }
+.kb-blobs i:nth-child(3) { width: 160px; height: 160px; right: 18%; top: 8%; animation-delay: -5s, -9s; }
+@keyframes kb-drift { to { transform: translate(60px, 40px) rotate(25deg); } }
+.kb-overlay:not(.is-open) .kb-blobs i { animation-play-state: paused; }
+
+.kb-panel { position: relative; }
+.kb-fx { position: absolute; inset: 0; pointer-events: none; z-index: 5; overflow: visible; }
+
+/* Welle: Nachbartasten heben sich nacheinander */
+.kb-key.kb-wave .kb-cap { animation: kb-wave .55s cubic-bezier(.3, 1.6, .5, 1) var(--wd, 0ms) both; }
+@keyframes kb-wave {
+  0% { transform: none; }
+  40% { transform: translateY(calc(var(--ws, 1) * -5px)) scale(calc(1 + var(--ws, 1) * .04)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), inset 0 -3px 0 rgba(0, 0, 0, .18), 0 6px 0 rgba(0, 0, 0, .22), 0 0 calc(var(--ws, 1) * 22px) rgba(111, 231, 255, .55); }
+  100% { transform: none; }
+}
+.kb-key.is-down .kb-cap { animation: none; }
+
+/* Glastropfen */
+.kb-drop {
+  position: absolute;
+  width: var(--s); height: var(--s);
+  margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #fff, rgba(255, 255, 255, .2) 40%, rgba(111, 231, 255, .35) 70%);
+  border: 1px solid rgba(255, 255, 255, .6);
+  box-shadow: 0 0 10px rgba(111, 231, 255, .6);
+  will-change: transform, opacity;
+  animation: kb-drop .8s cubic-bezier(.2, .8, .3, 1) both;
+}
+.kb-drop.is-big { animation-duration: 1.2s; }
+@keyframes kb-drop {
+  0% { opacity: 0; transform: translate(0, 0) scale(.2); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.2); }
+}
+
+/* Buchstaben: getippter Buchstabe ploppt, beim Gewinnen springen alle als Welle */
+.kb-word .is-done { animation: kb-letter-pop .45s cubic-bezier(.3, 1.8, .5, 1) both; }
+@keyframes kb-letter-pop { 0% { transform: scale(1.5) translateY(-4px); } 100% { transform: translateY(-4px); } }
+.kb-word.is-win { animation: none; }
+.kb-word.is-win span { animation: kb-letter-jump .7s cubic-bezier(.3, 1.8, .5, 1) calc(var(--i) * 35ms) both; color: var(--color-primary); }
+@keyframes kb-letter-jump {
+  0% { transform: translateY(-4px); }
+  35% { transform: translateY(-22px) scale(1.15); text-shadow: 0 0 24px rgba(111, 231, 255, .9); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* Serien-Anzeige steigt auf */
+.kb-combo {
+  position: absolute;
+  transform: translate(-50%, 0);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: .95rem;
+  color: #0a0c0b;
+  background: linear-gradient(110deg, var(--color-primary), var(--fx-cyan));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), 0 8px 24px rgba(111, 231, 255, .45);
+  animation: kb-combo 1.1s cubic-bezier(.2, .8, .2, 1) both;
+  white-space: nowrap;
+}
+@keyframes kb-combo {
+  0% { opacity: 0; transform: translate(-50%, 10px) scale(.5); }
+  25% { opacity: 1; transform: translate(-50%, -18px) scale(1.12); }
+  70% { opacity: 1; transform: translate(-50%, -34px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -60px) scale(.9); }
+}
+
+/* Zahlen springen */
+.kb-stats b.kb-bump { animation: kb-bump .5s cubic-bezier(.3, 1.8, .5, 1); }
+@keyframes kb-bump { 0% { transform: scale(1); } 35% { transform: scale(1.35); color: var(--fx-cyan); } 100% { transform: scale(1); } }
+.kb-stats b { display: inline-block; }
+
+/* Falsche Taste: ganzes Panel zuckt kurz */
+.kb-panel.kb-hurt { animation: kb-hurt .35s ease; }
+@keyframes kb-hurt { 25% { translate: -6px 0; } 50% { translate: 5px 0; } 75% { translate: -3px 0; } }
+.kb-overlay.is-open .kb-panel { transform: none; }
+
+/* Panel: Lichtkante wandert langsam über das Glas */
+.kb-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, .12) 50%, transparent 65%) -100% 0 / 50% 100% no-repeat;
+  animation: kb-sheen 7s ease-in-out infinite;
+}
+@keyframes kb-sheen { 0%, 40% { background-position: -100% 0; } 100% { background-position: 250% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .kb-blobs i, .kb-key.kb-wave .kb-cap, .kb-drop, .kb-word .is-done, .kb-word.is-win span, .kb-combo,
+  .kb-stats b.kb-bump, .kb-panel.kb-hurt, .kb-panel::after { animation: none; }
+  .kb-drop, .kb-combo { display: none; }
+}
+@media (max-width: 640px) {
+  .kb-blobs i:nth-child(1) { width: 220px; height: 220px; }
+  .kb-blobs i:nth-child(2) { width: 180px; height: 180px; }
+}
+
+/* ===== V2: Leistung, Runde 2 =====
+   Hauptursache fürs Ruckeln: Alles, was sich HINTER einer Glasfläche bewegt, zwingt den Browser,
+   die Unschärfe in jedem Bild neu zu berechnen. Darum steht der Hintergrund jetzt still,
+   und alle bewegten Effekte liegen VOR dem Inhalt statt dahinter. */
+
+/* Hintergrund ruhig: Lichtflecken und Aurora bewegen sich nicht mehr */
+.glass-bg span, .glass-bg::before, .glass-bg::after { animation: none !important; translate: none; transition: none; will-change: auto; }
+.glass-bg::before { transform: translate(-50%, -50%) translateX(12vmax); }
+
+/* Glitzer, aufsteigende Blasen und Mausschein liegen vor dem Inhalt, aber nicht unter der Kopfleiste */
+.fx-sparkles, .fx-bubbles { z-index: 3; clip-path: inset(96px 0 0 0); }
+.fx-cursor { z-index: 3; }
+.fx-bubbles i { opacity: .7; }
+
+/* Keine Unschärfe auf kleinen, bewegten Teilen */
+.hero .eyebrow, .btn-outline, .theme-toggle, .accordion-trigger::after, .custom-divider-line span {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.hero .eyebrow { background: var(--color-surface); }
+.btn-outline { background: var(--color-surface); }
+
+/* Bereiche außerhalb des Bildschirms werden gar nicht erst gezeichnet */
+main > section.section:not(.hero) { content-visibility: auto; contain-intrinsic-size: auto 900px; }
+
+/* Ruhigere Dauer-Animationen im Startbereich */
+.hero .eyebrow { animation: fx-pill-hop 5s ease-in-out infinite; }
+.hero-actions .btn-outline { animation: none; }
+/* Wellenlinie liegt innerhalb des Bereichs, weil er außerhalb des Bildschirms nicht gezeichnet wird */
+.fx-wave { top: 6px; transform: translateX(-50%); }
+
+/* Leistung, Runde 3: Hinter den Karten liegt nur weicher Farbverlauf. Echte Unschärfe sieht dort fast gleich aus,
+   kostet aber beim Scrollen bei jedem Bild Rechenzeit. Darum nur noch Glanz und Füllung, echte Unschärfe
+   bleibt dort, wo Inhalt darunter durchläuft: Kopfleiste, Handy-Menü, Spiel und Erfolg. */
+.service-card, .offer-card, .accordion-item, .about-portrait, .kontakt-map, .contact-list, .contact-popover,
+.custom-testimonial-card, .custom-pricing-card, .custom-social-icon, .kb-stats span {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.service-card, .offer-card, .accordion-item, .contact-list, .custom-testimonial-card, .custom-pricing-card {
+  background-color: rgba(18, 28, 27, .35);
+}
+:root.light .service-card, :root.light .offer-card, :root.light .accordion-item, :root.light .contact-list,
+:root.light .custom-testimonial-card, :root.light .custom-pricing-card { background-color: rgba(255, 255, 255, .35); }
+/* Leistung, Runde 4 (gemessen mit gedrosselter CPU): nur noch Animationen,
+   die die Grafikkarte ohne Neuzeichnen schafft (transform, opacity). */
+
+/* Glanzstreifen über transform statt über die Position */
+.hero .eyebrow::after, .btn::after { left: 0; transform: translateX(-150%) skewX(-20deg); animation-name: fx-shine-move; will-change: transform; }
+@keyframes fx-shine-move { 0%, 55% { transform: translateX(-150%) skewX(-20deg); } 100% { transform: translateX(330%) skewX(-20deg); } }
+
+/* Farbverläufe in Schrift und Knöpfen stehen still (bleiben bunt) */
+.hero h1, .section h2, .hero h1.in-view, .section h2.in-view, .impressum-page h1, .made-by h1 { animation: none; background-position: 30% 50%; }
+.hero h1.in-view, .section h2.in-view { animation: fx-land 1.4s var(--boing) both; }
+.btn-primary, .hero-actions .btn { animation: none; }
+.hero-actions .btn-primary { animation: fx-hop 4s var(--boing) infinite; }
+
+/* Kein pulsierender Schatten mehr (müsste jedes Bild neu gezeichnet werden) */
+.hero .eyebrow { animation: fx-pill-hop 5s ease-in-out infinite; }
+.timeline-dot { animation: none; }
+.fx-wave.is-drawn path { animation: none; opacity: .8; }
+
+/* Blasen verformen sich nur noch über transform */
+.fx-ball, .fx-ball.is-new, .fx-ball.is-child.is-new { animation: none; }
+.fx-ball.is-new, .fx-ball.is-child.is-new { animation: fx-ball-in .7s var(--boing) both; }
+.section-head::before { animation: fx-float 11s ease-in-out infinite; }
+
+/* Effekt-Ebenen ohne Ausschnitt-Maske, beginnen einfach unter der Kopfleiste */
+.fx-sparkles, .fx-bubbles { clip-path: none; top: 96px; }
+/* Leistung, Runde 5: Glitzer und Blasen ohne große Schatten, weniger davon */
+.fx-sparkles i { box-shadow: none; background: radial-gradient(circle, #fff 0 30%, rgba(111, 231, 255, .55) 45%, transparent 70%); width: calc(var(--size) * 3); height: calc(var(--size) * 3); }
+:root.light .fx-sparkles i { box-shadow: none; background: radial-gradient(circle, var(--color-primary) 0 30%, rgba(23, 182, 164, .35) 45%, transparent 70%); }
+.fx-sparkles i:nth-child(n + 11) { display: none; }
+.fx-bubbles i { box-shadow: none; border-width: 1px; }
+.fx-bubbles i:nth-child(n + 6) { display: none; }
+.fx-ball { box-shadow: inset 0 -14px 30px rgba(23, 182, 164, .35), inset 0 10px 24px rgba(255, 255, 255, .35); }
+.fx-ball.is-grabbed { box-shadow: inset 0 -14px 30px rgba(23, 182, 164, .45), inset 0 10px 24px rgba(255, 255, 255, .45), 0 0 0 3px rgba(111, 231, 255, .5); }
+.fx-ball:hover, .fx-ball.is-grabbed { filter: none; }
