@@ -30,3 +30,10 @@ SOFTWARE.
    "bubbles 'pop'" von farfadet46 auf OpenGameArt:
    https://opengameart.org/content/bubbles-pop
    Lizenz CC0 (gemeinfrei, keine Namensnennung nötig).
+3) Maus-Klick (Ordner xp/)
+   "Middle Mouse Click" von 1j01 auf OpenGameArt:
+   https://opengameart.org/content/middle-mouse-click
+   Lizenz CC0 (gemeinfrei, keine Namensnennung nötig).
+
+4) Alte, klackernde Tastatur für Windows XP (Ordner old/)
+   "MX Blue - Full Travel" aus dem Projekt Mechvibes (src/audio/mxblue-travel), Lizenz MIT wie unter 1).

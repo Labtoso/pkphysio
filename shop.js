@@ -92,7 +92,19 @@
     if (id === 's-deep' && on) sound.setVariant('deep');
     if (id === 's-bright' && on) sound.setVariant('bright');
     if (id === 's-retro' && on) sound.setVariant('retro');
-    if (id === 'xp') { root.classList.toggle('theme-xp', on); if (on) xpChime(); }
+    if (id === 'xp') {
+      root.classList.toggle('theme-xp', on);
+      if (on) {
+        prevVariant = sound.variant;
+        sound.setVariant('xp');
+        buildTaskbar();
+        xpChime();
+      } else {
+        sound.setVariant(prevVariant);
+        closeStartMenu();
+        xpShutdown();
+      }
+    }
   }
 
   function activate(id) {
@@ -117,7 +129,7 @@
     if (balance() < it.price) {
       btn.classList.remove('is-nope');
       requestAnimationFrame(() => btn.classList.add('is-nope'));
-      sound.play('buzz');
+      if (root.classList.contains('theme-xp')) xpError(); else sound.play('buzz');
       return;
     }
     spent += it.price;
@@ -210,25 +222,92 @@
   }
 
   /* ---------- Windows XP ---------- */
-  function xpChime() {
+  let prevVariant = null;
+  let taskbar = null;
+
+  // Taskleiste unten mit Start-Knopf, Startmenü und Uhr
+  function buildTaskbar() {
+    buildWinButtons();
+    if (taskbar) return;
+    taskbar = document.createElement('div');
+    taskbar.className = 'xp-taskbar';
+    taskbar.innerHTML =
+      '<button type="button" class="xp-start"><span class="xp-flag" aria-hidden="true"><i></i><i></i><i></i><i></i></span>start</button>' +
+      '<div class="xp-task">Pascal Krieger – Physiotherapie</div>' +
+      '<div class="xp-tray"><span class="xp-tray-icon" aria-hidden="true"></span><span data-clock></span></div>' +
+      '<div class="xp-menu" hidden>' +
+        '<div class="xp-menu-head"><span class="xp-avatar" aria-hidden="true"></span>Besucher</div>' +
+        '<div class="xp-menu-body">' +
+          '<a href="#ueber-mich">Über mich</a><a href="#leistungen">Leistungen</a><a href="#faq">FAQ</a><a href="#kontakt">Kontakt</a>' +
+          '<hr><button type="button" data-xp="ach">Erfolge</button><button type="button" data-xp="shop">Shop</button><button type="button" data-xp="thock">Thock</button>' +
+        '</div>' +
+        '<div class="xp-menu-foot"><button type="button" data-xp="off">Abmelden</button></div>' +
+      '</div>';
+    document.body.appendChild(taskbar);
+    const clock = taskbar.querySelector('[data-clock]');
+    const tick = () => { const d = new Date(); clock.textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
+    tick();
+    setInterval(tick, 15000);
+    const menu = taskbar.querySelector('.xp-menu');
+    taskbar.querySelector('.xp-start').addEventListener('click', () => { menu.hidden = !menu.hidden; });
+    menu.addEventListener('click', (e) => {
+      const a = e.target.closest('a, [data-xp]');
+      if (!a) return;
+      menu.hidden = true;
+      const act = a.dataset.xp;
+      if (act === 'ach') fx.openAchievements();
+      if (act === 'shop') openShop();
+      if (act === 'thock') startGame('g-thock');
+      if (act === 'off') { active.delete('xp'); apply('xp', false); }
+    });
+    document.addEventListener('click', (e) => { if (!e.target.closest('.xp-taskbar')) menu.hidden = true; });
+  }
+  function closeStartMenu() {
+    if (taskbar) taskbar.querySelector('.xp-menu').hidden = true;
+  }
+
+  // Eigene, nachempfundene Systemklänge (keine Original-Dateien von Microsoft)
+  function xpPlay(notes, len) {
+    if (!sound.on) return;
     try {
       const AC = window.AudioContext || window.webkitAudioContext;
       const ctx = new AC();
-      const notes = [[311, 0], [466, 0.18], [415, 0.36], [311, 0.6], [622, 0.6], [466, 0.78]];
-      notes.forEach(([f, d]) => {
-        const o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = 'triangle';
-        o.frequency.value = f;
-        const t = ctx.currentTime + d;
-        g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(0.08, t + 0.04);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + 1.4);
-        o.connect(g).connect(ctx.destination);
-        o.start(t);
-        o.stop(t + 1.5);
+      notes.forEach(([f, d, vol]) => {
+        [1, 2.01].forEach((m, i) => {
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.type = i ? 'sine' : 'triangle';
+          o.frequency.value = f * m;
+          const t = ctx.currentTime + d;
+          g.gain.setValueAtTime(0.0001, t);
+          g.gain.exponentialRampToValueAtTime((vol || 0.08) * (i ? 0.3 : 1), t + 0.05);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + (len || 1.4));
+          o.connect(g).connect(ctx.destination);
+          o.start(t);
+          o.stop(t + (len || 1.4) + 0.1);
+        });
       });
-      setTimeout(() => ctx.close(), 2500);
+      setTimeout(() => ctx.close(), ((len || 1.4) + 1.5) * 1000);
     } catch (e) {}
+  }
+  // Hochfahren: weiche, aufsteigende Akkorde
+  function xpChime() { xpPlay([[311, 0], [466, 0.18], [415, 0.36], [311, 0.6], [622, 0.6], [466, 0.78]]); }
+  // Herunterfahren: absteigend und leiser werdend
+  function xpShutdown() { xpPlay([[831, 0, 0.07], [622, 0.22, 0.07], [415, 0.44, 0.07], [466, 0.66, 0.08], [311, 0.66, 0.05]], 1.6); }
+  // Fehler: kurzer, harter Doppelton
+  function xpError() { xpPlay([[659, 0, 0.1], [988, 0, 0.06], [494, 0.14, 0.1]], 0.5); }
+
+  // Minimieren, Maximieren, Schließen in der Kopfleiste
+  function buildWinButtons() {
+    if (header.querySelector('.xp-winbtns')) return;
+    const w = document.createElement('div');
+    w.className = 'xp-winbtns';
+    w.innerHTML = '<i role="button" tabindex="0" aria-label="Minimieren"></i><i role="button" tabindex="0" aria-label="Maximieren"></i><i role="button" tabindex="0" aria-label="Schließen"></i>';
+    header.appendChild(w);
+    w.addEventListener('click', (e) => {
+      const i = [...w.children].indexOf(e.target.closest('i'));
+      if (i === 2) { active.delete('xp'); apply('xp', false); }
+      else if (i >= 0) xpError();
+    });
   }
 
   updateBadge();

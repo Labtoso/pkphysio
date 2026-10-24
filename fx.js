@@ -127,7 +127,10 @@
       r3: 'cream/press/GENERIC_R3.mp3', r4: 'cream/press/GENERIC_R4.mp3',
       space: 'cream/press/SPACE.mp3', enter: 'cream/press/ENTER.mp3', backspace: 'cream/press/BACKSPACE.mp3',
       up: 'cream/release/GENERIC.mp3', upSpace: 'cream/release/SPACE.mp3', upEnter: 'cream/release/ENTER.mp3', upBackspace: 'cream/release/BACKSPACE.mp3',
-      pop: 'pop.mp3'
+      pop: 'pop.mp3',
+      xpPress: 'xp/mouse-press.wav', xpRelease: 'xp/mouse-release.wav',
+      old0: 'old/press-GENERIC_R0.mp3', old1: 'old/press-GENERIC_R1.mp3', old2: 'old/press-GENERIC_R2.mp3',
+      old3: 'old/press-GENERIC_R3.mp3', old4: 'old/press-GENERIC_R4.mp3', oldUp: 'old/release-GENERIC.mp3'
     };
     function loadSamples() {
       if (samplesLoading || !ctx) return;
@@ -324,6 +327,29 @@
       ding() { sounds.thock({ size: 2.25, row: 2, soft: 0.7 }); later(() => sounds.thock({ size: 1, row: 0, soft: 0.5 }), 90); },
       buzz() { sounds.thock({ size: 2.75, row: 3, soft: 0.6 }); later(() => sounds.thock({ size: 2.75, row: 3, soft: 0.45 }), 80); }
     });
+    // Windows-XP-Modus: echte Maus-Klicks (Drücken und Loslassen) und einfache Systemtöne, sonst Stille
+    const XP_CLICKS = ['click', 'pop', 'open', 'close', 'burst', 'squish'];
+    function mouseClick() {
+      if (!sample('xpPress', { vol: 0.9, noVariant: true })) { noise({ freq: 3000, q: 2, dur: 0.006, vol: 0.5 }); return; }
+      setTimeout(() => sample('xpRelease', { vol: 0.8, noVariant: true }), 75);
+    }
+    function xpTone(notes) {
+      notes.forEach(([f, d, len]) => body({ freq: f, dur: len || 0.5, vol: 0.09, wave: 'triangle', attack: 0.01, delay: d }));
+    }
+    // Uralte, klackernde Bürotastatur: etwas tiefer abgespielt
+    function oldKey(k) {
+      const row = Math.max(0, Math.min(4, Math.round(k && k.row != null ? k.row : 2)));
+      sample('old' + row, { rate: rnd(0.9, 0.05), vol: 0.9 * ((k && k.soft) || 1), pan: (k && k.pan) || 0, noVariant: true });
+    }
+    function playXp(name, arg) {
+      if (name === 'thock') { oldKey(arg); return; }
+      if (name === 'clack') { sample('oldUp', { rate: rnd(0.9, 0.05), vol: 0.7, pan: (arg && arg.pan) || 0, noVariant: true }); return; }
+      if (XP_CLICKS.includes(name)) mouseClick();
+      else if (name === 'chime') xpTone([[523, 0, 0.35], [784, 0.12, 0.6]]);
+      else if (name === 'ding') xpTone([[880, 0, 0.25], [1175, 0.1, 0.5]]);
+      else if (name === 'buzz') xpTone([[440, 0, 0.18], [349, 0.09, 0.45]]);
+    }
+
     // Diese Töne kommen erst, wenn schon einmal geklickt wurde (Browser erlauben vorher keinen Ton)
     const passive = ['bubble', 'glassTap', 'ratchet', 'boing', 'knock', 'rise'];
 
@@ -337,7 +363,11 @@
       get variant() { return variant; },
       get on() { return on; },
       set on(v) { on = v; try { localStorage.setItem('sound', v ? 'on' : 'off'); } catch (e) {} },
-      play(name, arg) { if (!on || !sounds[name] || (!ctx && passive.includes(name))) return; sounds[name](arg); },
+      play(name, arg) {
+        if (!on || !sounds[name] || (!ctx && passive.includes(name))) return;
+        if (variant === 'xp') { playXp(name, arg); return; }
+        sounds[name](arg);
+      },
       hover() {
         const now = performance.now();
         if (!on || !ctx || now - lastHover < 90) return;
