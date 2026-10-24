@@ -2517,3 +2517,125 @@ main > section.section:not(.hero) { content-visibility: auto; contain-intrinsic-
   100% { transform: translate(var(--dx), calc(var(--dy) + 46px)) scale(.3); opacity: 0; }
 }
 .fx-splash { will-change: transform, opacity; }
+
+/* ===== V2: Erfolge-Liste und Blasen-Knöpfe ===== */
+
+.fx-achievement { cursor: pointer; }
+.fx-achievement:hover { box-shadow: var(--glass-shine), 0 20px 50px rgba(16, 60, 56, .3), 0 0 0 2px rgba(111, 231, 255, .5), 0 0 40px rgba(111, 231, 255, .45); }
+
+.fx-ach-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(5, 10, 10, .45);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .35s ease, visibility .35s;
+}
+:root.light .fx-ach-overlay { background: rgba(230, 242, 240, .5); }
+.fx-ach-overlay.is-open { opacity: 1; visibility: visible; }
+.fx-ach-panel {
+  width: min(560px, 100%);
+  max-height: min(80vh, 760px);
+  overflow-y: auto;
+  padding: 22px;
+  border-radius: 30px;
+  background: var(--glass-fill);
+  background-color: var(--glass-solid);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--glass-shine), 0 40px 100px rgba(0, 0, 0, .45);
+  transform: translateY(40px) scale(.94);
+  transition: transform .8s var(--boing);
+}
+.fx-ach-overlay.is-open .fx-ach-panel { transform: none; }
+.fx-ach-panel-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.fx-ach-panel-head h2 { font-size: 1.6rem; }
+.fx-ach-count {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: .9rem;
+  color: #0a0c0b;
+  background: linear-gradient(110deg, var(--color-primary), var(--fx-cyan));
+}
+.fx-ach-close { margin-left: auto; }
+
+.fx-ach-list { display: flex; flex-direction: column; gap: 10px; }
+.fx-ach-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--glass-edge);
+  opacity: .72;
+  animation: fx-ach-row .6s var(--boing) calc(var(--i) * 40ms) both;
+}
+@keyframes fx-ach-row { from { opacity: 0; transform: translateY(14px); } }
+.fx-ach-item.is-got { opacity: 1; border-color: rgba(255, 213, 74, .55); box-shadow: 0 0 22px rgba(255, 213, 74, .18); }
+.fx-ach-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: var(--color-surface);
+  border: 1px solid var(--glass-edge);
+}
+.fx-ach-item.is-got .fx-ach-item-icon { background: radial-gradient(circle at 35% 30%, #fff6c8, #ffd54a 45%, #e8a800); border-color: transparent; }
+.fx-ach-item.is-secret .fx-ach-item-icon { color: var(--fx-violet); }
+.fx-ach-item-text { display: flex; flex-direction: column; line-height: 1.3; }
+.fx-ach-item-text strong { font-size: 1rem; }
+.fx-ach-item-text small { color: var(--color-ink-soft); font-size: .85rem; }
+
+/* Blasen-Knöpfe unten im Startbereich */
+.fx-ball-controls {
+  position: absolute;
+  right: 24px;
+  bottom: 28px;
+  z-index: 4;
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 999px;
+  background: var(--color-surface);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--glass-shine);
+}
+.fx-ball-controls button {
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--color-ink);
+  font: 700 .82rem var(--font-body);
+  transition: background .3s ease, transform .6s var(--boing);
+}
+.fx-ball-controls button:hover { background: var(--color-bg-alt); transform: translateY(-2px) scale(1.06); }
+.fx-ball-controls button:active { transform: scale(.9); transition-duration: .08s; }
+@media (max-width: 640px) {
+  .fx-ball-controls { left: 50%; right: auto; bottom: 14px; transform: translateX(-50%); gap: 2px; padding: 4px; }
+  .fx-ball-controls button { padding: 7px 10px; font-size: .74rem; white-space: nowrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-ach-item { animation: none; }
+}
+
+/* Keine eckigen Konfetti-Stücke mehr: aus dem Erfolg sprühen runde Glasbläschen */
+.fx-ach-confetti {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #fff, hsla(var(--h), 85%, 70%, .5) 55%, hsla(var(--h), 85%, 60%, .25));
+  border: 1px solid rgba(255, 255, 255, .6);
+}
+.fx-ach-item { opacity: .88; }
