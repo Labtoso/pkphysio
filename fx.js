@@ -282,6 +282,52 @@
     themeToggle.parentNode.insertBefore(btn, themeToggle);
   }
 
+  // Erfolg „Flashbangt“, wenn man ins helle Farbschema wechselt
+  let achievementTimer = null;
+  function flashbang() {
+    const flash = document.createElement('div');
+    flash.className = 'fx-flash';
+    flash.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(flash);
+    flash.addEventListener('animationend', () => flash.remove());
+
+    document.querySelectorAll('.fx-achievement').forEach(el => el.remove());
+    const toast = document.createElement('div');
+    toast.className = 'fx-achievement';
+    toast.setAttribute('role', 'status');
+    toast.innerHTML =
+      '<span class="fx-ach-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span>' +
+      '<span class="fx-ach-text"><small>Erfolg freigeschaltet</small><strong>Flashbangt</strong></span>' +
+      '<span class="fx-ach-bar" aria-hidden="true"></span>';
+    for (let i = 0; i < 18; i++) {
+      const c = document.createElement('i');
+      c.className = 'fx-ach-confetti';
+      const a = Math.random() * Math.PI - Math.PI;
+      const d = 60 + Math.random() * 90;
+      c.style.setProperty('--dx', (Math.cos(a) * d * 1.8).toFixed(0) + 'px');
+      c.style.setProperty('--dy', (Math.sin(a) * -d * 0.6 + 40).toFixed(0) + 'px');
+      c.style.setProperty('--r', (Math.random() * 720 - 360).toFixed(0) + 'deg');
+      c.style.setProperty('--h', Math.floor(Math.random() * 360));
+      c.style.animationDelay = (0.35 + Math.random() * 0.15).toFixed(2) + 's';
+      toast.appendChild(c);
+    }
+    document.body.appendChild(toast);
+
+    // Fanfare aus Tastenanschlägen, von tief nach hoch
+    [4, 3, 2, 1, 0].forEach((row, i) => setTimeout(() => sound.play('thock', { size: i === 4 ? 2.25 : 1, row, soft: 0.8, pan: -0.6 + i * 0.3 }), 380 + i * 75));
+    setTimeout(() => sound.play('thock', { size: 6.25, row: 4 }), 380 + 5 * 75 + 60);
+
+    clearTimeout(achievementTimer);
+    achievementTimer = setTimeout(() => {
+      toast.classList.add('is-leaving');
+      toast.addEventListener('animationend', (e) => { if (e.animationName === 'fx-ach-out') toast.remove(); });
+    }, 3800);
+  }
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) themeBtn.addEventListener('click', () => {
+    setTimeout(() => { if (root.classList.contains('light')) flashbang(); }, 0);
+  });
+
   // Welcher Ton zu welchem Klick gehört
   document.addEventListener('click', (e) => {
     const t = e.target.closest('a, button, summary');
