@@ -12,70 +12,179 @@
     try { on = localStorage.getItem('sound') !== 'off'; } catch (e) {}
     let lastHover = 0;
 
+    let master = null;
+
+    // Alles läuft durch eine weiche Kette: Tiefpass, Kompressor und ein kleiner, naher Raumhall
     function audio() {
       if (!ctx) {
         const AC = window.AudioContext || window.webkitAudioContext;
         if (!AC) return null;
         ctx = new AC();
+        const lowpass = ctx.createBiquadFilter();
+        lowpass.type = 'lowpass';
+        lowpass.frequency.value = 7500;
+        const comp = ctx.createDynamicsCompressor();
+        comp.threshold.value = -24;
+        comp.ratio.value = 4;
+        comp.attack.value = 0.002;
+        comp.release.value = 0.12;
+        const room = ctx.createConvolver();
+        const len = Math.floor(ctx.sampleRate * 0.35);
+        const ir = ctx.createBuffer(2, len, ctx.sampleRate);
+        for (let ch = 0; ch < 2; ch++) {
+          const d = ir.getChannelData(ch);
+          for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 4);
+        }
+        room.buffer = ir;
+        const wet = ctx.createGain();
+        wet.gain.value = 0.14;
+        master = ctx.createGain();
+        master.gain.value = 0.9;
+        master.connect(lowpass);
+        master.connect(room).connect(wet).connect(lowpass);
+        lowpass.connect(comp).connect(ctx.destination);
       }
       if (ctx.state === 'suspended') ctx.resume();
       return ctx;
     }
 
-    // Ein kurzer Ton mit weichem Ausklang
-    function tone(freq, endFreq, dur, vol, type, delay) {
+    // Kurzer Rausch-Impuls durch einen Filter: Klopfen, Klicken, Knistern
+    function noise(opt) {
       const a = audio();
       if (!a) return;
-      const t = a.currentTime + (delay || 0);
-      const osc = a.createOscillator();
-      const gain = a.createGain();
-      osc.type = type || 'sine';
-      osc.frequency.setValueAtTime(freq, t);
-      osc.frequency.exponentialRampToValueAtTime(endFreq, t + dur);
-      gain.gain.setValueAtTime(0.0001, t);
-      gain.gain.exponentialRampToValueAtTime(vol, t + 0.006);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      osc.connect(gain).connect(a.destination);
-      osc.start(t);
-      osc.stop(t + dur + 0.02);
-    }
-
-    // Leises Rauschen für ein knackiges „Tick“
-    function tick(vol) {
-      const a = audio();
-      if (!a) return;
-      const len = Math.floor(a.sampleRate * 0.03);
+      const t = a.currentTime + (opt.delay || 0);
+      const len = Math.max(1, Math.floor(a.sampleRate * opt.dur));
       const buf = a.createBuffer(1, len, a.sampleRate);
       const data = buf.getChannelData(0);
-      for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 6);
+      const curve = opt.curve || 4;
+      for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, curve);
       const src = a.createBufferSource();
-      const filter = a.createBiquadFilter();
-      const gain = a.createGain();
-      filter.type = 'bandpass';
-      filter.frequency.value = 3200;
-      filter.Q.value = 1.2;
-      gain.gain.value = vol;
       src.buffer = buf;
-      src.connect(filter).connect(gain).connect(a.destination);
-      src.start();
+      const f = a.createBiquadFilter();
+      f.type = opt.type || 'bandpass';
+      f.frequency.setValueAtTime(opt.freq, t);
+      if (opt.toFreq) f.frequency.exponentialRampToValueAtTime(opt.toFreq, t + opt.dur);
+      f.Q.value = opt.q || 1;
+      const g = a.createGain();
+      g.gain.value = opt.vol;
+      const pan = a.createStereoPanner ? a.createStereoPanner() : null;
+      if (pan) pan.pan.value = opt.pan || 0;
+      src.connect(f).connect(g);
+      (pan ? g.connect(pan) : g).connect(master);
+      src.start(t);
     }
 
+    // Weicher Sinus mit Tonhöhen-Gleiten: Plopp, Blubb, Ting
+    function body(opt) {
+      const a = audio();
+      if (!a) return;
+      const t = a.currentTime + (opt.delay || 0);
+      const osc = a.createOscillator();
+      const g = a.createGain();
+      osc.type = opt.wave || 'sine';
+      osc.frequency.setValueAtTime(opt.freq, t);
+      osc.frequency.exponentialRampToValueAtTime(opt.toFreq || opt.freq, t + (opt.glide || opt.dur));
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(opt.vol, t + (opt.attack || 0.003));
+      g.gain.exponentialRampToValueAtTime(0.0001, t + opt.dur);
+      osc.connect(g).connect(master);
+      osc.start(t);
+      osc.stop(t + opt.dur + 0.05);
+    }
+
+    const rnd = (v, spread) => v * (1 + (Math.random() - 0.5) * spread);
+
     const sounds = {
-      click() { tick(0.5); tone(520, 180, 0.09, 0.22, 'sine'); },
-      pop() { tone(380, 900, 0.07, 0.16, 'sine'); tone(900, 1400, 0.05, 0.06, 'triangle', 0.03); },
-      bubble() { tone(600 + Math.random() * 300, 1500 + Math.random() * 500, 0.08, 0.05, 'sine'); },
-      open() { tone(330, 660, 0.12, 0.14, 'sine'); tick(0.25); },
-      close() { tone(660, 300, 0.12, 0.12, 'sine'); tick(0.2); },
-      chime() { [784, 988, 1319].forEach((f, i) => tone(f, f * 1.01, 0.5, 0.08, 'sine', i * 0.07)); },
-      drop() { tone(1200, 260, 0.14, 0.12, 'sine'); },
-      burst() { tick(0.9); tone(700, 2200, 0.06, 0.2, 'sine'); tone(1800, 400, 0.18, 0.08, 'triangle', 0.02); },
-      boing() { tone(220, 520, 0.16, 0.1, 'sine'); tone(520, 300, 0.2, 0.05, 'sine', 0.08); }
+      // Tiefes, weiches „Thock“ wie eine gute Tastatur
+      click() {
+        noise({ freq: rnd(1900, 0.2), q: 3, dur: 0.012, vol: 0.9, curve: 6 });
+        body({ freq: rnd(150, 0.1), toFreq: 90, dur: 0.07, vol: 0.5 });
+        noise({ freq: 5200, type: 'highpass', dur: 0.004, vol: 0.12, delay: 0.002 });
+      },
+      // Lippen-Plopp
+      pop() {
+        body({ freq: rnd(260, 0.15), toFreq: 820, glide: 0.022, dur: 0.05, vol: 0.45 });
+        noise({ freq: 2600, q: 2, dur: 0.006, vol: 0.35 });
+      },
+      // Ganz leises Wasser-„Plip“
+      bubble() {
+        body({ freq: rnd(700, 0.3), toFreq: rnd(1700, 0.2), glide: 0.018, dur: 0.045, vol: 0.12, pan: 0 });
+      },
+      // FAQ: Holz-„Tok“ mit leisem Wischen
+      open() {
+        noise({ freq: 950, q: 12, dur: 0.05, vol: 1.4, curve: 5 });
+        noise({ freq: 600, toFreq: 2400, q: 0.8, dur: 0.09, vol: 0.12, curve: 1.5, delay: 0.01 });
+      },
+      close() {
+        noise({ freq: 760, q: 12, dur: 0.05, vol: 1.3, curve: 5 });
+        noise({ freq: 2400, toFreq: 600, q: 0.8, dur: 0.08, vol: 0.1, curve: 1.5, delay: 0.01 });
+      },
+      // Glas-„Ting“
+      chime() {
+        body({ freq: 2093, dur: 0.9, vol: 0.08, attack: 0.002 });
+        body({ freq: 3136, dur: 0.6, vol: 0.035, attack: 0.002, delay: 0.004 });
+        noise({ freq: 6000, q: 20, dur: 0.02, vol: 0.4 });
+      },
+      // Knackiges Blasen-Platzen
+      burst() {
+        noise({ freq: 3000, type: 'highpass', dur: 0.014, vol: 0.7, curve: 3 });
+        body({ freq: rnd(1100, 0.2), toFreq: 240, glide: 0.035, dur: 0.06, vol: 0.4 });
+        for (let i = 0; i < 4; i++) noise({ freq: rnd(4500, 0.4), q: 6, dur: 0.006, vol: 0.25, delay: 0.03 + i * rnd(0.018, 0.6), pan: (Math.random() - 0.5) * 1.4 });
+      },
+      // Weicher Gummi-„Boop“ beim Aufprall
+      boing(r) {
+        const p = 40 / Math.max(10, r || 40);
+        body({ freq: rnd(210 * p, 0.15), toFreq: 140 * p, dur: 0.12, vol: 0.28 });
+        noise({ freq: 700, type: 'lowpass', dur: 0.03, vol: 0.4, curve: 3 });
+      },
+      // Matschiges „Squish“ beim Anfassen einer Blase
+      squish() {
+        noise({ freq: 350, toFreq: 1600, q: 2.5, dur: 0.09, vol: 0.5, curve: 1.8 });
+        body({ freq: 320, toFreq: 520, dur: 0.06, vol: 0.12 });
+      },
+      // Wie groß die Blase ist, so tief klingt sie (r = Radius in Pixeln)
+      split(r) {
+        const p = 60 / Math.max(14, r || 40);
+        noise({ freq: 2600, type: 'highpass', dur: 0.012, vol: 0.55, curve: 3 });
+        body({ freq: 520 * p, toFreq: 180 * p, glide: 0.05, dur: 0.09, vol: 0.38 });
+        noise({ freq: 900, toFreq: 300, q: 1.5, dur: 0.12, vol: 0.22, curve: 2 });
+      },
+      plip(r) {
+        const p = 40 / Math.max(8, r || 20);
+        body({ freq: rnd(600 * p, 0.2), toFreq: rnd(1500 * p, 0.2), glide: 0.02, dur: 0.05, vol: 0.2 });
+        noise({ freq: 4200, q: 4, dur: 0.004, vol: 0.18, pan: (Math.random() - 0.5) * 1.2 });
+      },
+      glassTap(r) {
+        const p = 50 / Math.max(10, r || 40);
+        body({ freq: rnd(1800 * p, 0.1), dur: 0.18, vol: 0.05, attack: 0.001 });
+        noise({ freq: 5200, q: 14, dur: 0.01, vol: 0.25 });
+      },
+      knock(r) {
+        const p = 40 / Math.max(10, r || 30);
+        body({ freq: rnd(260 * p, 0.15), toFreq: 170 * p, dur: 0.06, vol: 0.2 });
+        noise({ freq: 1400 * p, q: 6, dur: 0.02, vol: 0.5, curve: 5 });
+      },
+      unsquish() {
+        noise({ freq: 1500, toFreq: 400, q: 2.5, dur: 0.08, vol: 0.4, curve: 1.8 });
+      },
+      whoosh() {
+        noise({ freq: 400, toFreq: 3200, q: 0.9, dur: 0.22, vol: 0.35, curve: 1.2 });
+      },
+      rise() {
+        for (let i = 0; i < 3; i++) body({ freq: 500 + i * 220, toFreq: 1100 + i * 300, glide: 0.03, dur: 0.06, vol: 0.08, delay: i * 0.07 });
+      },
+      // Ganz feines Rasten beim Scrollen, wie ein Drehrad
+      ratchet() {
+        noise({ freq: rnd(3400, 0.15), q: 8, dur: 0.008, vol: 0.22, curve: 6 });
+      }
     };
+    // Diese Töne kommen erst, wenn schon einmal geklickt wurde (Browser erlauben vorher keinen Ton)
+    const passive = ['bubble', 'glassTap', 'ratchet', 'boing', 'knock', 'rise'];
 
     return {
       get on() { return on; },
       set on(v) { on = v; try { localStorage.setItem('sound', v ? 'on' : 'off'); } catch (e) {} },
-      play(name) { if (on && sounds[name]) sounds[name](); },
+      play(name, arg) { if (!on || !sounds[name] || (!ctx && passive.includes(name))) return; sounds[name](arg); },
       hover() {
         const now = performance.now();
         if (!on || !ctx || now - lastHover < 90) return;
@@ -157,6 +266,7 @@
   document.body.appendChild(bubbles);
 
   /* ---------- Blasen im Startbereich: schieben, werfen, platzen lassen ---------- */
+  // Große Blasen zerfallen beim Platzen in kleinere, die kleinsten zerplatzen in Spritzer
   const hero = document.querySelector('.hero');
   if (hero) {
     const play = document.createElement('div');
@@ -166,31 +276,36 @@
 
     const small = window.innerWidth < 700;
     const count = small ? 4 : 7;
+    const MIN_SPLIT = small ? 14 : 18;
+    const MAX_BALLS = small ? 22 : 40;
     const items = [];
     let W = 0, H = 0;
     const measure = () => { W = hero.clientWidth; H = hero.clientHeight; };
     measure();
     window.addEventListener('resize', measure);
 
-    function spawn(b, fromBottom) {
-      b.r = (small ? 18 : 34) + Math.random() * (small ? 24 : 70);
-      b.x = (small ? 0.35 : 0.5) * W + Math.random() * (W * (small ? 0.6 : 0.48) - b.r * 2);
-      b.y = fromBottom ? H + b.r : 90 + Math.random() * (H - 140 - b.r * 2);
-      b.vx = (Math.random() - 0.5) * 1.2;
-      b.vy = fromBottom ? -4 - Math.random() * 3 : (Math.random() - 0.5) * 1.2;
+    function place(b) {
       b.el.style.width = b.el.style.height = (b.r * 2).toFixed(0) + 'px';
       b.el.style.transform = `translate3d(${b.x.toFixed(1)}px, ${b.y.toFixed(1)}px, 0)`;
+    }
+
+    function respawn(b) {
+      b.r = (small ? 18 : 34) + Math.random() * (small ? 24 : 70);
+      b.x = (small ? 0.35 : 0.5) * W + Math.random() * Math.max(10, W * (small ? 0.6 : 0.48) - b.r * 2);
+      b.y = b.fromBottom ? H + b.r : 90 + Math.random() * Math.max(10, H - 140 - b.r * 2);
+      b.vx = (Math.random() - 0.5) * 1.2;
+      b.vy = b.fromBottom ? -4 - Math.random() * 3 : (Math.random() - 0.5) * 1.2;
       b.el.classList.remove('is-popping');
       b.el.classList.add('is-new');
       b.alive = true;
+      place(b);
     }
 
-    for (let i = 0; i < count; i++) {
+    function makeBall(opt) {
       const el = document.createElement('i');
-      el.className = 'fx-ball';
+      el.className = 'fx-ball' + (opt.child ? ' is-child' : '');
       play.appendChild(el);
-      const b = { el, drag: false, squash: 0 };
-      spawn(b, false);
+      const b = { el, drag: false, squash: 0, alive: true, child: !!opt.child, fromBottom: false, born: performance.now() };
       items.push(b);
       el.addEventListener('animationend', (e) => { if (e.animationName === 'fx-ball-in') el.classList.remove('is-new'); });
 
@@ -200,10 +315,11 @@
         e.preventDefault();
         el.setPointerCapture(e.pointerId);
         b.drag = true;
+        b.squash = 0.3;
         el.classList.add('is-grabbed');
         startX = lastX = e.clientX; startY = lastY = e.clientY; lastT = performance.now(); moved = 0;
         b.vx = b.vy = 0;
-        sound.play('pop');
+        sound.play('squish');
       });
       el.addEventListener('pointermove', (e) => {
         if (!b.drag) return;
@@ -220,31 +336,76 @@
         b.drag = false;
         el.classList.remove('is-grabbed');
         if (moved < 6) pop(b);
+        else if (Math.hypot(b.vx, b.vy) > 8) sound.play('whoosh');
+        else sound.play('unsquish');
       };
       el.addEventListener('pointerup', release);
       el.addEventListener('pointercancel', release);
+      el.addEventListener('pointerenter', () => { if (b.alive && !b.drag) { b.squash = 0.12; sound.play('glassTap', b.r); } });
+
+      if (opt.child) {
+        b.r = opt.r; b.x = opt.x; b.y = opt.y; b.vx = opt.vx; b.vy = opt.vy;
+        el.classList.add('is-new');
+        place(b);
+      } else {
+        respawn(b);
+      }
+      return b;
     }
 
-    function pop(b) {
-      b.alive = false;
-      b.el.classList.add('is-popping');
-      sound.play('burst');
-      const cx = b.x + b.r, cy = b.y + b.r;
-      for (let k = 0; k < 12; k++) {
+    function splash(cx, cy, r, n) {
+      for (let k = 0; k < n; k++) {
         const d = document.createElement('span');
         d.className = 'fx-splash';
-        const a = (k / 12) * Math.PI * 2 + Math.random() * 0.4;
-        const dist = b.r * (1.1 + Math.random() * 0.9);
+        const a = (k / n) * Math.PI * 2 + Math.random() * 0.4;
+        const dist = r * (1.1 + Math.random() * 0.9);
         d.style.left = cx + 'px';
         d.style.top = cy + 'px';
         d.style.setProperty('--dx', (Math.cos(a) * dist).toFixed(0) + 'px');
         d.style.setProperty('--dy', (Math.sin(a) * dist).toFixed(0) + 'px');
-        d.style.setProperty('--s', (4 + Math.random() * 6).toFixed(1) + 'px');
+        d.style.setProperty('--s', (3 + Math.random() * 6).toFixed(1) + 'px');
         play.appendChild(d);
         d.addEventListener('animationend', () => d.remove());
       }
-      setTimeout(() => spawn(b, true), 1800);
     }
+
+    function pop(b) {
+      if (!b.alive) return;
+      b.alive = false;
+      b.el.classList.add('is-popping');
+      const cx = b.x + b.r, cy = b.y + b.r;
+      const alive = items.filter(i => i.alive).length;
+      const canSplit = b.r >= MIN_SPLIT && alive < MAX_BALLS;
+
+      if (canSplit) {
+        // In 2 bis 4 kleinere Blasen zerfallen, die nach außen schießen
+        const n = b.r > 60 ? 4 : b.r > 34 ? 3 : 2;
+        const childR = b.r * (n === 4 ? 0.5 : n === 3 ? 0.56 : 0.64);
+        sound.play('split', b.r);
+        for (let k = 0; k < n; k++) {
+          const a = (k / n) * Math.PI * 2 + Math.random() * 0.8;
+          const speed = 3 + Math.random() * 3;
+          setTimeout(() => {
+            makeBall({ child: true, r: childR * (0.85 + Math.random() * 0.3), x: cx + Math.cos(a) * b.r * 0.4 - childR, y: cy + Math.sin(a) * b.r * 0.4 - childR, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed });
+            sound.play('plip', childR - k * 3);
+          }, 40 + k * 55);
+        }
+        splash(cx, cy, b.r, 8);
+      } else {
+        sound.play('burst');
+        splash(cx, cy, b.r, 12);
+      }
+
+      b.el.addEventListener('animationend', () => {
+        if (b.child) {
+          b.el.remove();
+          items.splice(items.indexOf(b), 1);
+        }
+      }, { once: true });
+      if (!b.child) setTimeout(() => { b.fromBottom = true; respawn(b); sound.play('rise'); }, 2200);
+    }
+
+    for (let i = 0; i < count; i++) makeBall({});
 
     let running = false, lastHit = 0;
     function step() {
@@ -257,16 +418,16 @@
         b.x += b.vx; b.y += b.vy;
         const d = b.r * 2;
         let hit = 0;
-        if (b.x < 0) { b.x = 0; b.vx = Math.abs(b.vx) * 0.85; hit = Math.abs(b.vx); }
-        if (b.x > W - d) { b.x = W - d; b.vx = -Math.abs(b.vx) * 0.85; hit = Math.abs(b.vx); }
-        if (b.y < 80) { b.y = 80; b.vy = Math.abs(b.vy) * 0.85; hit = Math.abs(b.vy); }
+        if (b.x < 0) { b.x = 0; b.vx = Math.abs(b.vx) * 0.95; hit = Math.abs(b.vx); }
+        if (b.x > W - d) { b.x = W - d; b.vx = -Math.abs(b.vx) * 0.95; hit = Math.abs(b.vx); }
+        if (b.y < 80) { b.y = 80; b.vy = Math.abs(b.vy) * 0.95; hit = Math.abs(b.vy); }
         if (b.y > H - d) {
-          if (b.vy < -2) { /* steigt gerade frisch auf */ } else { b.y = H - d; b.vy = -Math.abs(b.vy) * 0.85; hit = Math.abs(b.vy); }
+          if (b.vy < -2 && !b.child) { /* steigt gerade frisch auf */ } else { b.y = H - d; b.vy = -Math.abs(b.vy) * 0.95; hit = Math.abs(b.vy); }
         }
-        if (hit > 3) {
-          b.squash = Math.min(0.3, hit / 30);
+        if (hit > 2.5) {
+          b.squash = Math.min(0.42, hit / 18);
           const now = performance.now();
-          if (now - lastHit > 120) { lastHit = now; sound.play('boing'); }
+          if (now - lastHit > 90) { lastHit = now; sound.play('boing', b.r); }
         }
       }
       // Blasen stoßen sich voneinander ab
@@ -282,16 +443,20 @@
             if (!c.drag) { c.x += nx * push; c.y += ny * push; }
             const rel = (c.vx - a.vx) * nx + (c.vy - a.vy) * ny;
             if (rel < 0) {
-              a.vx += rel * nx * 0.9; a.vy += rel * ny * 0.9;
-              c.vx -= rel * nx * 0.9; c.vy -= rel * ny * 0.9;
-              if (-rel > 2.5) { a.squash = c.squash = Math.min(0.25, -rel / 25); sound.hover(); }
+              a.vx += rel * nx * 0.95; a.vy += rel * ny * 0.95;
+              c.vx -= rel * nx * 0.95; c.vy -= rel * ny * 0.95;
+              if (-rel > 2) {
+                a.squash = c.squash = Math.min(0.35, -rel / 16);
+                const now = performance.now();
+                if (now - lastHit > 70) { lastHit = now; sound.play('knock', Math.min(a.r, c.r)); }
+              }
             }
           }
         }
       }
       for (const b of items) {
-        b.squash *= 0.86;
-        const s = 1 + b.squash;
+        b.squash *= 0.88;
+        const s = 1 + b.squash * Math.cos((performance.now() - b.born) / 40);
         b.el.style.transform = `translate3d(${b.x.toFixed(1)}px, ${b.y.toFixed(1)}px, 0) scale(${s.toFixed(3)}, ${(2 - s).toFixed(3)})`;
       }
       requestAnimationFrame(step);
@@ -302,6 +467,27 @@
       if (running && !was) requestAnimationFrame(step);
     }).observe(hero);
   }
+
+  /* ---------- Leises Plip, wenn Inhalte auftauchen ---------- */
+  let lastReveal = 0;
+  const revealSound = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      revealSound.unobserve(entry.target);
+      const now = performance.now();
+      if (now - lastReveal > 110) { lastReveal = now; sound.play('plip', 26); }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('main .reveal').forEach(el => revealSound.observe(el));
+
+  /* ---------- Leises Ratschen beim Scrollen ---------- */
+  let lastScrollY = window.scrollY;
+  window.addEventListener('scroll', () => {
+    if (Math.abs(window.scrollY - lastScrollY) > 90) {
+      lastScrollY = window.scrollY;
+      sound.play('ratchet');
+    }
+  }, { passive: true });
 
   /* ---------- Wassertropfen beim Klicken ---------- */
   document.addEventListener('pointerdown', (e) => {
