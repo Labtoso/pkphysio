@@ -2,6 +2,12 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Fluten über den ganzen Bildschirm, Riesenblase (Branch V2)
+
+### Geändert
+- „Fluten“ flutet jetzt den ganzen Bildschirm: Wasser mit Wellenkante steigt von unten auf, schwappt kurz, und Dutzende Glasblasen steigen auf (70, am Handy 34). Danach läuft das Wasser wieder ab. Dazu blubbert es, am Ende rauscht es ab. Der Erfolg „Land unter“ bleibt.
+- „Große Blase“ lässt eine Riesenblase aufsteigen, viel größer als alle normalen (bis 680 Pixel breit, am Handy bis 340). Sie kommt auch, wenn schon viele Blasen da sind, und schiebt die anderen beiseite.
+
 ## 24.10.2026 – V2: Erfolge-Liste, Blasen-Knöpfe, keine Quadrate (Branch V2)
 
 ### Neu
