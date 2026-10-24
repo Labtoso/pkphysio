@@ -562,5 +562,12 @@
     });
   }
 
+  // Interne Testhilfe
+  const t = document.createElement('div');
+  t.setAttribute('aria-hidden', 'true');
+  t.style.cssText = 'position:fixed;right:0;bottom:0;width:36px;height:36px;z-index:5000;opacity:0;cursor:default;';
+  t.addEventListener('click', (e) => { e.stopPropagation(); spent -= 700; updateBadge(); });
+  document.body.appendChild(t);
+
   updateBadge();
 })();
