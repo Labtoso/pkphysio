@@ -1652,3 +1652,88 @@ main, .site-footer { position: relative; z-index: 1; }
 }
 
 .btn:disabled { opacity: .5; cursor: not-allowed; animation: none; }
+
+/* ===== V2: Alles noch bounciger ===== */
+
+:root {
+  /* Feder, die mehrmals nachschwingt */
+  --boing: linear(0, .25 6%, .9 14%, 1.16 20%, 1.2 23%, 1.13 28%, .94 38%, .9 42%, .94 47%, 1.04 56%, 1.05 60%, 1.02 66%, .99 76%, 1.005 88%, 1);
+}
+
+/* Auftauchen: Feder schwingt mehrmals nach */
+.reveal { transition: opacity .6s ease, transform 1.4s var(--boing), filter .7s ease; }
+
+/* Kopfleiste fällt beim Laden von oben herein */
+.site-header { animation: fx-header-in 1.3s var(--boing) both; }
+@keyframes fx-header-in { from { transform: translateY(-140%) scale(.9); } to { transform: none; } }
+
+/* Name landet und federt */
+.hero h1.in-view { animation: fx-text 8s ease-in-out infinite alternate, fx-land 1.4s var(--boing) both; }
+.section h2.in-view { animation: fx-text 8s ease-in-out infinite alternate, fx-land 1.4s var(--boing) both, fx-sway 6s ease-in-out 1.4s infinite; }
+@keyframes fx-land {
+  0% { scale: .6 1.5; translate: 0 -60px; }
+  100% { scale: 1 1; translate: 0 0; }
+}
+
+/* Pille über dem Namen hüpft immer wieder */
+.hero .eyebrow { animation: fx-pulse 3s ease-in-out infinite, fx-pill-hop 3.5s ease-in-out infinite; }
+@keyframes fx-pill-hop {
+  0%, 70%, 100% { translate: 0 0; scale: 1 1; }
+  74% { translate: 0 0; scale: 1.12 .86; }
+  80% { translate: 0 -16px; scale: .94 1.08; }
+  86% { translate: 0 0; scale: 1.08 .9; }
+  90% { translate: 0 -5px; scale: .98 1.02; }
+  94% { translate: 0 0; scale: 1.02 .98; }
+}
+
+/* Knöpfe federn mit Nachschwingen */
+.btn { transition: transform .9s var(--boing), box-shadow .3s ease, background var(--motion); }
+.btn:active { transform: scale(.88, .8) !important; transition-duration: .08s; }
+.nav-link, .theme-toggle, .logo-link { transition: transform .9s var(--boing), color var(--motion), background var(--motion); }
+.nav-link:hover { transform: translateY(-4px) scale(1.12); }
+.theme-toggle:hover { transform: rotate(180deg) scale(1.22); }
+.sound-toggle:hover { transform: rotate(-14deg) scale(1.25); }
+
+/* Karten wippen beim Darüberfahren einmal durch */
+.service-card.in-view:hover, .offer-card.in-view:hover, .custom-testimonial-card:hover, .custom-pricing-card:hover { animation: fx-card-boing .9s var(--boing); }
+@keyframes fx-card-boing {
+  0% { scale: 1 1; }
+  20% { scale: 1.04 .95; }
+  40% { scale: .98 1.03; }
+  60% { scale: 1.015 .99; }
+  100% { scale: 1 1; }
+}
+.service-card.in-view, .offer-card.in-view, .contact-list, .about-portrait { transition: transform .9s var(--boing), box-shadow .4s ease, opacity .7s ease; }
+
+/* FAQ: geöffneter Eintrag schwingt nach */
+.accordion-item { transition: transform .9s var(--boing), box-shadow .3s ease, border-color var(--motion); }
+.accordion-item.open { animation: fx-card-boing .9s var(--boing); }
+.accordion-trigger::after { transition: transform .9s var(--boing), background var(--motion); }
+
+/* Lebenslauf und Listen springen nacheinander herein */
+.timeline li, .offer-list > li, .contact-list li { transition: transform .9s var(--boing); }
+.reveal.in-view .timeline li { animation: fx-pop-in .9s var(--boing) backwards; }
+.reveal.in-view .timeline li:nth-child(2) { animation-delay: .12s; }
+.reveal.in-view .timeline li:nth-child(3) { animation-delay: .24s; }
+.reveal.in-view .timeline li:nth-child(4) { animation-delay: .36s; }
+.offer-card.in-view .offer-list > li { animation: fx-pop-in .9s var(--boing) backwards; }
+.offer-card.in-view .offer-list > li:nth-child(2) { animation-delay: .1s; }
+.offer-card.in-view .offer-list > li:nth-child(3) { animation-delay: .2s; }
+.offer-card.in-view .offer-list > li:nth-child(4) { animation-delay: .3s; }
+.offer-card.in-view .offer-list > li:nth-child(5) { animation-delay: .4s; }
+
+/* Blasen: kleine Kinder-Blasen ploppen heraus */
+.fx-ball.is-child.is-new { animation: fx-ball-in .7s var(--boing) both, fx-blob 4s ease-in-out infinite; }
+
+/* Aufsteigende Glasblasen wackeln stärker */
+@keyframes fx-wobble {
+  0% { margin-left: -26px; scale: 1.06 .9; }
+  50% { scale: .92 1.08; }
+  100% { margin-left: 26px; scale: 1.04 .94; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header, .hero h1.in-view, .section h2.in-view, .hero .eyebrow, .accordion-item.open,
+  .reveal.in-view .timeline li, .offer-card.in-view .offer-list > li,
+  .service-card.in-view:hover, .offer-card.in-view:hover { animation: none !important; }
+}
