@@ -273,7 +273,7 @@
     const timer = setInterval(() => {
       time--;
       timeEl.textContent = time;
-      if (time <= 5) sound.play('thock', { size: 1, row: 0, soft: 0.6 });
+      if (time <= 5) sound.play('plip', 12);
       if (time <= 0) {
         clearInterval(timer);
         clearInterval(spawner);
@@ -558,7 +558,7 @@
       win.score.textContent = clicks + ' Klicks';
       btn.classList.remove('is-hit');
       requestAnimationFrame(() => btn.classList.add('is-hit'));
-      sound.play('thock', { size: 1, row: clicks % 5, soft: 0.8 });
+      sound.play('click');
     });
   }
 

@@ -322,17 +322,13 @@
         noise({ freq: rnd(3400, 0.15), q: 8, dur: 0.008, vol: 0.22, curve: 6 });
       }
     };
-    // Überall dasselbe cremige Tastatur-Gefühl
+    // Tastatur-Klänge (thock/clack) nur im Thock-Spiel und in Windows XP, sonst Wasser, Glas und Plopp
     const later = (fn, ms) => setTimeout(fn, ms);
     Object.assign(sounds, {
-      click() { sounds.thock({ size: 1, row: 2 }); later(() => sounds.clack({ soft: 0.8 }), 85); },
-      pop() { sounds.thock({ size: 1, row: 1, soft: 0.8 }); later(() => sounds.clack({ soft: 0.6 }), 70); },
+      // Knöpfe: kurzer, heller Plopp
+      click() { if (!sample('pop', { rate: rnd(1.9, 0.06), vol: 0.55, tone: 'bright' })) water(rnd(700, 0.1), 0.25, 0); },
       bubble() {},
-      open() { sounds.thock({ size: 2.25, row: 2 }); later(() => sounds.clack({ soft: 0.8 }), 110); },
-      close() { sounds.thock({ size: 2, row: 3, soft: 0.85 }); later(() => sounds.clack({ soft: 0.7 }), 95); },
-      chime() { sounds.thock({ size: 6.25, row: 4 }); later(() => sounds.clack({ soft: 0.9 }), 130); },
       burst(r) { sample('pop', { rate: Math.max(1.35, Math.min(2, 70 / Math.max(14, r || 40))) * rnd(1, 0.06), vol: 1, pan: (Math.random() - 0.5) * 0.6, tone: 'bright' }); },
-      split() { sounds.thock({ size: 6.25, row: 4, soft: 0.95 }); later(() => sounds.clack({ soft: 0.8 }), 90); },
       glassTap(r) { sample('pop', { rate: 2.2 * rnd(1, 0.1), vol: 0.18, pan: (Math.random() - 0.5) * 0.8 }); },
       plip(r) { sample('pop', { rate: Math.max(1.3, Math.min(2.4, 40 / Math.max(8, r || 20))) * rnd(1, 0.1), vol: 0.3, pan: (Math.random() - 0.5) * 1.2 }); },
       squish() { sample('pop', { rate: 1.7 * rnd(1, 0.08), vol: 0.25 }); },
@@ -342,8 +338,8 @@
       boing() { sample('pop', { rate: 2 * rnd(1, 0.1), vol: 0.1, pan: (Math.random() - 0.5) * 0.8 }); },
       rise() { [0, 1, 2].forEach(i => sample('pop', { rate: 1.6 + i * 0.3, vol: 0.2, delay: i * 0.08 })); },
       ratchet() { sounds.thock({ size: 1, row: 0, soft: 0.14 }); },
-      ding() { sounds.thock({ size: 2.25, row: 2, soft: 0.7 }); later(() => sounds.thock({ size: 1, row: 0, soft: 0.5 }), 90); },
-      buzz() { sounds.thock({ size: 2.75, row: 3, soft: 0.6 }); later(() => sounds.thock({ size: 2.75, row: 3, soft: 0.45 }), 80); }
+      // Falsch: zwei weiche, absteigende Tropfen statt eines dumpfen Brummens
+      buzz() { water(rnd(330, 0.05), 0.22, -0.2); water(rnd(250, 0.05), 0.18, 0.2, 0.09); }
     });
     // Windows-XP-Modus: echte Maus-Klicks (Drücken und Loslassen) und einfache Systemtöne, sonst Stille
     const XP_CLICKS = ['click', 'pop', 'open', 'close', 'burst', 'squish'];
@@ -530,9 +526,9 @@
     toast.addEventListener('click', openAchievements);
     document.body.appendChild(toast);
 
-    // Fanfare aus Tastenanschlägen, von tief nach hoch (bei Ton aus bleibt sie natürlich stumm)
-    [4, 3, 2, 1, 0].forEach((row, i) => setTimeout(() => sound.play('thock', { size: i === 4 ? 2.25 : 1, row, soft: 0.8, pan: -0.6 + i * 0.3 }), 380 + i * 75));
-    setTimeout(() => sound.play('thock', { size: 6.25, row: 4 }), 380 + 5 * 75 + 60);
+    // Fanfare: aufsteigende Plopps und ein Glas (bei Ton aus bleibt sie natürlich stumm)
+    [24, 20, 16, 13, 10].forEach((r, i) => setTimeout(() => sound.play('plip', r), 380 + i * 75));
+    setTimeout(() => sound.play('chime'), 380 + 5 * 75 + 60);
 
     clearTimeout(achievementTimer);
     achievementTimer = setTimeout(() => {
