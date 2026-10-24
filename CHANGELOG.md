@@ -2,6 +2,13 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Sauberer Retro-Mauszeiger (Branch V2)
+
+### Geändert
+- Der Pixel-Mauszeiger war grob und hässlich (doppelt große Pixel, ausgefranste Kanten). Neu sind pixelgenaue, klassische Zeiger wie bei Windows 98/XP: ein schwarz umrandeter weißer Pfeil (12 × 19 Pixel) und dazu die passende Hand über Links und Knöpfen. Beide sind scharf und ohne Unschärfe, und die Spitze sitzt genau auf dem Klickpunkt.
+- Diese Zeiger gibt es beim gekauften Pixel-Mauszeiger und automatisch in Windows XP und Windows 98. In Textfeldern bleibt der normale Textcursor.
+- Datei-Versionen auf `?v=24r`.
+
 ## 24.10.2026 – V2: Admin-Hinweis wieder rätselhafter (Branch V2)
 
 ### Geändert
