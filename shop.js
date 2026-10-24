@@ -100,7 +100,7 @@
       { id: 'xp', name: 'Windows XP', price: 800 },
       { id: 'r-98', name: 'Windows 98', price: 530 },
       { id: 'r-dos', name: 'MS-DOS', price: 480 },
-      { id: 'r-gb', name: 'Game Boy', price: 480 }
+      { id: 'r-gb', name: 'Game Boy', price: 630 }
     ] }
   ];
   const findItem = (id) => { for (const g of SHOP) for (const it of g.items) if (it.id === id) return { g, it }; return null; };
