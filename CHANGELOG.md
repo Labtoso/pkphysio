@@ -2,6 +2,31 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Töne, Bounce, spielbare Blasen, Anmelden ohne Passwort (Branch V2)
+
+### Neu
+- Klick-Töne im ASMR-Stil, direkt im Browser erzeugt (keine Sounddateien): Klick bei Knöpfen, Plopp bei Links, Glockenspiel beim Farbschema, Auf- und Zu-Ton bei den FAQ, leises Blubbern beim Darüberfahren.
+- Ton-Knopf mit Lautsprecher neben dem Farbschema-Knopf. Die Wahl bleibt gespeichert.
+- Im Startbereich schweben Glasblasen, die man anfassen kann: ziehen, herumschieben und werfen. Sie prallen von den Rändern und voneinander ab und verformen sich dabei. Antippen lässt eine Blase mit Spritzern und Knall-Ton platzen, kurz darauf steigt eine neue von unten auf.
+- Über die ganze Seite steigen kleine Glasblasen auf und wackeln dabei.
+- Beim Klicken breitet sich an der Stelle ein Wassertropfen aus.
+- Knöpfe, Navigation und FAQ wackeln beim Drücken wie Wackelpudding.
+- Knöpfe ziehen sich am Computer leicht zur Maus hin.
+- Admin: Neuer Knopf „Ohne Passwort anmelden“. Damit kann man den Website-Editor ohne Passwort und Token öffnen und alles ansehen. Speichern ist dabei gesperrt, dafür braucht es weiter die Anmeldung mit GitHub oder mit Passwort und Token.
+
+### Geändert
+- Inhalte springen beim Auftauchen mit Federung und leichter Drehung herein.
+- Knöpfe springen beim Darüberfahren hoch, die Knöpfe im Startbereich hüpfen ab und zu von selbst, „Termin vereinbaren“ atmet mit einem Schein.
+- Das Logo hüpft ab und zu, Navigationspunkte federn, der Ton-Knopf kippt beim Darüberfahren.
+- Portrait und Kontaktdaten verformen sich langsam wie flüssiges Glas.
+- Karten neigen sich stärker und federn zurück.
+- FAQ-Antworten springen beim Öffnen herein, Einträge federn beim Darüberfahren.
+- Lebenslauf, Angebote und Kontaktdaten rutschen beim Darüberfahren federnd zur Seite.
+- Überschriften wippen leicht.
+
+### Entfernt
+- Die zwei festen Glaskugeln im Startbereich, an ihrer Stelle sind jetzt die beweglichen Blasen.
+
 ## 24.10.2026 – V2: Mehr Glas, viel mehr Bewegung (Branch V2)
 
 ### Neu
