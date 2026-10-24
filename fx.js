@@ -188,29 +188,31 @@
       rise() {
         for (let i = 0; i < 3; i++) body({ freq: 500 + i * 220, toFreq: 1100 + i * 300, glide: 0.03, dur: 0.06, vol: 0.08, delay: i * 0.07 });
       },
-      // Mechanische Tastatur: tiefes, gedämpftes „Thock“ beim Drücken (k = { size, row })
+      // Cremiges Thock wie bei einer geschmierten (prelubed) Linear-Tastatur:
+      // tiefer, runder Kern, hohles Gehäuse, keine Feder-Pings, keine kratzigen Höhen (k = { size, row, pan, soft })
       thock(k) {
         const size = (k && k.size) || 1;
         const row = (k && k.row) || 0;
-        const deep = Math.min(1.6, 0.8 + size * 0.12);
         const pan = k && typeof k.pan === 'number' ? k.pan : 0;
-        // Gehäuse-Resonanz: der dumpfe Kern des Thock
-        body({ freq: rnd(165 / deep + row * 6, 0.08), toFreq: 95 / deep, dur: 0.075 + size * 0.01, vol: 0.55, attack: 0.0015 });
-        // Kappe trifft auf die Platte
-        noise({ freq: rnd(720 / deep + row * 40, 0.12), q: 1.6, dur: 0.035, vol: 1.1, curve: 5, pan });
-        // Feiner Anschlag oben drauf
-        noise({ freq: rnd(3600, 0.2), q: 2.5, dur: 0.006, vol: 0.32, curve: 7, pan });
-        // Große Tasten: Stabilisator klappert ganz leise nach
-        if (size >= 2) {
-          noise({ freq: rnd(2200, 0.2), q: 6, dur: 0.008, vol: 0.18, delay: 0.012, pan: pan - 0.3 });
-          noise({ freq: rnd(2000, 0.2), q: 6, dur: 0.008, vol: 0.14, delay: 0.019, pan: pan + 0.3 });
-        }
+        const soft = (k && k.soft) || 1;
+        const deep = Math.min(1.7, 0.85 + size * 0.13);
+        // Runder, tiefer Kern
+        body({ freq: rnd(190 / deep + row * 5, 0.06), toFreq: 105 / deep, glide: 0.035, dur: 0.07 + size * 0.012, vol: 0.62 * soft, attack: 0.0025, pan });
+        // Hohles Gehäuse: der eigentliche „Thock“
+        noise({ freq: rnd(330 / deep + row * 12, 0.08), q: 7, dur: 0.06 + size * 0.01, vol: 1.9 * soft, curve: 3.2, pan });
+        // Kappe trifft gedämpft auf (nur tiefe Höhen, daher cremig)
+        noise({ freq: rnd(1150 / deep, 0.1), type: 'lowpass', q: 0.9, dur: 0.022, vol: 0.85 * soft, curve: 5, pan });
+        // Ganz feine Textur, kaum hörbar
+        noise({ freq: 2100, q: 1.2, dur: 0.008, vol: 0.12 * soft, curve: 7, pan });
+        // Große Tasten: weich gedämpfter Stabilisator, kein Klappern
+        if (size >= 2) noise({ freq: rnd(520, 0.1), q: 5, dur: 0.05, vol: 0.5 * soft, curve: 3, delay: 0.008, pan });
       },
-      // Leichtes „Clack“ beim Loslassen
+      // Loslassen: leiser, runder „Tock“ nach oben
       clack(k) {
         const pan = k && typeof k.pan === 'number' ? k.pan : 0;
-        noise({ freq: rnd(1500, 0.15), q: 2.2, dur: 0.018, vol: 0.35, curve: 6, pan });
-        body({ freq: rnd(260, 0.1), toFreq: 200, dur: 0.03, vol: 0.12 });
+        const soft = (k && k.soft) || 1;
+        noise({ freq: rnd(620, 0.1), q: 5, dur: 0.035, vol: 0.75 * soft, curve: 4, pan });
+        body({ freq: rnd(300, 0.08), toFreq: 230, dur: 0.035, vol: 0.14 * soft, pan });
       },
       // Spiel: richtig getippt
       ding() {
@@ -226,6 +228,26 @@
         noise({ freq: rnd(3400, 0.15), q: 8, dur: 0.008, vol: 0.22, curve: 6 });
       }
     };
+    // Überall dasselbe cremige Tastatur-Gefühl
+    const later = (fn, ms) => setTimeout(fn, ms);
+    Object.assign(sounds, {
+      click() { sounds.thock({ size: 1.5, row: 3 }); later(() => sounds.clack({ soft: 0.8 }), 85); },
+      pop() { sounds.thock({ size: 1, row: 1, soft: 0.8 }); later(() => sounds.clack({ soft: 0.6 }), 70); },
+      bubble() { sounds.thock({ size: 1, row: 0, soft: 0.18, pan: (Math.random() - 0.5) * 0.8 }); },
+      open() { sounds.thock({ size: 2.25, row: 2 }); later(() => sounds.clack({ soft: 0.8 }), 110); },
+      close() { sounds.thock({ size: 2, row: 3, soft: 0.85 }); later(() => sounds.clack({ soft: 0.7 }), 95); },
+      chime() { sounds.thock({ size: 6.25, row: 4 }); later(() => sounds.clack({ soft: 0.9 }), 130); },
+      burst() { sounds.thock({ size: 1.25, row: 1, pan: (Math.random() - 0.5) * 0.6 }); later(() => sounds.clack({ soft: 0.7 }), 60); },
+      split() { sounds.thock({ size: 6.25, row: 4, soft: 0.95 }); later(() => sounds.clack({ soft: 0.8 }), 90); },
+      plip(r) { sounds.thock({ size: 1, row: Math.max(0, Math.min(4, 4 - (r || 20) / 12)), soft: 0.55, pan: (Math.random() - 0.5) * 1.2 }); },
+      boing(r) { sounds.thock({ size: Math.min(2.5, (r || 30) / 30), row: 3, soft: 0.5 }); },
+      knock(r) { sounds.thock({ size: Math.min(2, (r || 30) / 35), row: 2, soft: 0.4, pan: (Math.random() - 0.5) * 0.8 }); },
+      glassTap() { sounds.clack({ soft: 0.35 }); },
+      rise() { [0, 1, 2].forEach(i => later(() => sounds.thock({ size: 1, row: 4 - i, soft: 0.35 }), i * 70)); },
+      ratchet() { sounds.thock({ size: 1, row: 0, soft: 0.14 }); },
+      ding() { sounds.thock({ size: 2.25, row: 2, soft: 0.7 }); later(() => sounds.thock({ size: 1, row: 0, soft: 0.5 }), 90); },
+      buzz() { sounds.thock({ size: 2.75, row: 3, soft: 0.6 }); later(() => sounds.thock({ size: 2.75, row: 3, soft: 0.45 }), 80); }
+    });
     // Diese Töne kommen erst, wenn schon einmal geklickt wurde (Browser erlauben vorher keinen Ton)
     const passive = ['bubble', 'glassTap', 'ratchet', 'boing', 'knock', 'rise'];
 
