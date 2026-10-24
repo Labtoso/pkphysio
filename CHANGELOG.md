@@ -2,6 +2,13 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Cremiges Thock überall (Branch V2)
+
+### Geändert
+- Tastatur-Klang neu wie bei einer geschmierten (prelubed) Linear-Tastatur: tiefer, runder Kern, hohles Gehäuse, gedämpfter Anschlag ohne kratzige Höhen, kein Feder-Ping. Große Tasten klingen tiefer und weich gedämpft statt klappernd. Beim Loslassen kommt ein leiser, runder Tock.
+- Alle Töne der Seite nutzen jetzt dieses cremige Thock: Knöpfe, Links, FAQ auf und zu, Farbschema (wie eine Leertaste), Blasen platzen und zerfallen, Aufprall, Darüberfahren und Scrollen (ganz leise), Richtig und Falsch im Spiel.
+- Zu jedem Drücken folgt kurz danach der Loslass-Tock, wie bei einer echten Taste.
+
 ## 24.10.2026 – V2: Kein Ruckeln mehr, ruhigere FAQ (Branch V2)
 
 ### Geändert
