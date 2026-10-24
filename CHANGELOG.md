@@ -2,6 +2,18 @@
 
 Neueste Änderungen stehen oben.
 
+## 24.10.2026 – V2: Game-Boy-Spiel „Blockfall“ (Branch V2)
+
+### Neu
+- Im Game-Boy-Look steht unten links eine kleine Konsole. Ein Klick öffnet „Blockfall“ (`gb-game.js`), ein klassisches Block-Stapelspiel in vier Grüntönen, als komplette Handheld-Konsole mit Bildschirm, Steuerkreuz, A, B, SELECT und START. Es ist eine eigene Umsetzung ohne fremde Grafiken oder Namen.
+- Steuerung: Pfeiltasten (hoch dreht), Leertaste lässt fallen, X dreht, Enter pausiert. Am Handy über die Knöpfe der Konsole.
+- Es gibt einen Schatten, wo das Teil landet, eine Anzeige für das nächste Teil sowie Punkte und Reihen. Das Spiel wird schneller, je mehr Reihen man abräumt. Dazu kommen Chiptune-Töne für Bewegen, Drehen, Ablegen, Reihen, Start und Game Over.
+- Neuer Erfolg „Zeilenfresser“ (150): im Game-Boy-Look 10 Reihen abräumen.
+
+### Geändert
+- Game Boy im Shop kostet 630, damit es weiter genau aufgeht: 33 Erfolge bringen 4310 Punkte, alles im Shop kostet 4310.
+- Datei-Versionen auf `?v=24t`.
+
 ## 24.10.2026 – V2: Heimlicher Virus in Windows XP (Branch V2)
 
 ### Neu
