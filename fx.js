@@ -22,22 +22,22 @@
         ctx = new AC();
         const lowpass = ctx.createBiquadFilter();
         lowpass.type = 'lowpass';
-        lowpass.frequency.value = 7500;
+        lowpass.frequency.value = 6200;
         const comp = ctx.createDynamicsCompressor();
         comp.threshold.value = -24;
         comp.ratio.value = 4;
         comp.attack.value = 0.002;
         comp.release.value = 0.12;
         const room = ctx.createConvolver();
-        const len = Math.floor(ctx.sampleRate * 0.35);
+        const len = Math.floor(ctx.sampleRate * 0.6);
         const ir = ctx.createBuffer(2, len, ctx.sampleRate);
         for (let ch = 0; ch < 2; ch++) {
           const d = ir.getChannelData(ch);
-          for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 4);
+          for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3.2);
         }
         room.buffer = ir;
         const wet = ctx.createGain();
-        wet.gain.value = 0.14;
+        wet.gain.value = 0.22;
         master = ctx.createGain();
         master.gain.value = 0.9;
         master.connect(lowpass);
@@ -87,49 +87,64 @@
       g.gain.setValueAtTime(0.0001, t);
       g.gain.exponentialRampToValueAtTime(opt.vol, t + (opt.attack || 0.003));
       g.gain.exponentialRampToValueAtTime(0.0001, t + opt.dur);
-      osc.connect(g).connect(master);
+      const pan = opt.pan && a.createStereoPanner ? a.createStereoPanner() : null;
+      if (pan) pan.pan.value = opt.pan;
+      osc.connect(g);
+      (pan ? g.connect(pan) : g).connect(master);
       osc.start(t);
       osc.stop(t + opt.dur + 0.05);
     }
 
     const rnd = (v, spread) => v * (1 + (Math.random() - 0.5) * spread);
 
+    // Wassertropfen: Ton schnellt nach oben, wie ein Tropfen in ein Glas Wasser
+    function water(freq, vol, pan, delay) {
+      body({ freq, toFreq: freq * 2.4, glide: 0.028, dur: 0.075, vol, attack: 0.002, pan, delay });
+      noise({ freq: freq * 5, q: 3, dur: 0.004, vol: vol * 0.6, pan, delay });
+    }
+
+    // Glas: mehrere Obertöne, die lange und weich ausklingen
+    function glass(freq, vol, delay) {
+      [[1, 1], [2.76, 0.42], [5.4, 0.2], [8.9, 0.08]].forEach(([m, v], i) => {
+        body({ freq: freq * m, dur: 1.2 - i * 0.22, vol: vol * v, attack: 0.002, delay, pan: (i % 2 ? 0.25 : -0.25) });
+      });
+    }
+
     const sounds = {
-      // Tiefes, weiches „Thock“ wie eine gute Tastatur
+      // Knöpfe: weiches Tastatur-Thock
       click() {
-        noise({ freq: rnd(1900, 0.2), q: 3, dur: 0.012, vol: 0.9, curve: 6 });
-        body({ freq: rnd(150, 0.1), toFreq: 90, dur: 0.07, vol: 0.5 });
-        noise({ freq: 5200, type: 'highpass', dur: 0.004, vol: 0.12, delay: 0.002 });
+        sounds.thock({ size: 1.5, row: 3, pan: 0 });
       },
-      // Lippen-Plopp
+      // Links: Wassertropfen
       pop() {
-        body({ freq: rnd(260, 0.15), toFreq: 820, glide: 0.022, dur: 0.05, vol: 0.45 });
-        noise({ freq: 2600, q: 2, dur: 0.006, vol: 0.35 });
+        water(rnd(520, 0.15), 0.32, (Math.random() - 0.5) * 0.4);
       },
-      // Ganz leises Wasser-„Plip“
+      // Darüberfahren: ganz leiser, kleiner Tropfen
       bubble() {
-        body({ freq: rnd(700, 0.3), toFreq: rnd(1700, 0.2), glide: 0.018, dur: 0.045, vol: 0.12, pan: 0 });
+        water(rnd(900, 0.35), 0.08, (Math.random() - 0.5) * 1.2);
       },
-      // FAQ: Holz-„Tok“ mit leisem Wischen
+      // FAQ auf: drei Tropfen steigen auf, dazu ein Hauch und ein leises Glas
       open() {
-        noise({ freq: 950, q: 12, dur: 0.05, vol: 1.4, curve: 5 });
-        noise({ freq: 600, toFreq: 2400, q: 0.8, dur: 0.09, vol: 0.12, curve: 1.5, delay: 0.01 });
+        [392, 523, 659].forEach((f, i) => water(rnd(f, 0.04), 0.26 - i * 0.04, -0.4 + i * 0.4, i * 0.065));
+        noise({ freq: 1800, toFreq: 7000, q: 0.7, dur: 0.28, vol: 0.06, curve: 1.2, delay: 0.02 });
+        glass(1568, 0.025, 0.2);
       },
+      // FAQ zu: zwei Tropfen sinken ab, dazu ein weiches Fwump
       close() {
-        noise({ freq: 760, q: 12, dur: 0.05, vol: 1.3, curve: 5 });
-        noise({ freq: 2400, toFreq: 600, q: 0.8, dur: 0.08, vol: 0.1, curve: 1.5, delay: 0.01 });
+        [523, 392].forEach((f, i) => water(rnd(f, 0.04), 0.22, 0.3 - i * 0.6, i * 0.07));
+        noise({ freq: 420, type: 'lowpass', dur: 0.12, vol: 0.4, curve: 2.2, delay: 0.05 });
       },
-      // Glas-„Ting“
+      // Farbschema: Weinglas
       chime() {
-        body({ freq: 2093, dur: 0.9, vol: 0.08, attack: 0.002 });
-        body({ freq: 3136, dur: 0.6, vol: 0.035, attack: 0.002, delay: 0.004 });
-        noise({ freq: 6000, q: 20, dur: 0.02, vol: 0.4 });
+        glass(1046, 0.09);
+        glass(1568, 0.04, 0.09);
       },
       // Knackiges Blasen-Platzen
       burst() {
         noise({ freq: 3000, type: 'highpass', dur: 0.014, vol: 0.7, curve: 3 });
         body({ freq: rnd(1100, 0.2), toFreq: 240, glide: 0.035, dur: 0.06, vol: 0.4 });
         for (let i = 0; i < 4; i++) noise({ freq: rnd(4500, 0.4), q: 6, dur: 0.006, vol: 0.25, delay: 0.03 + i * rnd(0.018, 0.6), pan: (Math.random() - 0.5) * 1.4 });
+        for (let i = 0; i < 3; i++) water(rnd(1200 + i * 300, 0.2), 0.07, (Math.random() - 0.5) * 1.6, 0.05 + i * rnd(0.04, 0.5));
       },
       // Weicher Gummi-„Boop“ beim Aufprall
       boing(r) {
@@ -173,6 +188,39 @@
       rise() {
         for (let i = 0; i < 3; i++) body({ freq: 500 + i * 220, toFreq: 1100 + i * 300, glide: 0.03, dur: 0.06, vol: 0.08, delay: i * 0.07 });
       },
+      // Mechanische Tastatur: tiefes, gedämpftes „Thock“ beim Drücken (k = { size, row })
+      thock(k) {
+        const size = (k && k.size) || 1;
+        const row = (k && k.row) || 0;
+        const deep = Math.min(1.6, 0.8 + size * 0.12);
+        const pan = k && typeof k.pan === 'number' ? k.pan : 0;
+        // Gehäuse-Resonanz: der dumpfe Kern des Thock
+        body({ freq: rnd(165 / deep + row * 6, 0.08), toFreq: 95 / deep, dur: 0.075 + size * 0.01, vol: 0.55, attack: 0.0015 });
+        // Kappe trifft auf die Platte
+        noise({ freq: rnd(720 / deep + row * 40, 0.12), q: 1.6, dur: 0.035, vol: 1.1, curve: 5, pan });
+        // Feiner Anschlag oben drauf
+        noise({ freq: rnd(3600, 0.2), q: 2.5, dur: 0.006, vol: 0.32, curve: 7, pan });
+        // Große Tasten: Stabilisator klappert ganz leise nach
+        if (size >= 2) {
+          noise({ freq: rnd(2200, 0.2), q: 6, dur: 0.008, vol: 0.18, delay: 0.012, pan: pan - 0.3 });
+          noise({ freq: rnd(2000, 0.2), q: 6, dur: 0.008, vol: 0.14, delay: 0.019, pan: pan + 0.3 });
+        }
+      },
+      // Leichtes „Clack“ beim Loslassen
+      clack(k) {
+        const pan = k && typeof k.pan === 'number' ? k.pan : 0;
+        noise({ freq: rnd(1500, 0.15), q: 2.2, dur: 0.018, vol: 0.35, curve: 6, pan });
+        body({ freq: rnd(260, 0.1), toFreq: 200, dur: 0.03, vol: 0.12 });
+      },
+      // Spiel: richtig getippt
+      ding() {
+        body({ freq: 1568, dur: 0.35, vol: 0.06, attack: 0.002 });
+        body({ freq: 2349, dur: 0.25, vol: 0.035, attack: 0.002, delay: 0.05 });
+      },
+      // Spiel: falsche Taste
+      buzz() {
+        body({ freq: 120, toFreq: 90, dur: 0.12, vol: 0.18, wave: 'triangle' });
+      },
       // Ganz feines Rasten beim Scrollen, wie ein Drehrad
       ratchet() {
         noise({ freq: rnd(3400, 0.15), q: 8, dur: 0.008, vol: 0.22, curve: 6 });
@@ -194,6 +242,9 @@
     };
   })();
 
+  // Für das geheime Tastatur-Spiel (thock.js)
+  window.pkSound = sound;
+
   // Ton-Knopf neben dem Farbschema-Knopf
   const themeToggle = document.getElementById('themeToggle');
   if (themeToggle) {
@@ -212,7 +263,7 @@
   // Welcher Ton zu welchem Klick gehört
   document.addEventListener('click', (e) => {
     const t = e.target.closest('a, button, summary');
-    if (!t || t.classList.contains('sound-toggle')) return;
+    if (!t || t.classList.contains('sound-toggle') || t.closest('.kb-overlay')) return;
     if (t.id === 'themeToggle') sound.play('chime');
     else if (t.classList.contains('accordion-trigger')) {
       const item = t.closest('.accordion-item');
@@ -234,6 +285,68 @@
   onScroll();
 
   if (reduce) return;
+
+  /* ---------- Startbereich: Wörter gleiten einzeln herein ---------- */
+  function splitWords(el, startDelay) {
+    let i = 0;
+    const walk = (node) => {
+      [...node.childNodes].forEach(child => {
+        if (child.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          child.textContent.split(/(\s+)/).forEach(part => {
+            if (!part) return;
+            if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+            const w = document.createElement('span');
+            w.className = 'fx-word';
+            w.style.animationDelay = (startDelay + i++ * 0.035).toFixed(3) + 's';
+            w.textContent = part;
+            frag.appendChild(w);
+          });
+          child.replaceWith(frag);
+        } else if (child.nodeType === 1) {
+          walk(child);
+        }
+      });
+    };
+    walk(el);
+  }
+  const heroSub = document.getElementById('heroSubtitle');
+  const heroText = document.getElementById('heroText');
+  if (heroSub) splitWords(heroSub, 0.5);
+  if (heroText) splitWords(heroText, 0.8);
+
+  /* ---------- Wellenlinien zwischen den Bereichen, die sich selbst zeichnen ---------- */
+  document.querySelectorAll('main > section.section').forEach(section => {
+    const wave = document.createElement('div');
+    wave.className = 'fx-wave';
+    wave.setAttribute('aria-hidden', 'true');
+    wave.innerHTML = '<svg viewBox="0 0 1200 40" preserveAspectRatio="none"><path pathLength="1" d="M0 20 C 100 0, 200 40, 300 20 S 500 0, 600 20 S 800 40, 900 20 S 1100 0, 1200 20"/></svg>';
+    section.prepend(wave);
+  });
+  const waveObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-drawn');
+      waveObserver.unobserve(entry.target);
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll('.fx-wave').forEach(w => waveObserver.observe(w));
+
+  /* ---------- Flüssig-Filter für die Lichtflecken (wabert langsam) ---------- */
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('width', '0');
+  svg.setAttribute('height', '0');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.style.position = 'absolute';
+  svg.innerHTML =
+    '<filter id="fx-liquid" x="-20%" y="-20%" width="140%" height="140%">' +
+      '<feTurbulence type="fractalNoise" baseFrequency="0.006 0.009" numOctaves="2" seed="7" result="n">' +
+        '<animate attributeName="baseFrequency" dur="18s" values="0.006 0.009;0.011 0.006;0.006 0.009" repeatCount="indefinite"/>' +
+      '</feTurbulence>' +
+      '<feDisplacementMap in="SourceGraphic" in2="n" scale="90" xChannelSelector="R" yChannelSelector="G"/>' +
+    '</filter>';
+  document.body.appendChild(svg);
 
   /* ---------- Glitzer ---------- */
   const sparkles = document.createElement('div');
@@ -516,9 +629,22 @@
   glow.className = 'fx-cursor';
   glow.setAttribute('aria-hidden', 'true');
   document.body.appendChild(glow);
+  // Der Schein gleitet weich hinterher statt hart zu springen
+  let tx = -999, ty = -999, gx = -999, gy = -999, gliding = false;
+  function glide() {
+    gx += (tx - gx) * 0.12;
+    gy += (ty - gy) * 0.12;
+    root.style.setProperty('--mx', gx.toFixed(1) + 'px');
+    root.style.setProperty('--my', gy.toFixed(1) + 'px');
+    gliding = Math.abs(tx - gx) + Math.abs(ty - gy) > 0.5;
+    if (gliding) requestAnimationFrame(glide);
+  }
   window.addEventListener('pointermove', (e) => {
-    root.style.setProperty('--mx', e.clientX + 'px');
-    root.style.setProperty('--my', e.clientY + 'px');
+    if (gx < -900) { gx = e.clientX; gy = e.clientY; }
+    tx = e.clientX; ty = e.clientY;
+    root.style.setProperty('--mxn', (e.clientX / window.innerWidth - 0.5).toFixed(3));
+    root.style.setProperty('--myn', (e.clientY / window.innerHeight - 0.5).toFixed(3));
+    if (!gliding) { gliding = true; requestAnimationFrame(glide); }
   }, { passive: true });
 
   // Leises Blubbern beim Darüberfahren
