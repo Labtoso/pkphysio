@@ -17,7 +17,7 @@
   /* ---------- Rätsel: Geheimschrift ---------- */
   // Verschiebung = Länge des Zip-Kennworts, das Lösungswort muss man bei Start > Ausführen eingeben
   const SECRET = pick(['DEHNEN', 'ATMEN', 'STRECKEN', 'LOCKERN', 'BEWEGEN', 'AUFSTEHEN']);
-  const SHIFT = xp.puzzle.word.length;
+  const SHIFT = 1 + Math.floor(Math.random() * 5);
   const caesar = (s, k) => s.replace(/[A-Z]/g, c => String.fromCharCode((c.charCodeAt(0) - 65 + k) % 26 + 65));
   const CIPHER = caesar(SECRET, SHIFT);
 
@@ -26,8 +26,8 @@
   const privat = xp.F('Privat', [
     xp.T('brief.txt', 'Liebe M.,\n\ndanke, dass du jede Nacht nach dem alten PC gesehen hast.\nEr war nie kaputt. Er hat nur gezählt, für alle, die zu lange sitzen.\n\nWenn du das liest, bist du weiter gekommen als alle anderen.\nSteh auf. Streck dich. Er zählt mit.\n\n– P.')
   ], { lockedPassword: xp.puzzle.privatCode, comment: 'Kennwort = Anzahl der Dehnübungen × Sekunden beim Nacken + Termine der Rücken-Gruppe.', onUnlock: () => fx.unlock('privat') });
-  const readme = xp.T('LIES MICH.txt', 'Für den nächsten, der hier sitzt:\n\nNicht alles auf diesem Desktop ist, was es scheint.\nDer Explorer kennt mehr, als er zeigt.\nUnd wer zu lange sitzt, sollte die Favoriten lesen.');
-  const favNote = xp.T('favoriten.txt', 'Meine Favoriten schreibe ich nie im Klartext.\nJeder Buchstabe wird so viele Stellen im Alphabet weitergeschoben,\nwie das Kennwort der Zip-Datei Buchstaben hat. Nach Z kommt wieder A.\n\nWas dabei herauskommt, sollst du nicht lesen, sondern ausführen.', { hidden: true });
+  const readme = xp.T('LIES MICH.txt', 'Für den nächsten, der hier sitzt:\n\n1. Versteckte Dateien: im Explorer Extras > Ordneroptionen > Ansicht.\n2. Der Ordner Privat: Rechtsklick > Eigenschaften > Zusammenfassung.\n3. Die Favoriten im Internet Explorer: siehe favoriten.txt.\n4. Admin werden: Klick auf das Bild oben im Startmenü.');
+  const favNote = xp.T('favoriten.txt', 'Meine Favoriten im Internet Explorer schreibe ich verschlüsselt.\nJeder Buchstabe ist um ' + SHIFT + ' Stellen im Alphabet nach hinten verschoben (aus A wird ' + String.fromCharCode(65 + SHIFT) + ').\nZum Entschlüsseln also jeden Buchstaben ' + SHIFT + ' Stellen zurück.\n\nDas Wort dann bei Start > Ausführen eintippen.');
   desktopNode.children.push(privat, readme, favNote);
   [privat, readme, favNote].forEach(f => { f.parent = desktopNode; });
   // Desktop-Ordner im Explorer ersetzen
@@ -48,6 +48,7 @@
     { id: 'cmd', name: 'Eingabeaufforderung', icon: 'cmd' },
     { id: 'privat', name: 'Privat', icon: 'folder' },
     { id: 'readme', name: 'LIES MICH.txt', icon: 'txt' },
+    { id: 'fav', name: 'favoriten.txt', icon: 'txt' },
     { id: 'site', name: 'Pascal Krieger', icon: 'site' }
   ];
   let desktop = null;
@@ -78,6 +79,7 @@
     if (id === 'bin') xp.openExplorer('bin');
     if (id === 'notepad') xp.openText(null);
     if (id === 'readme') xp.openText(readme);
+    if (id === 'fav') xp.openText(favNote);
     if (id === 'privat') xp.openExplorer(desktopNode);
     if (id === 'ie') internetExplorer();
     if (id === 'calc') calculator();
@@ -245,7 +247,7 @@
     const menu = body.querySelector('[data-menu="fav"]');
     menu.addEventListener('click', (e) => {
       const d = menu.querySelector('.xpw-drop');
-      if (e.target.closest('[data-fav]')) { d.hidden = true; xp.msgBox('Favorit', 'Die Adresse „' + CIPHER + '“ ist ungültig.\n\nVerschiebung unbekannt.', 'info'); return; }
+      if (e.target.closest('[data-fav]')) { d.hidden = true; xp.msgBox('Favorit', 'Die Adresse „' + CIPHER + '“ ist ungültig.\n\nSie ist verschlüsselt, siehe favoriten.txt auf dem Desktop.', 'info'); return; }
       d.hidden = !d.hidden;
     });
     body.querySelector('.xpw-address input').addEventListener('keydown', (e) => e.stopPropagation());

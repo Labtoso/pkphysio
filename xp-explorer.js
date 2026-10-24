@@ -83,19 +83,8 @@
     if (i === 2) lines[0] = 'Den Wecker habe ich weggeworfen. Er klingelte jede Nacht zur selben Zeit.';
     return { date: pad(day) + '.11.2006', text: lines.join('\n') + '\n' + pick(CLOSERS).replace('{W}', endWord(letter)), real: true };
   });
-  // Täuschungen: Einträge außerhalb des Novembers zählen nicht
-  const decoyLetters = shuffle(Object.keys(ENDWORDS)).slice(0, 2);
-  entries.push(
-    { date: pad(20 + Math.floor(Math.random() * 8)) + '.10.2006', text: 'Erster Tag mit dem neuen PC. Alles ganz normal.\n' + pick(CLOSERS).replace('{W}', endWord(decoyLetters[0])), real: false },
-    { date: pad(3 + Math.floor(Math.random() * 20)) + '.12.2006', text: 'Seit Wochen nichts mehr. Ich hoffe, es ist vorbei.\n' + pick(CLOSERS).replace('{W}', endWord(decoyLetters[1])), real: false }
-  );
-  const codes = new Set();
-  const diaryFiles = shuffle(entries).map(e => {
-    let c;
-    do { c = Math.random().toString(16).slice(2, 6); } while (codes.has(c));
-    codes.add(c);
-    return { name: 'eintrag_' + c + '.txt', type: 'txt', text: e.date + '\n\n' + e.text, diary: e.real, date: e.date };
-  });
+  // Dateinamen nach Datum: im Ordner stehen die Einträge schon in der richtigen Reihenfolge
+  const diaryFiles = entries.map((e, i) => ({ name: 'Tag ' + (i + 1) + ' (' + e.date + ').txt', type: 'txt', text: e.date + '\n\n' + e.text, diary: e.real, date: e.date }));
   const realCount = entries.filter(e => e.real).length;
   const plain = word.toLowerCase();
   const PASSWORDS = [plain, plain.replace(/ue/g, 'ü')];
@@ -117,7 +106,7 @@
   const F = (name, children, extra) => Object.assign({ name, type: 'folder', children: children || [], date: '01.11.2006 08:12' }, extra || {});
   const T = (name, text, extra) => Object.assign({ name, type: 'txt', text, date: '03.11.2006 17:40' }, extra || {});
   const recycle = F('Papierkorb', [
-    T('wecker.txt', 'Wecker: ' + code + '\n\nGenau dann fängt er jedes Mal an.', { deletedFrom: 'Eigene Dateien', date: '13.11.2006 03:33' })
+    T('wecker.txt', 'Admin-Kennwort (verschlüsselt): ' + code + '\n\n' + RULE + '\n\nDas Ergebnis ist eine Uhrzeit, ohne Doppelpunkt eintippen.', { deletedFrom: 'Eigene Dateien', date: '13.11.2006 03:33' })
   ], { recycle: true });
   const myFiles = F('Eigene Dateien', [
     F('Bilder', [
@@ -130,14 +119,14 @@
     T('Termine.txt', termineText),
     T('Dehnübungen.txt', exercises.map((e, i) => (i + 1) + '. ' + e).join('\n') + '\n\nLangsam. Gleichmäßig. Mitzählen.'),
     F('Tagebuch', diaryFiles, { hidden: true, date: '14.11.2006 03:33' }),
-    T('notiz.txt', 'Die Reihenfolge verrät der Kalender.\nWas genau zählt, steht in den Eigenschaften von fuer_dich.zip.\n\n– M.', { hidden: true, date: NOW }),
+    T('notiz.txt', 'Das Kennwort für fuer_dich.zip steht im Tagebuch.\nNimm von jedem Tag den ersten Buchstaben des LETZTEN Wortes.\nTag 1 zuerst, dann Tag 2 und so weiter.\n\n– M.', { hidden: true, date: NOW }),
     { name: 'fuer_dich.zip', type: 'zip', hidden: true, date: NOW, comment: 'Von jedem Eintrag aus dem November: der erste Buchstabe des letzten Wortes. Alles andere zählt nicht.' },
     T('desktop.ini', '[.ShellClassInfo]\nInfoTip=Nicht alles, was gelöscht ist, ist weg.', { hidden: true, system: true })
   ], { date: '01.11.2006 08:10' });
   const windowsDir = F('WINDOWS', [
     F('system32', [
       T('readme.txt', 'Systemordner.\nWer Systemdateien sehen will, entfernt in den Ordneroptionen den Haken bei\n„Geschützte Systemdateien ausblenden“.'),
-      T('konten.sys', 'Kontowechsel: Klick auf das Bild oben im Startmenü.\nDas Kennwort ist eine Uhrzeit, vier Ziffern.\nVolle Rechte regelt eine Richtlinie zwischen den Bildern.', { system: true, hidden: true }),
+      T('konten.sys', 'Kontowechsel: Klick auf das Bild oben im Startmenü.\nDas Kennwort steht im Papierkorb.\nVolle Rechte: versteckte Datei im Ordner Bilder öffnen und beim Administrator false auf true ändern.', { system: true, hidden: true }),
       T('uhr.ini', '[Notiz]\n' + RULE.replace(/\n/g, '\n'), { hidden: true, system: true, date: '12.11.2006 23:58' }),
       { name: 'notepad.exe', type: 'exe', app: 'notepad', date: '23.08.2001 12:00' },
       { name: 'explorer.exe', type: 'exe', app: 'explorer', date: '23.08.2001 12:00' }
@@ -536,7 +525,7 @@
         '<button type="button" class="xpw-account' + (isAdmin ? '' : ' is-current') + '"><span class="xp-avatar"></span><span><b>Besucher</b><small>Eingeschränktes Konto</small></span></button>' +
         '<button type="button" class="xpw-account' + (isAdmin ? ' is-current' : '') + '" data-admin><span class="xp-avatar xp-avatar-admin"></span><span><b>Administrator</b><small>Computeradministrator · Kennwortgeschützt</small></span></button>' +
       '</div>' +
-      '<div class="xpw-login" hidden><div>Kennwort für Administrator:</div><input type="password" class="xpw-input" autocomplete="off" spellcheck="false"><div class="xpw-hint" hidden>Kennworthinweis: Weggeworfen. Verschlüsselt. Das System kennt die Regel.</div><div class="xpw-dialog-btns"><button type="button" data-hint>?</button><button type="button" data-ok>Anmelden</button></div></div>';
+      '<div class="xpw-login" hidden><div>Kennwort für Administrator:</div><input type="password" class="xpw-input" autocomplete="off" spellcheck="false"><div class="xpw-hint" hidden>Kennworthinweis: Schau in den Papierkorb (wecker.txt).</div><div class="xpw-dialog-btns"><button type="button" data-hint>?</button><button type="button" data-ok>Anmelden</button></div></div>';
     const login = body.querySelector('.xpw-login');
     const input = body.querySelector('input');
     body.querySelector('[data-admin]').addEventListener('click', () => {
