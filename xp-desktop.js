@@ -125,7 +125,11 @@
     if (e.target.closest('.xp-task') && root.classList.contains('xp-site-hidden')) showSite();
   });
   // Beim Verlassen von XP immer zurück zur Website
-  new MutationObserver(() => { if (!root.classList.contains('theme-xp')) root.classList.remove('xp-site-hidden'); }).observe(root, { attributes: true, attributeFilter: ['class'] });
+  // Nur entfernen, wenn die Klasse wirklich da ist: classList.remove setzt das Attribut sonst trotzdem neu,
+  // das löst den Beobachter erneut aus, und die Seite hängt in einer Endlosschleife fest
+  new MutationObserver(() => {
+    if (!root.classList.contains('theme-xp') && root.classList.contains('xp-site-hidden')) root.classList.remove('xp-site-hidden');
+  }).observe(root, { attributes: true, attributeFilter: ['class'] });
 
   /* ---------- Start > Ausführen ---------- */
   function runDialog() {
