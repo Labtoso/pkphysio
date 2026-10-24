@@ -136,8 +136,11 @@
       if (samplesLoading || !ctx) return;
       samplesLoading = true;
       Object.entries(SAMPLE_FILES).forEach(([name, file]) => {
-        fetch(SOUND_BASE + file)
-          .then(r => r.arrayBuffer())
+        // Eingebettete Daten (sounds-data.js) zuerst: funktioniert auch bei file://, wo fetch blockiert ist
+        const embedded = window.PK_SOUNDS && window.PK_SOUNDS[name];
+        (embedded
+          ? Promise.resolve(Uint8Array.from(atob(embedded), c => c.charCodeAt(0)).buffer)
+          : fetch(SOUND_BASE + file).then(r => r.arrayBuffer()))
           .then(buf => new Promise((res, rej) => ctx.decodeAudioData(buf, res, rej)))
           .then(audioBuf => {
             // Aufnahmen sind unterschiedlich laut aufgenommen, darum auf gleiche Lautstärke bringen
@@ -166,7 +169,23 @@
       g.gain.value = (opt.vol == null ? 1 : opt.vol) * (buf.norm || 1);
       const pan = opt.pan && a.createStereoPanner ? a.createStereoPanner() : null;
       if (pan) pan.pan.value = opt.pan;
-      src.connect(g);
+      let node = src;
+      if (opt.tone) {
+        const shape = {
+          deep: [['lowshelf', 180, 9], ['peaking', 900, -4], ['lowpass', 2200, 0]],
+          soft: [['lowshelf', 220, 5], ['lowpass', 3200, 0]],
+          bright: [['highshelf', 2500, 6], ['highpass', 180, 0]]
+        }[opt.tone] || [];
+        shape.forEach(([type, freq, gain]) => {
+          const f = a.createBiquadFilter();
+          f.type = type;
+          f.frequency.value = freq;
+          if (type === 'lowshelf' || type === 'highshelf' || type === 'peaking') f.gain.value = gain;
+          node.connect(f);
+          node = f;
+        });
+      }
+      node.connect(g);
       (pan ? g.connect(pan) : g).connect(dry);
       src.start(t);
       return true;
@@ -262,7 +281,7 @@
         }
         const rowName = 'r' + Math.max(0, Math.min(4, Math.round(kk.row == null ? 2 : kk.row)));
         const name = sz >= 5 ? 'space' : sz >= 2 ? 'enter' : sz >= 1.5 ? 'backspace' : rowName;
-        if (sample(name, { rate: rnd(1, 0.06), vol: 0.9 * (kk.soft || 1), pan: kk.pan || 0 })) return;
+        if (sample(name, { rate: rnd(0.86, 0.05), vol: 1.1 * (kk.soft || 1), pan: kk.pan || 0, tone: 'deep' })) return;
         const size = (k && k.size) || 1;
         const row = (k && k.row) || 0;
         const pan = k && typeof k.pan === 'number' ? k.pan : 0;
@@ -284,7 +303,7 @@
         const kk = k || {};
         const sz = kk.size || 1;
         const upName = sz >= 5 ? 'upSpace' : sz >= 2 ? 'upEnter' : sz >= 1.5 ? 'upBackspace' : 'up';
-        if (sample(upName, { rate: rnd(1, 0.05), vol: 0.8 * (kk.soft || 1), pan: kk.pan || 0 })) return;
+        if (sample(upName, { rate: rnd(0.9, 0.05), vol: 0.75 * (kk.soft || 1), pan: kk.pan || 0, tone: 'soft' })) return;
         const pan = k && typeof k.pan === 'number' ? k.pan : 0;
         const soft = (k && k.soft) || 1;
         noise({ freq: rnd(620, 0.1), q: 5, dur: 0.035, vol: 0.75 * soft, curve: 4, pan });
@@ -307,13 +326,13 @@
     // Überall dasselbe cremige Tastatur-Gefühl
     const later = (fn, ms) => setTimeout(fn, ms);
     Object.assign(sounds, {
-      click() { sounds.thock({ size: 1.5, row: 3 }); later(() => sounds.clack({ soft: 0.8 }), 85); },
+      click() { sounds.thock({ size: 1, row: 2 }); later(() => sounds.clack({ soft: 0.8 }), 85); },
       pop() { sounds.thock({ size: 1, row: 1, soft: 0.8 }); later(() => sounds.clack({ soft: 0.6 }), 70); },
-      bubble() { sounds.thock({ size: 1, row: 0, soft: 0.18, pan: (Math.random() - 0.5) * 0.8 }); },
+      bubble() {},
       open() { sounds.thock({ size: 2.25, row: 2 }); later(() => sounds.clack({ soft: 0.8 }), 110); },
       close() { sounds.thock({ size: 2, row: 3, soft: 0.85 }); later(() => sounds.clack({ soft: 0.7 }), 95); },
       chime() { sounds.thock({ size: 6.25, row: 4 }); later(() => sounds.clack({ soft: 0.9 }), 130); },
-      burst(r) { sample('pop', { rate: Math.max(0.9, Math.min(1.6, 50 / Math.max(14, r || 40))) * rnd(1, 0.08), vol: 1, pan: (Math.random() - 0.5) * 0.6 }); },
+      burst(r) { sample('pop', { rate: Math.max(1.35, Math.min(2, 70 / Math.max(14, r || 40))) * rnd(1, 0.06), vol: 1, pan: (Math.random() - 0.5) * 0.6, tone: 'bright' }); },
       split() { sounds.thock({ size: 6.25, row: 4, soft: 0.95 }); later(() => sounds.clack({ soft: 0.8 }), 90); },
       glassTap(r) { sample('pop', { rate: 2.2 * rnd(1, 0.1), vol: 0.18, pan: (Math.random() - 0.5) * 0.8 }); },
       plip(r) { sample('pop', { rate: Math.max(1.3, Math.min(2.4, 40 / Math.max(8, r || 20))) * rnd(1, 0.1), vol: 0.3, pan: (Math.random() - 0.5) * 1.2 }); },
@@ -926,27 +945,6 @@
     }).observe(hero);
   }
 
-  /* ---------- Leises Plip, wenn Inhalte auftauchen ---------- */
-  let lastReveal = 0;
-  const revealSound = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      revealSound.unobserve(entry.target);
-      const now = performance.now();
-      if (now - lastReveal > 110) { lastReveal = now; sound.play('plip', 26); }
-    });
-  }, { threshold: 0.2 });
-  document.querySelectorAll('main .reveal').forEach(el => revealSound.observe(el));
-
-  /* ---------- Leises Ratschen beim Scrollen ---------- */
-  let lastScrollY = window.scrollY;
-  window.addEventListener('scroll', () => {
-    if (Math.abs(window.scrollY - lastScrollY) > 90) {
-      lastScrollY = window.scrollY;
-      sound.play('ratchet');
-    }
-  }, { passive: true });
-
   /* ---------- Wassertropfen beim Klicken ---------- */
   document.addEventListener('pointerdown', (e) => {
     const drop = document.createElement('span');
@@ -988,12 +986,6 @@
     tx = e.clientX; ty = e.clientY;
     if (!gliding) { gliding = true; requestAnimationFrame(glide); }
   }, { passive: true });
-
-  // Leises Blubbern beim Darüberfahren
-  document.addEventListener('pointerover', (e) => {
-    const t = e.target.closest && e.target.closest('.btn, .nav-link, .theme-toggle, .accordion-trigger, .service-card, .offer-card');
-    if (t && !t.contains(e.relatedTarget)) sound.hover();
-  });
 
   /* ---------- Karten neigen sich zur Maus ---------- */
   const tiltSelector = '.service-card, .offer-card, .contact-list, .about-portrait, .custom-testimonial-card, .custom-pricing-card';
