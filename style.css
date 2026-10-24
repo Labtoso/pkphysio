@@ -2038,3 +2038,85 @@ main, .site-footer { position: relative; z-index: 1; }
   .section-head::before { width: 140px; height: 140px; left: -30px; top: -40px; }
   .faq-layout .section-head::before { margin-left: -70px; }
 }
+
+/* ===== V2: Leistung – gleicher Look, viel weniger Rechenarbeit ===== */
+/* Bewegt wird nur noch über transform und opacity, die Grafikkarte macht das ohne Neuzeichnen. */
+
+:root { --glass-blur: blur(16px) saturate(170%); }
+
+/* Hintergrund: kein Farb-Filter und keine Verzerrung mehr über den ganzen Bildschirm */
+.glass-bg { animation: none; contain: strict; }
+.glass-bg span { filter: none; will-change: transform; }
+.glass-bg::after {
+  background: conic-gradient(transparent 0deg, rgba(23, 182, 164, .10) 60deg, transparent 120deg, rgba(111, 231, 255, .08) 200deg, transparent 260deg, rgba(255, 122, 198, .07) 320deg, transparent 360deg);
+  animation: fx-turn 60s linear infinite;
+  will-change: transform;
+}
+.glass-bg::before { will-change: transform; }
+@keyframes fx-turn { to { transform: rotate(360deg); } }
+
+/* Regenbogen-Ränder: stehen still und drehen sich nur beim Darüberfahren */
+.service-card::before, .offer-card::before, .contact-list::before, .about-portrait::before,
+.accordion-item.open::before, .kontakt-map::before, .custom-testimonial-card::before, .custom-pricing-card::before,
+.header-inner::after { animation-play-state: paused; }
+.fx-tilting::before, .accordion-item.open:hover::before, .header-inner:hover::after { animation-play-state: running; }
+
+/* Glasflächen verformen sich nicht mehr dauernd (das zwingt die Unschärfe zum Neuberechnen) */
+.service-card, .offer-card, .custom-testimonial-card, .custom-pricing-card,
+.about-portrait, .contact-list { animation: none; }
+.service-card.in-view:hover, .offer-card.in-view:hover { animation: fx-card-boing .9s var(--boing); }
+
+/* Bewegte Blasen: Glas-Look ohne echte Unschärfe dahinter */
+.fx-ball, .fx-bubbles i, .fx-drop, .section-head::before, .hero::before, .hero::after {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.fx-ball { will-change: transform; contain: layout paint; }
+.fx-bubbles i { will-change: transform; }
+.fx-sparkles i { will-change: transform, opacity; }
+
+/* Auftauchen ohne Unschärfe-Filter, nur Bewegung und Einblenden */
+.reveal, .reveal.in-view { filter: none; }
+.fx-word { animation-name: fx-word-in-light; }
+@keyframes fx-word-in-light { from { opacity: 0; transform: translateY(14px) rotate(2deg); } to { opacity: 1; transform: none; } }
+
+/* Name: kein mitlaufender Schatten-Filter mehr */
+.hero h1, .hero h1.in-view { filter: none; }
+
+/* Mausschein wird direkt per Skript verschoben */
+.fx-cursor { will-change: transform; transform: translate3d(-999px, -999px, 0); }
+.fx-progress { will-change: transform; transform: scaleX(0); }
+
+/* Wellenlinie ohne Schatten-Filter */
+.fx-wave path { filter: none; }
+
+/* Aufsteigende Blasen: Wackeln über transform statt margin */
+.fx-bubbles i { animation-name: fx-rise, fx-wobble-x; }
+@keyframes fx-wobble-x { 0% { translate: -22px 0; scale: 1.05 .92; } 100% { translate: 22px 0; scale: .94 1.05; } }
+
+/* ===== V2: Ruhige FAQ – weich und gleichmäßig statt hüpfend ===== */
+
+.accordion-item,
+.accordion-item:hover,
+.accordion-item.open,
+.accordion-item.open:hover {
+  animation: none;
+  transform: none;
+}
+.accordion-item {
+  transition: background .5s ease, border-color .5s ease, box-shadow .5s ease;
+}
+.accordion-item:hover { background: var(--color-surface); box-shadow: var(--glass-shine), var(--glass-shadow); }
+.accordion-item.open { box-shadow: var(--glass-shine), 0 18px 45px rgba(0, 0, 0, .22), 0 0 0 1px var(--color-primary-light); }
+.accordion-item.open::before { display: none; }
+
+/* Aufklappen gleitet gleichmäßig, ohne Nachfedern */
+.accordion-panel { transition: max-height .55s cubic-bezier(.4, 0, .2, 1), padding .55s cubic-bezier(.4, 0, .2, 1); }
+.accordion-item.open .accordion-answer { animation: fx-faq-in .6s cubic-bezier(.2, .7, .2, 1) .08s both; }
+@keyframes fx-faq-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+/* Plus dreht sich ruhig zum Kreuz */
+.accordion-trigger::after { transition: transform .45s cubic-bezier(.4, 0, .2, 1), background .45s ease, color .45s ease; }
+.accordion-item.open .accordion-trigger::after { transform: rotate(45deg); }
+.accordion-trigger { transition: color .4s ease; }
+.accordion-item:hover .accordion-trigger { color: var(--color-ink); }
