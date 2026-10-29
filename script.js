@@ -55,7 +55,6 @@ function applyDesign(design, customFonts) {
   root.setProperty('--color-primary-light', tintColor(design.primaryColor, 0.16));
   root.setProperty('--color-accent', design.accentColor);
   root.setProperty('--radius', design.borderRadius + 'px');
-  root.setProperty('--radius-sm', Math.max(4, design.borderRadius - 2) + 'px');
   root.setProperty('--portrait-width', design.portraitWidth + 'px');
   root.setProperty('--logo-height', design.logoHeight + 'px');
   document.documentElement.style.fontSize = design.textScale + '%';

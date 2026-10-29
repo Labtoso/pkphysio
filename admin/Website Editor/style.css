@@ -150,7 +150,7 @@ body:not(.admin-searching) .admin-section.is-collapsed > :not(h2):not(.admin-sec
   color: var(--color-ink);
   background: var(--color-bg);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   padding: 10px 14px;
   line-height: 1.5;
   resize: vertical;
@@ -179,7 +179,7 @@ body:not(.admin-searching) .admin-section.is-collapsed > :not(h2):not(.admin-sec
 .admin-richtext {
   background: var(--color-bg);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   min-height: 90px;
   cursor: text;
 }
@@ -199,7 +199,7 @@ body:not(.admin-searching) .admin-section.is-collapsed > :not(h2):not(.admin-sec
 .ql-bubble .ql-tooltip {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   box-shadow: var(--shadow-md, 0 10px 30px rgba(0, 0, 0, .45));
   color: var(--color-ink);
 }
@@ -220,14 +220,14 @@ body:not(.admin-searching) .admin-section.is-collapsed > :not(h2):not(.admin-sec
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   color: var(--color-ink);
-  border-radius: 6px;
+  border-radius: var(--radius);
 }
 .ql-bubble .ql-tooltip a.ql-action,
 .ql-bubble .ql-tooltip a.ql-remove { color: var(--color-primary); }
 .ql-bubble .ql-picker-options {
   background: var(--color-surface);
   border: 1px solid var(--color-border) !important;
-  border-radius: 8px;
+  border-radius: var(--radius);
   box-shadow: var(--shadow-md, 0 10px 30px rgba(0, 0, 0, .45));
 }
 .ql-bubble .ql-picker.ql-expanded .ql-picker-label { border-color: var(--color-border); }
@@ -252,7 +252,7 @@ body:not(.admin-searching) .admin-section.is-collapsed > :not(h2):not(.admin-sec
   width: 84px;
   height: 84px;
   object-fit: cover;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   border: 1px solid var(--color-border);
   background: #1a1a1a;
 }
@@ -287,7 +287,7 @@ input[type="file"]::file-selector-button {
   color: var(--color-ink);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 6px;
+  border-radius: var(--radius);
   padding: 7px 12px;
   margin-right: 10px;
   cursor: pointer;
@@ -343,7 +343,7 @@ textarea.admin-oneline { min-height: 0; resize: none; }
   padding: 20px 12px;
   background: var(--color-bg);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   color: var(--color-ink);
   font-family: var(--font-body);
   transition: border-color var(--motion), color var(--motion), transform var(--motion);
@@ -379,7 +379,7 @@ textarea.admin-oneline { min-height: 0; resize: none; }
   color: var(--color-ink);
   background: var(--color-bg);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   padding: 9px 26px 9px 12px;
 }
 .admin-table-cell input:focus { outline: none; border-color: var(--color-primary); }
@@ -401,7 +401,7 @@ textarea.admin-oneline { min-height: 0; resize: none; }
   height: 28px;
   background: none;
   border: 1px solid var(--color-border);
-  border-radius: 6px;
+  border-radius: var(--radius);
   color: var(--color-ink-soft);
   line-height: 1;
 }
@@ -444,7 +444,7 @@ textarea.admin-oneline { min-height: 0; resize: none; }
   background: none;
   border: none;
   color: var(--color-ink-soft);
-  border-radius: 6px;
+  border-radius: var(--radius);
   transition: color var(--motion), background var(--motion);
 }
 .admin-block-rename-btn:hover { color: var(--color-ink); background: var(--color-bg-alt); }
@@ -455,7 +455,7 @@ textarea.admin-oneline { min-height: 0; resize: none; }
   color: var(--color-ink);
   background: var(--color-bg);
   border: 1px solid var(--color-primary);
-  border-radius: 6px;
+  border-radius: var(--radius);
   padding: 2px 8px;
   min-width: 160px;
 }
@@ -553,7 +553,7 @@ body.admin-dragging-active .admin-drag-handle { cursor: grabbing; }
   color: var(--color-ink);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   padding: 0 14px;
   min-height: 42px;
 }
@@ -567,7 +567,7 @@ body.admin-dragging-active .admin-drag-handle { cursor: grabbing; }
 .admin-repeater { display: flex; flex-direction: column; gap: 16px; }
 .admin-repeater-item {
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   padding: 16px;
   background: transparent;
   position: relative;
@@ -591,7 +591,7 @@ body.admin-dragging-active .admin-drag-handle { cursor: grabbing; }
   margin-top: 16px;
   background: none;
   border: 1px dashed var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   color: var(--color-ink-soft);
   font-family: inherit;
   font-weight: 600;
