@@ -2,6 +2,16 @@
 
 Neueste Änderungen stehen oben.
 
+## 29.10.2026 – Einheitliche Eckenrundung
+
+### Geändert
+- Alle Ecken auf der Website richten sich jetzt nach dem Regler „Eckenrundung“ im Website-Editor (aktuell 10 px). Vorher hatten Knöpfe, Sonne/Mond-Knopf, Menü-Knopf und die Auswahl bei „Termin vereinbaren“ fest 6 px und die FAQ-Einträge 8 px.
+- Im Website-Editor, im Admin-Bereich und in der Statistik nutzen Knöpfe, Eingabefelder und Karten ebenfalls dieselbe Rundung.
+- Runde Elemente (Porträtkreise, Punkte, Pillen-Knöpfe) bleiben rund.
+
+### Entfernt
+- Der zweite, kleinere Rundungswert (Eckenrundung minus 2 px) entfällt.
+
 ## 23.10.2026 – Impressum als Baustein
 
 ### Neu
