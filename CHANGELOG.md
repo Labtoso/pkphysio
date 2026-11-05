@@ -2,6 +2,11 @@
 
 Neueste Änderungen stehen oben.
 
+## 05.11.2026 – Herz auf „Made by“
+
+### Neu
+- Auf der Seite `/made-by/` steht links neben „Made by Sebastian“ ein rotes Herz, genau so groß wie der Text. Es ist als kleine Grafik direkt in der Seite eingebaut (kein Emoji) und sieht in Hell und Dunkel gleich aus.
+
 ## 29.10.2026 – Einheitliche Eckenrundung
 
 ### Geändert
